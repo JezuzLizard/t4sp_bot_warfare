@@ -15,7 +15,7 @@ init()
 	if ( !getDvarInt( "bots_main" ) )
 		return;
 
-	thread load_waypoints();
+	//thread load_waypoints(); //Don't call for now
 	thread hook_callbacks();
 
 	if ( getDvar( "bots_main_GUIDs" ) == "" )
@@ -144,8 +144,8 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 {
 	if ( self is_bot() )
 	{
-		//self maps\mp\bots\_bot_internal::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
-		//self maps\mp\bots\_bot_script::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
+		//self scripts\sp\bots\_bot_internal::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
+		self scripts\sp\bots\_bot_script::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
 	}
 
 	self [[level.prevCallbackPlayerDamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
@@ -222,8 +222,8 @@ connected()
 		self thread added();
 	}
 
-	//self thread maps\mp\bots\_bot_internal::connected();
-	//self thread maps\mp\bots\_bot_script::connected();
+	self thread scripts\sp\bots\_bot_internal::connected();
+	self thread scripts\sp\bots\_bot_script::connected();
 
 	level.bots[level.bots.size] = self;
 	self thread onDisconnect();
@@ -258,8 +258,8 @@ added()
 {
 	self endon( "disconnect" );
 
-	//self thread maps\mp\bots\_bot_internal::added();
-	//self thread maps\mp\bots\_bot_script::added();
+	self thread scripts\sp\bots\_bot_internal::added();
+	//self thread scripts\sp\bots\_bot_script::added();
 }
 
 /*

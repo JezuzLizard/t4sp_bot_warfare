@@ -69,15 +69,15 @@ BotSetStance( stance )
 	switch ( stance )
 	{
 		case "stand":
-			//self maps\mp\bots\_bot_internal::stand();
+			//self scripts\sp\bots\_bot_internal::stand();
 			break;
 
 		case "crouch":
-			//self maps\mp\bots\_bot_internal::crouch();
+			//self scripts\sp\bots\_bot_internal::crouch();
 			break;
 
 		case "prone":
-			//self maps\mp\bots\_bot_internal::prone();
+			//self scripts\sp\bots\_bot_internal::prone();
 			break;
 	}
 }
@@ -87,7 +87,7 @@ BotSetStance( stance )
 */
 BotChangeToWeapon( weap )
 {
-	//self maps\mp\bots\_bot_internal::changeToWeap( weap );
+	self botWeapon( weap );
 }
 
 /*
@@ -95,7 +95,7 @@ BotChangeToWeapon( weap )
 */
 BotPressAttack( time )
 {
-	//self maps\mp\bots\_bot_internal::pressFire( time );
+	self scripts\sp\bots\_bot_internal::pressFire( time );
 }
 
 /*
@@ -103,7 +103,7 @@ BotPressAttack( time )
 */
 BotPressADS( time )
 {
-	//self maps\mp\bots\_bot_internal::pressADS( time );
+	self scripts\sp\bots\_bot_internal::pressADS( time );
 }
 
 /*
@@ -111,7 +111,7 @@ BotPressADS( time )
 */
 BotPressUse( time )
 {
-	//self maps\mp\bots\_bot_internal::use( time );
+	self scripts\sp\bots\_bot_internal::use( time );
 }
 
 /*
@@ -119,7 +119,7 @@ BotPressUse( time )
 */
 BotPressFrag( time )
 {
-	//self maps\mp\bots\_bot_internal::frag( time );
+	self scripts\sp\bots\_bot_internal::frag( time );
 }
 
 /*
@@ -127,7 +127,7 @@ BotPressFrag( time )
 */
 BotPressSmoke( time )
 {
-	//self maps\mp\bots\_bot_internal::smoke( time );
+	self scripts\sp\bots\_bot_internal::smoke( time );
 }
 
 /*
@@ -798,13 +798,6 @@ load_waypoints()
 	}
 	else
 	{
-		switch ( mapname )
-		{
-			default:
-				maps\mp\bots\waypoints\_custom_map::main( mapname );
-				break;
-		}
-
 		if ( level.waypoints.size )
 			PrintConsole( "Loaded " + level.waypoints.size + " waypoints from script.\n" );
 	}
@@ -1382,4 +1375,12 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 	}
 
 	return ( number );
+}
+
+/*
+	If the player is in laststand
+*/
+inLastStand()
+{
+	return ( isDefined( self.lastStand ) && self.lastStand );
 }
