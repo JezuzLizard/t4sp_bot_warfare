@@ -6,7 +6,7 @@
 #include maps\mp\zombies\_zm_utility;
 #include scripts\zm\bots\bot_utility;
 
-register_bot_action( group, action_name, action_func, should_do_func, action_completion_func, should_cancel_func, on_cancel_func, should_postpone_func, on_postpone_func, priority_func )
+register_bot_action( group, action_name, action_func, should_do_func, action_process_order_func, action_completion_func, should_cancel_func, on_cancel_func, should_postpone_func, on_postpone_func, priority_func )
 {
 	if ( !isDefined( level.zbots_actions ) )
 	{
@@ -20,23 +20,13 @@ register_bot_action( group, action_name, action_func, should_do_func, action_com
 	level.zbots_actions[ action_name ].group = group;
 	level.zbots_actions[ action_name ].action = action_func;
 	level.zbots_actions[ action_name ].should_do_func = should_do_func;
+	level.zbots_actions[ action_name ].action_process_order_func = action_process_order_func;
 	level.zbots_actions[ action_name ].on_completion_func = action_completion_func;
 	level.zbots_actions[ action_name ].should_cancel_func = should_cancel_func;
 	level.zbots_actions[ action_name ].on_cancel_func = on_cancel_func;
 	level.zbots_actions[ action_name ].should_postpone_func = should_postpone_func;
 	level.zbots_actions[ action_name ].on_postpone_func = on_postpone_func;
 	level.zbots_actions[ action_name ].priority_func = priority_func;
-}
-
-register_bot_powerup_priority( powerup, priority_normal, priority_emergency )
-{
-	if ( !isDefined( level.zbots_powerup_priorities ) )
-	{
-		level.zbots_powerup_priorities = [];
-	}
-	level.zbots_powerup_priorities[ powerup ] = spawnStruct();
-	level.zbots_powerup_priorities[ powerup ].normal = priority_normal;
-	level.zbots_powerup_priorities[ powerup ].emergency = priority_emergency;
 }
 
 register_bot_action_queue_action( action_name )
@@ -56,13 +46,18 @@ bot_magicbox_purchase()
 	self.target_pos = self.available_chests[ 0 ].origin;
 }
 
+bot_magicbox_action_order()
+{
+
+}
+
 bot_should_purchase_magicbox()
 {
-	if ( level.chests.size <= 0 )
+	if ( !level.enable_magic )
 	{
 		return false;
 	}
-	if ( !level.enable_magic )
+	if ( level.chests.size <= 0 )
 	{
 		return false;
 	}
@@ -142,6 +137,11 @@ bot_wallbuy_purchase()
 
 }
 
+bot_wallbuy_action_order()
+{
+	return 0;
+}
+
 bot_should_purchase_wallbuy()
 {
 	return false;
@@ -180,6 +180,11 @@ bot_wallbuy_purchase_priority()
 bot_wallbuy_ammo_purchase()
 {
 
+}
+
+bot_wallbuyammo_action_order()
+{
+	return 0;
 }
 
 bot_should_purchase_wallbuy_ammo()
@@ -222,6 +227,11 @@ bot_perk_purchase()
 
 }
 
+bot_perk_action_order()
+{
+	return 0;
+}
+
 bot_should_purchase_perk()
 {
 	return false;
@@ -260,6 +270,11 @@ bot_perk_purchase_priority()
 bot_door_purchase()
 {
 
+}
+
+bot_door_action_order()
+{
+	return 0;
 }
 
 bot_should_purchase_door()
@@ -302,6 +317,11 @@ bot_debris_purchase()
 
 }
 
+bot_debris_action_order()
+{
+	return 0;
+}
+
 bot_should_purchase_debris()
 {
 	return false;
@@ -342,6 +362,11 @@ bot_trap_purchase()
 
 }
 
+bot_trap_action_order()
+{
+	return 0;
+}
+
 bot_should_purchase_trap()
 {
 	return false;
@@ -377,9 +402,59 @@ bot_trap_purchase_priority()
 	return 0;
 }
 
+bot_packapunch_purchase()
+{
+
+}
+
+bot_packapunch_action_order()
+{
+	return 0;
+}
+
+bot_should_purchase_packapunch()
+{
+	return false;
+}
+
+bot_packapunch_purchase_on_completion()
+{
+
+}
+
+bot_packapunch_purchase_should_cancel()
+{
+	return false;
+}
+
+bot_packapunch_purchase_on_cancel()
+{
+
+}
+
+bot_packapunch_purchase_should_postpone()
+{
+	return false;
+}
+
+bot_packapunch_purchase_on_postpone()
+{
+
+}
+
+bot_packapunch_purchase_priority()
+{
+	return 0;
+}
+
 bot_revive_player()
 {
 
+}
+
+bot_revive_action_order()
+{
+	return 0;
 }
 
 bot_should_revive_player()
@@ -422,6 +497,11 @@ bot_grab_buildable()
 
 }
 
+bot_grabbuildable_action_order()
+{
+	return 0;
+}
+
 bot_should_grab_buildable()
 {
 	return false;
@@ -462,6 +542,11 @@ bot_build_buildable()
 
 }
 
+bot_buildbuildable_action_order()
+{
+	return 0;
+}
+
 bot_should_build_buildable()
 {
 	return false;
@@ -500,6 +585,11 @@ bot_build_buildable_priority()
 bot_grab_part()
 {
 
+}
+
+bot_part_action_order()
+{
+	return 0;
 }
 
 bot_should_grab_part()
@@ -548,6 +638,11 @@ bot_grab_powerup()
 	self.target_pos = self.available_powerups[ 0 ].origin;
 	self.target_powerup = self.available_powerups[ 0 ];
 	level.zbots_powerups_targeted_for_grab[ level.zbots_powerups_targeted_for_grab.size ] = self.available_powerups[ 0 ];
+}
+
+bot_powerup_action_order()
+{
+	return 0;
 }
 
 bot_should_grab_powerup()
