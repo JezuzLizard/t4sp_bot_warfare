@@ -1,52 +1,9 @@
-/*
-	Bot actions are in two parts
-*/
-#include common_scripts\utility;
-#include maps\mp\_utility;
-#include maps\mp\zombies\_zm_utility;
-#include scripts\zm\bots\bot_utility;
-
-register_bot_action( group, action_name, action_func, should_do_func, action_process_order_func, action_completion_func, should_cancel_func, on_cancel_func, should_postpone_func, on_postpone_func, priority_func )
-{
-	if ( !isDefined( level.zbots_actions ) )
-	{
-		level.zbots_actions = [];
-	}
-	if ( !isDefined( level.zbots_actions[ action_name ] ) )
-	{
-		level.zbots_actions[ action_name ] = [];
-	}
-	level.zbots_actions[ action_name ] = spawnStruct();
-	level.zbots_actions[ action_name ].group = group;
-	level.zbots_actions[ action_name ].action = action_func;
-	level.zbots_actions[ action_name ].should_do_func = should_do_func;
-	level.zbots_actions[ action_name ].action_process_order_func = action_process_order_func;
-	level.zbots_actions[ action_name ].on_completion_func = action_completion_func;
-	level.zbots_actions[ action_name ].should_cancel_func = should_cancel_func;
-	level.zbots_actions[ action_name ].on_cancel_func = on_cancel_func;
-	level.zbots_actions[ action_name ].should_postpone_func = should_postpone_func;
-	level.zbots_actions[ action_name ].on_postpone_func = on_postpone_func;
-	level.zbots_actions[ action_name ].priority_func = priority_func;
-}
-
-register_bot_action_queue_action( action_name )
-{
-	if ( !isDefined( self.actions_in_queue ) )
-	{
-		self.actions_in_queue = [];
-	}
-	self.actions_in_queue[ action_name ] = spawnStruct();
-	self.actions_in_queue[ action_name ].postponed = false;
-	self.actions_in_queue[ action_name ].canceled = false;
-	self.actions_in_queue[ action_name ].queued = false;
-}
-
 bot_magicbox_purchase()
 {
 	self.target_pos = self.available_chests[ 0 ].origin;
 }
 
-bot_magicbox_action_order()
+bot_magicbox_process_order()
 {
 
 }
@@ -137,7 +94,7 @@ bot_wallbuy_purchase()
 
 }
 
-bot_wallbuy_action_order()
+bot_wallbuy_process_order()
 {
 	return 0;
 }
@@ -182,7 +139,7 @@ bot_wallbuy_ammo_purchase()
 
 }
 
-bot_wallbuyammo_action_order()
+bot_wallbuyammo_process_order()
 {
 	return 0;
 }
@@ -227,7 +184,7 @@ bot_perk_purchase()
 
 }
 
-bot_perk_action_order()
+bot_perk_process_order()
 {
 	return 0;
 }
@@ -272,7 +229,7 @@ bot_door_purchase()
 
 }
 
-bot_door_action_order()
+bot_door_process_order()
 {
 	return 0;
 }
@@ -317,7 +274,7 @@ bot_debris_purchase()
 
 }
 
-bot_debris_action_order()
+bot_debris_process_order()
 {
 	return 0;
 }
@@ -362,7 +319,7 @@ bot_trap_purchase()
 
 }
 
-bot_trap_action_order()
+bot_trap_process_order()
 {
 	return 0;
 }
@@ -407,7 +364,7 @@ bot_packapunch_purchase()
 
 }
 
-bot_packapunch_action_order()
+bot_packapunch_process_order()
 {
 	return 0;
 }
@@ -452,7 +409,7 @@ bot_revive_player()
 
 }
 
-bot_revive_action_order()
+bot_revive_process_order()
 {
 	return 0;
 }
@@ -497,7 +454,7 @@ bot_grab_buildable()
 
 }
 
-bot_grabbuildable_action_order()
+bot_grabbuildable_process_order()
 {
 	return 0;
 }
@@ -542,7 +499,7 @@ bot_build_buildable()
 
 }
 
-bot_buildbuildable_action_order()
+bot_buildbuildable_process_order()
 {
 	return 0;
 }
@@ -587,7 +544,7 @@ bot_grab_part()
 
 }
 
-bot_part_action_order()
+bot_part_process_order()
 {
 	return 0;
 }
@@ -640,7 +597,7 @@ bot_grab_powerup()
 	level.zbots_powerups_targeted_for_grab[ level.zbots_powerups_targeted_for_grab.size ] = self.available_powerups[ 0 ];
 }
 
-bot_powerup_action_order()
+bot_powerup_process_order()
 {
 	return 0;
 }
