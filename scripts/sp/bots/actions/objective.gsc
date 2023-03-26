@@ -45,6 +45,16 @@ bot_should_purchase_magicbox()
 	return self.available_chests.size > 0;
 }
 
+bot_check_complete_magicbox() 
+{
+
+}
+
+bot_set_complete_magicbox()
+{
+
+}
+
 bot_magicbox_purchase_on_completion()
 {
 
@@ -104,6 +114,16 @@ bot_should_purchase_wallbuy()
 	return false;
 }
 
+bot_check_complete_wallbuy()
+{
+
+}
+
+bot_set_complete_wallbuy()
+{
+
+}
+
 bot_wallbuy_purchase_on_completion()
 {
 
@@ -147,6 +167,16 @@ bot_wallbuyammo_process_order()
 bot_should_purchase_wallbuy_ammo()
 {
 	return false;
+}
+
+bot_check_complete_wallbuy_ammo()
+{
+
+}
+
+bot_set_complete_wallbuy_ammo()
+{
+
 }
 
 bot_wallbuy_ammo_purchase_on_completion()
@@ -194,6 +224,16 @@ bot_should_purchase_perk()
 	return false;
 }
 
+bot_check_complete_perk_purchase()
+{
+
+}
+
+bot_set_complete_perk_purchase()
+{
+
+}
+
 bot_perk_purchase_on_completion()
 {
 
@@ -237,6 +277,16 @@ bot_door_process_order()
 bot_should_purchase_door()
 {
 	return false;
+}
+
+bot_check_complete_door_purchase()
+{
+
+}
+
+bot_set_complete_door_purchase()
+{
+
 }
 
 bot_door_purchase_on_completion()
@@ -284,6 +334,16 @@ bot_should_purchase_debris()
 	return false;
 }
 
+bot_check_complete_debris_purchase()
+{
+
+}
+
+bot_set_complete_debris_purchase()
+{
+
+}
+
 bot_debris_purchase_on_completion()
 {
 
@@ -327,6 +387,16 @@ bot_trap_process_order()
 bot_should_purchase_trap()
 {
 	return false;
+}
+
+bot_check_complete_trap_purchase()
+{
+
+}
+
+bot_set_complete_trap_purchase()
+{
+
 }
 
 bot_trap_purchase_on_completion()
@@ -374,6 +444,16 @@ bot_should_purchase_packapunch()
 	return false;
 }
 
+bot_check_complete_packapunch_purchase()
+{
+
+}
+
+bot_set_complete_packapunch_purchase()
+{
+
+}
+
 bot_packapunch_purchase_on_completion()
 {
 
@@ -419,6 +499,16 @@ bot_should_revive_player()
 	return false;
 }
 
+bot_check_complete_revive_player()
+{
+
+}
+
+bot_set_complete_revive_player()
+{
+
+}
+
 bot_revive_player_on_completion()
 {
 
@@ -454,7 +544,7 @@ bot_grab_buildable()
 
 }
 
-bot_grabbuildable_process_order()
+bot_grab_buildable_process_order()
 {
 	return 0;
 }
@@ -462,6 +552,16 @@ bot_grabbuildable_process_order()
 bot_should_grab_buildable()
 {
 	return false;
+}
+
+bot_check_complete_grab_buildable()
+{
+
+}
+
+bot_set_complete_grab_buildable()
+{
+
 }
 
 bot_grab_buildable_on_completion()
@@ -499,7 +599,7 @@ bot_build_buildable()
 
 }
 
-bot_buildbuildable_process_order()
+bot_build_buildable_process_order()
 {
 	return 0;
 }
@@ -507,6 +607,16 @@ bot_buildbuildable_process_order()
 bot_should_build_buildable()
 {
 	return false;
+}
+
+bot_check_complete_build_buildable()
+{
+	
+}
+
+bot_set_complete_build_buildable()
+{
+
 }
 
 bot_build_buildable_on_completion()
@@ -562,6 +672,16 @@ bot_part_on_completion()
 bot_part_should_cancel()
 {
 	return false;
+}
+
+bot_check_complete_grab_part()
+{
+
+}
+
+bot_set_complete_grab_part()
+{
+
 }
 
 bot_part_on_cancel()
@@ -649,6 +769,16 @@ bot_should_grab_powerup()
 	distance_required_to_reach_powerup = undefined;
 	already_targeted = undefined;
 	return self.available_powerups.size > 0;
+}
+
+bot_check_complete_grab_powerup()
+{
+
+}
+
+bot_set_complete_grab_powerup()
+{
+
 }
 
 bot_powerup_on_completion()

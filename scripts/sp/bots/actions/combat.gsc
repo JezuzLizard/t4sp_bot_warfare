@@ -1,5 +1,3 @@
-
-
 bot_aimatsinglenormalzombie()
 {
 
@@ -13,6 +11,16 @@ bot_aimatsinglenormalzombie_process_order()
 bot_should_aimatsinglenormalzombie()
 {
 	return false;
+}
+
+bot_check_complete_aimatsinglenormalzombie()
+{
+
+}
+
+bot_set_complete_aimatsinglenormalzombie()
+{
+
 }
 
 bot_aimatsinglenormalzombie_on_completion()
@@ -60,6 +68,16 @@ bot_should_shootsinglenormalzombie()
 	return false;
 }
 
+bot_check_complete_shootsinglenormalzombie()
+{
+
+}
+
+bot_set_complete_shootsinglenormalzombie()
+{
+
+}
+
 bot_shootsinglenormalzombie_on_completion()
 {
 
@@ -103,6 +121,16 @@ bot_aimatmultiplenormalzombies_process_order()
 bot_should_aimatmultiplenormalzombies()
 {
 	return false;
+}
+
+bot_check_complete_aimatmultiplenormalzombies()
+{
+
+}
+
+bot_set_complete_aimatmultiplenormalzombies()
+{
+
 }
 
 bot_aimatmultiplenormalzombies_on_completion()
@@ -150,6 +178,16 @@ bot_should_shootmultiplenormalzombies()
 	return false;
 }
 
+bot_check_complete_shootmultiplenormalzombies()
+{
+
+}
+
+bot_set_complete_shootmultiplenormalzombies()
+{
+
+}
+
 bot_shootmultiplenormalzombie_on_completion()
 {
 
@@ -191,6 +229,16 @@ bot_meleesinglenormalzombie_process_order()
 }
 
 bot_should_meleesinglenormalzombie()
+{
+
+}
+
+bot_check_complete_meleesinglenormalzombie()
+{
+
+}
+
+bot_set_complete_meleesinglenormalzombie()
 {
 
 }
@@ -240,6 +288,16 @@ bot_should_shootsingledogzombie()
 	return false;
 }
 
+bot_check_complete_shootsingledogzombie()
+{
+
+}
+
+bot_set_complete_shootsingledogzombie()
+{
+
+}
+
 bot_shootsingledogzombie_on_completion()
 {
 
@@ -285,6 +343,16 @@ bot_should_shootmultipledogzombies()
 	return false;
 }
 
+bot_check_complete_shootmultipledogzombies()
+{
+
+}
+
+bot_set_complete_shootmultipledogzombies()
+{
+
+}
+
 bot_shootmultipledogzombies_on_completion()
 {
 
@@ -328,6 +396,16 @@ bot_meleesingledogzombie_process_order()
 bot_should_meleesingledogzombie()
 {
 	return false;
+}
+
+bot_check_complete_meleesingledogzombie()
+{
+
+}
+
+bot_set_complete_meleesingledogzombie()
+{
+
 }
 
 bot_meleesingledogzombie_on_completion()

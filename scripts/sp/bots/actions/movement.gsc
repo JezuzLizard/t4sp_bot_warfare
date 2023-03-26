@@ -13,6 +13,16 @@ bot_should_movetoobjective()
 	return false;
 }
 
+bot_check_complete_movetoobjective()
+{
+
+}
+
+bot_set_complete_movetoobjective()
+{
+
+}
+
 bot_movetoobjective_on_completion()
 {
 	
@@ -56,6 +66,16 @@ bot_train_process_order()
 bot_should_train()
 {
 	return false;
+}
+
+bot_check_complete_train()
+{
+
+}
+
+bot_set_complete_train()
+{
+
 }
 
 bot_train_on_completion()
@@ -103,6 +123,16 @@ bot_should_camp()
 	return false;
 }
 
+bot_check_complete_camp()
+{
+
+}
+
+bot_set_complete_camp()
+{
+
+}
+
 bot_camp_on_completion()
 {
 
@@ -146,6 +176,16 @@ bot_flee_process_order()
 bot_should_flee()
 {
 	return false;
+}
+
+bot_check_complete_flee()
+{
+
+}
+
+bot_set_complete_flee()
+{
+
 }
 
 bot_flee_on_completion()
