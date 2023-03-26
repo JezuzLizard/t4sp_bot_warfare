@@ -1,423 +1,279 @@
 #include common_scripts\utility;
-#include maps\_utility;
-#include scripts\sp\bots\_bot_utility;
+#include maps\mp\_utility;
+#include maps\mp\zombies\_zm_utility;
+#include scripts\zm\bots\bot_actions;
+#include scripts\zm\bots\bot_utility;
+#include scripts\zm\bots\bot_difficulty;
+#include scripts\zm\bots\_overrides;
 
-/*
-	Initiates the whole bot scripts.
-*/
+main()
+{
+	replaceFunc( maps\mp\zombies\_zm_spawner::zombie_follow_enemy, ::zombie_follow_enemy_override );
+	replaceFunc( maps\mp\zombies\_zm_powerups::powerup_timeout, ::powerup_timeout_override );
+
+	register_bot_action( "purchase", "magicbox", ::bot_magicbox_purchase, ::bot_should_purchase_magicbox, ::bot_magicbox_purchase_on_completion, ::bot_magicbox_purchase_should_cancel, ::bot_magicbox_purchase_on_cancel, ::bot_magicbox_purchase_should_postpone, ::bot_magicbox_purchase_on_postpone, ::bot_magicbox_purchase_priority );
+	register_bot_action( "purchase", "wallbuy", ::bot_wallbuy_purchase, ::bot_should_purchase_wallbuy, ::bot_wallbuy_purchase_on_completion, ::bot_wallbuy_purchase_should_cancel, ::bot_wallbuy_purchase_on_cancel, ::bot_wallbuy_purchase_should_postpone, ::bot_wallbuy_purchase_on_postpone, ::bot_wallbuy_purchase_priority );
+	register_bot_action( "purchase", "wallbuyammo", ::bot_wallbuy_ammo_purchase, ::bot_should_purchase_wallbuy_ammo, ::bot_wallbuy_ammo_purchase_on_completion, ::bot_wallbuy_ammo_purchase_should_cancel, ::bot_wallbuy_ammo_purchase_on_cancel, ::bot_wallbuy_ammo_purchase_should_postpone, ::bot_wallbuy_ammo_purchase_on_postpone, ::bot_wallbuy_ammo_purchase_priority );
+	register_bot_action( "purchase", "perk", ::bot_perk_purchase, ::bot_should_purchase_perk, ::bot_perk_purchase_on_completion, ::bot_perk_purchase_should_cancel, ::bot_perk_purchase_on_cancel, ::bot_perk_purchase_should_postpone, ::bot_perk_purchase_on_postpone, ::bot_perk_purchase_priority );
+	register_bot_action( "purchase", "door", ::bot_door_purchase, ::bot_should_purchase_door, ::bot_door_purchase_on_completion, ::bot_door_purchase_should_cancel, ::bot_door_purchase_on_cancel, ::bot_door_purchase_should_postpone, ::bot_door_purchase_on_postpone, ::bot_door_purchase_priority );
+	register_bot_action( "purchase", "debris", ::bot_debris_purchase, ::bot_should_purchase_debris, ::bot_debris_purchase_on_completion, ::bot_debris_purchase_should_cancel, ::bot_debris_purchase_on_cancel, ::bot_debris_purchase_should_postpone, ::bot_debris_purchase_on_postpone, ::bot_debris_purchase_priority );
+	register_bot_action( "purchase", "trap", ::bot_trap_purchase, ::bot_should_purchase_trap, ::bot_trap_purchase_on_completion, ::bot_trap_purchase_should_cancel, ::bot_trap_purchase_on_cancel, ::bot_trap_purchase_should_postpone, ::bot_trap_purchase_on_postpone, ::bot_trap_purchase_priority );
+	register_bot_action( "purchase", "packapunch", ::bot_packapunch_purchase, ::bot_should_packapunch );
+	register_bot_action( "usetriggerhold", "revive", ::bot_revive_player, ::bot_should_revive_player, ::bot_revive_player_on_completion, ::bot_revive_player_should_cancel, ::bot_revive_player_on_cancel, ::bot_revive_player_should_postpone, ::bot_revive_player_on_postpone, ::bot_revive_player_priority );
+	register_bot_action( "usetrigger", "grabbuildable", ::bot_grab_buildable, ::bot_should_grab_buildable, ::bot_grab_buildable_on_completion, ::bot_grab_buildable_should_cancel, ::bot_grabbuild_buildable_on_cancel, ::bot_grab_buildable_should_postpone, ::bot_grab_buildable_on_postpone, ::bot_grab_buildable_priority  );
+	register_bot_action( "usetriggerhold", "buildbuildable", ::bot_build_buildable, ::bot_should_build_buildable, ::bot_build_buildable_on_completion, ::bot_build_buildable_should_cancel, ::bot_build_buildable_on_cancel, ::bot_build_buildable_should_postpone, ::bot_build_buildable_on_postpone, ::bot_build_buildable_priority );
+	register_bot_action( "usetrigger", "part", ::bot_grab_part, ::bot_should_grab_part, ::bot_part_on_completion, ::bot_part_should_cancel, ::bot_part_on_cancel, ::bot_part_should_postpone, ::bot_part_on_postpone, ::bot_part_priority );
+	register_bot_action( "touchtrigger", "powerup", ::bot_grab_powerup, ::bot_should_grab_powerup, ::bot_powerup_on_completion, ::bot_powerup_should_cancel, ::bot_powerup_on_cancel, ::bot_powerup_should_postpone, ::bot_powerup_on_postpone, ::bot_powerup_priority );
+	//register_bot_action( level.bot_action_type_shoot, "shoot", ::bot_shoot, ::bot_should_shoot );
+	//register_bot_action( level.bot_action_type_ads, "ads", ::bot_ads, ::bot_should_ads );
+	//register_bot_action( level.bot_action_type_grenade, "grenade", ::bot_grenade, ::bot_should_grenade );
+
+	level.bot_weapon_quality_poor = 0;
+	level.bot_weapon_quality_fair = 1;
+	level.bot_weapon_quality_good = 2;
+	level.bot_weapon_quality_excellent = 3;
+	level.bot_weapon_quality_best = 4;
+
+	/*
+	level.bot_powerup_priority_none = 0;
+	level.bot_powerup_priority_low = 1;
+	level.bot_powerup_priority_medium = 2;
+	level.bot_powerup_priority_high = 3;
+	level.bot_powerup_priority_urgent = 4;
+	register_bot_powerup_priority( "nuke", level.bot_powerup_priority_high, level.bot_powerup_priority_urgent );
+	register_bot_powerup_priority( "insta_kill", level.bot_powerup_priority_high, level.bot_powerup_priority_urgent );
+	register_bot_powerup_priority( "full_ammo", level.bot_powerup_priority_medium, level.bot_powerup_priority_low );
+	register_bot_powerup_priority( "double_points", level.bot_powerup_priority_low, level.bot_powerup_priority_none );
+	register_bot_powerup_priority( "carpenter", level.bot_powerup_priority_low, level.bot_powerup_priority_none );
+	register_bot_powerup_priority( "fire_sale", level.bot_powerup_priority_low, level.bot_powerup_priority_none );
+	register_bot_powerup_priority( "free_perk", level.bot_powerup_priority_medium, level.bot_powerup_priority_low );
+	register_bot_powerup_priority( "zombie_blood", level.bot_powerup_priority_high, level.bot_powerup_priority_urgent);
+	*/
+	level thread store_powerups_dropped();
+	level thread spawn_bots();
+}
+
 init()
 {
-	level.bw_VERSION = "2.1.0";
-
-	if ( getDvar( "bots_main" ) == "" )
-		setDvar( "bots_main", true );
-
-	if ( !getDvarInt( "bots_main" ) )
-		return;
-
-	//thread load_waypoints(); //Don't call for now
-	thread hook_callbacks();
-
-	if ( getDvar( "bots_main_GUIDs" ) == "" )
-		setDvar( "bots_main_GUIDs", "" ); //guids of players who will be given host powers, comma seperated
-
-	if ( getDvar( "bots_main_firstIsHost" ) == "" )
-		setDvar( "bots_main_firstIsHost", true ); //first player to connect is a host
-
-	if ( getDvar( "bots_main_waitForHostTime" ) == "" )
-		setDvar( "bots_main_waitForHostTime", 10.0 ); //how long to wait to wait for the host player
-
-	if ( getDvar( "bots_main_kickBotsAtEnd" ) == "" )
-		setDvar( "bots_main_kickBotsAtEnd", false ); //kicks the bots at game end
-
-	if ( getDvar( "bots_manage_add" ) == "" )
-		setDvar( "bots_manage_add", 0 ); //amount of bots to add to the game
-
-	if ( getDvar( "bots_manage_fill" ) == "" )
-		setDvar( "bots_manage_fill", 0 ); //amount of bots to maintain
-
-	if ( getDvar( "bots_manage_fill_mode" ) == "" )
-		setDvar( "bots_manage_fill_mode", 0 ); //fill mode, 0 adds everyone, 1 just bots, 2 maintains at maps, 3 is 2 with 1
-
-	if ( getDvar( "bots_manage_fill_kick" ) == "" )
-		setDvar( "bots_manage_fill_kick", false ); //kick bots if too many
-
-	if ( getDvar( "bots_skill" ) == "" )
-		setDvar( "bots_skill", 0 ); //0 is random, 1 is easy 7 is hard, 8 is custom, 9 is completely random
-
-	if ( getDvar( "bots_skill_hard" ) == "" )
-		setDvar( "bots_skill_hard", 0 ); //amount of hard bots on axis team
-
-	if ( getDvar( "bots_skill_med" ) == "" )
-		setDvar( "bots_skill_med", 0 );
-
-	if ( getDvar( "bots_loadout_rank" ) == "" ) // what rank the bots should be around, -1 is around the players, 0 is all random
-		setDvar( "bots_loadout_rank", -1 );
-
-	if ( getDvar( "bots_loadout_prestige" ) == "" ) // what pretige the bots will be, -1 is the players, -2 is random
-		setDvar( "bots_loadout_prestige", -1 );
-
-	if ( getDvar( "bots_play_move" ) == "" ) //bots move
-		setDvar( "bots_play_move", true );
-
-	if ( getDvar( "bots_play_knife" ) == "" ) //bots knife
-		setDvar( "bots_play_knife", true );
-
-	if ( getDvar( "bots_play_fire" ) == "" ) //bots fire
-		setDvar( "bots_play_fire", true );
-
-	if ( getDvar( "bots_play_nade" ) == "" ) //bots grenade
-		setDvar( "bots_play_nade", true );
-
-	if ( getDvar( "bots_play_ads" ) == "" ) //bot ads
-		setDvar( "bots_play_ads", true );
-
-	if ( getDvar( "bots_play_aim" ) == "" )
-		setDvar( "bots_play_aim", true );
-
-	if ( !isDefined( game["botWarfare"] ) )
-		game["botWarfare"] = true;
-
-	level.bots_minSprintDistance = 315;
-	level.bots_minSprintDistance *= level.bots_minSprintDistance;
-	level.bots_minGrenadeDistance = 256;
-	level.bots_minGrenadeDistance *= level.bots_minGrenadeDistance;
-	level.bots_maxGrenadeDistance = 1024;
-	level.bots_maxGrenadeDistance *= level.bots_maxGrenadeDistance;
-	level.bots_maxKnifeDistance = 80;
-	level.bots_maxKnifeDistance *= level.bots_maxKnifeDistance;
-	level.bots_goalDistance = 27.5;
-	level.bots_goalDistance *= level.bots_goalDistance;
-	level.bots_noADSDistance = 200;
-	level.bots_noADSDistance *= level.bots_noADSDistance;
-	level.bots_maxShotgunDistance = 500;
-	level.bots_maxShotgunDistance *= level.bots_maxShotgunDistance;
-
-	level.players = [];
-	level.bots = [];
-
-	level.bots_fullautoguns = [];
-	level.bots_fullautoguns["thompson"] = true;
-	level.bots_fullautoguns["mp40"] = true;
-	level.bots_fullautoguns["type100smg"] = true;
-	level.bots_fullautoguns["ppsh"] = true;
-	level.bots_fullautoguns["stg44"] = true;
-	level.bots_fullautoguns["30cal"] = true;
-	level.bots_fullautoguns["mg42"] = true;
-	level.bots_fullautoguns["dp28"] = true;
-	level.bots_fullautoguns["bar"] = true;
-	level.bots_fullautoguns["fg42"] = true;
-	level.bots_fullautoguns["type99lmg"] = true;
-
-	level thread onPlayerConnect();
-	level thread handleBots();
+	parse_bot_weapon_stats_from_table();
 }
 
-/*
-	Starts the threads for bots.
-*/
-handleBots()
+register_action_queue_actions()
 {
-	level thread diffBots();
-	level addBots();
+	self register_bot_action_queue_action( "magicbox" );
+	self register_bot_action_queue_action( "wallbuy" );
+	self register_bot_action_queue_action( "wallbuyammo" );
+	self register_bot_action_queue_action( "perk" );
+	self register_bot_action_queue_action( "door" );
+	self register_bot_action_queue_action( "debris" );
+	self register_bot_action_queue_action( "trap" );
+	self register_bot_action_queue_action( "revive" );
+	self register_bot_action_queue_action( "buildable" );
+	self register_bot_action_queue_action( "buildbuildable" );
+	self register_bot_action_queue_action( "part" );
+	self register_bot_action_queue_action( "powerup" );
+}
 
-	while ( !level.intermission )
+spawn_bots()
+{
+	level waittill( "connected", player );
+
+	while ( true )
+	{
+		spawn_bots();
+		wait 1;
+	}
+}
+
+spawn_bots()
+{
+	required_bots = 3;
+	bot_count = 0;
+	while ( bot_count < required_bots )
+	{
+		bot = undefined;
+		while ( !isDefined( bot ) )
+		{
+			bot = addTestClient();
+		}
+		bot.pers[ "isBot" ] = true;
+		bot.action_queue = [];
+		bot register_action_queue_actions();
+		bot thread bot_movement_think();
+		//bot thread bot_combat_think();
+		bot thread bot_think();
+		bot_count++;
+	}
+}
+
+copy_default_action_settings_to_queue( action_name )
+{
+	//self.group = level.zbots_actions[ action_name ].group;
+	self.action = level.zbots_actions[ action_name ].action;
+	//self.should_do_func = level.zbots_actions[ action_name ].should_do_func;
+	self.on_completion_func = level.zbots_actions[ action_name ].on_completion_func;
+	self.should_cancel_func = level.zbots_actions[ action_name ].should_cancel_func;
+	self.on_cancel_func = level.zbots_actions[ action_name ].on_cancel_func;
+	self.should_postpone_func = level.zbots_actions[ action_name ].should_postpone_func;
+	self.on_postpone_func = level.zbots_actions[ action_name ].on_postpone_func;
+	self.priority_func = level.zbots_actions[ action_name ].priority_func;
+}
+
+process_next_queued_action()
+{
+	if ( self.action_queue.size <= 0 )
+	{
+		return;
+	}
+	self thread [[ self.action_queue[ 0 ].on_completion_func ]]();
+	if ( self.action_queue[ 0 ].can_cancel )
+	{
+		self thread [[ self.action_queue[ 0 ].on_cancel_func ]]();
+	}
+	if ( self.action_queue[ 0 ].can_postpone )
+	{
+		self thread [[ self.action_queue[ 0 ].on_postpone_func ]]();
+	}
+	self [[ self.action_queue[ 0 ].action ]]();
+
+	self wait_for_action_completion( self.action_queue[ 0 ].action_name );
+}
+
+wait_for_action_completion( action_name )
+{
+	result = self waittill_any_return( action_name + "_completion", action_name + "_cancel", action_name + "_postpone" );
+	if ( isDefined( result ) && ( result == action_name + "_completion" || result == action_name + "_cancel" ) )
+	{
+		self.actions_in_queue[ self.action_queue[ 0 ].action_name ].queued = false;
+		arrayRemoveIndex( self.action_queue, 0 );
+	}
+	else if ( result == action_name + "_postpone" )
+	{
+		postponed_action = self.action_queue[ 0 ];
+		arrayRemoveIndex( self.action_queue, 0 );
+		postponed_action.priority = 0;
+		self.action_queue[ self.action_queue.size ] = postponed_action;
+	}
+}
+
+bot_think()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	self waittill( "spawned_player" );
+
+	while ( true )
+	{
 		wait 0.05;
-
-	setDvar( "bots_manage_add", getBotArray().size );
-
-	if ( !getDvarInt( "bots_main_kickBotsAtEnd" ) )
-		return;
-
-	bots = getBotArray();
-
-	for ( i = 0; i < bots.size; i++ )
-	{
-		bots[i] RemoveTestClient();
-	}
-}
-
-/*
-	The hook callback for when any player becomes damaged.
-*/
-onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset )
-{
-	if ( self is_bot() )
-	{
-		//self scripts\sp\bots\_bot_internal::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
-		self scripts\sp\bots\_bot_script::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
-	}
-
-	self [[level.prevCallbackPlayerDamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
-}
-
-/*
-	Starts the callbacks.
-*/
-hook_callbacks()
-{
-	wait 0.05;
-	level.prevCallbackPlayerDamage = level.callbackPlayerDamage;
-	level.callbackPlayerDamage = ::onPlayerDamage;
-}
-
-/*
-	Thread when any player connects. Starts the threads needed.
-*/
-onPlayerConnect()
-{
-	for ( ;; )
-	{
-		level waittill( "connected", player );
-
-		player thread connected();
-	}
-}
-
-/*
-	When a bot disconnects.
-*/
-onDisconnectAll()
-{
-	self waittill( "disconnect" );
-
-	level.players = array_remove( level.players, self );
-}
-
-/*
-	When a bot disconnects.
-*/
-onDisconnect()
-{
-	self waittill( "disconnect" );
-
-	level.bots = array_remove( level.bots, self );
-}
-
-/*
-	Called when a player connects.
-*/
-connected()
-{
-	self endon( "disconnect" );
-
-	if ( !isDefined( self.pers["bot_host"] ) )
-		self thread doHostCheck();
-
-	level.players[level.players.size] = self;
-	self thread onDisconnectAll();
-
-	if ( !self is_bot() )
-		return;
-
-	if ( !isDefined( self.pers["isBot"] ) )
-	{
-		// fast restart...
-		self.pers["isBot"] = true;
-	}
-
-	if ( !isDefined( self.pers["isBotWarfare"] ) )
-	{
-		self.pers["isBotWarfare"] = true;
-		self thread added();
-	}
-
-	self thread scripts\sp\bots\_bot_internal::connected();
-	self thread scripts\sp\bots\_bot_script::connected();
-
-	level.bots[level.bots.size] = self;
-	self thread onDisconnect();
-
-	level notify( "bot_connected", self );
-
-	self thread watchBotDebugEvent();
-}
-
-/*
-	DEBUG
-*/
-watchBotDebugEvent()
-{
-	self endon( "disconnect" );
-
-	for ( ;; )
-	{
-		self waittill( "bot_event", msg, str, b, c, d, e, f, g );
-
-		if ( msg == "debug" && GetDvarInt( "bots_main_debug" ) )
+		if ( !bot_valid( self ) )
 		{
-			PrintConsole( "Bot Warfare debug: " + self.name + ": " + str + "\n" );
+			self.action_queue = [];
+			wait 1;
+			continue;
 		}
-	}
-}
-
-/*
-	When a bot gets added into the game.
-*/
-added()
-{
-	self endon( "disconnect" );
-
-	self thread scripts\sp\bots\_bot_internal::added();
-	//self thread scripts\sp\bots\_bot_script::added();
-}
-
-/*
-	Adds a bot to the game.
-*/
-add_bot()
-{
-	bot = addtestclient();
-
-	if ( isdefined( bot ) )
-	{
-		bot.pers["isBot"] = true;
-		bot.pers["isBotWarfare"] = true;
-		bot thread added();
-	}
-}
-
-/*
-	A server thread for monitoring all bot's difficulty levels for custom server settings.
-*/
-diffBots_loop()
-{
-	var_hard = getDVarInt( "bots_skill_hard" );
-	var_med = getDVarInt( "bots_skill_med" );
-	var_skill = getDvarInt( "bots_skill" );
-
-	hard = 0;
-	med = 0;
-
-	if ( var_skill == 8 )
-	{
-		playercount = level.players.size;
-
-		for ( i = 0; i < playercount; i++ )
+		if ( self.action_queue.size > 4 )
 		{
-			player = level.players[i];
-
-			if ( !isDefined( player.pers["team"] ) )
-				continue;
-
-			if ( !player is_bot() )
-				continue;
-
-			if ( hard < var_hard )
+			continue;
+		}
+		/*
+		action_keys = getArrayKeys( level.zbots_actions );
+		for ( i = 0; i < action_keys.size; i++ )
+		{
+			if ( self.actions_in_queue[ action_keys[ i ] ].canceled )
 			{
-				hard++;
-				player.pers["bots"]["skill"]["base"] = 7;
+				self.actions_in_queue[ action_keys[ i ] ].canceled = false;
 			}
-			else if ( med < var_med )
+		}
+		action_keys = getArrayKeys( level.zbots_actions );
+		for ( i = 0; i < action_keys.size; i++ )
+		{
+			if ( self.actions_in_queue[ action_keys[ i ] ].postponed )
 			{
-				med++;
-				player.pers["bots"]["skill"]["base"] = 4;
+				self.actions_in_queue[ action_keys[ i ] ].postponed = false;
 			}
-			else
-				player.pers["bots"]["skill"]["base"] = 1;
 		}
-	}
-	else if ( var_skill != 0 && var_skill != 9 )
-	{
-		playercount = level.players.size;
-
-		for ( i = 0; i < playercount; i++ )
+		*/
+		action_keys = getArrayKeys( level.zbots_actions );
+		for ( i = 0; i < action_keys.size && self.action_queue.size < 3; i++ )
 		{
-			player = level.players[i];
-
-			if ( !player is_bot() )
-				continue;
-
-			player.pers["bots"]["skill"]["base"] = var_skill;
+			if ( !self.actions_in_queue[ action_keys[ i ] ].queued && [[ level.zbots_actions[ action_keys[ i ] ].should_do_func ]]() )
+			{
+				self.action_queue[ self.action_queue.size ] = spawnStruct();
+				self.action_queue[ self.action_queue.size - 1 ] copy_default_action_settings_to_queue( action_keys[ i ] );
+				self.action_queue[ self.action_queue.size - 1 ].action_name = action_keys[ i ];
+				self.action_queue[ self.action_queue.size - 1 ].priority = self [[ level.zbots_actions[ action_keys[ i ] ].priority_func ]]();
+				self.actions_in_queue[ action_keys[ i ] ].queued = true;
+			}
 		}
+		self.action_queue = self sort_array_by_priority_field( self.action_queue );
+		self process_next_queued_action();
 	}
 }
 
-/*
-	A server thread for monitoring all bot's difficulty levels for custom server settings.
-*/
-diffBots()
+bot_movement_think()
 {
-	for ( ;; )
+	level endon( "end_game" );
+	self endon( "disconnect" );
+	/*
+	if ( self any_zombies_targeting_self() )
 	{
-		wait 1.5;
 
-		diffBots_loop();
 	}
-}
-
-/*
-	A server thread for monitoring all bot's in game. Will add and kick bots according to server settings.
-*/
-addBots_loop()
-{
-	botsToAdd = GetDvarInt( "bots_manage_add" );
-
-	if ( botsToAdd > 0 )
+	*/
+	self.currently_moving = false;
+	while ( true )
 	{
-		SetDvar( "bots_manage_add", 0 );
-
-		if ( botsToAdd > 4 )
-			botsToAdd = 4;
-
-		for ( ; botsToAdd > 0; botsToAdd-- )
+		wait 0.05;
+		if ( isDefined( self.target_pos ) && !self.currently_moving )
 		{
-			level add_bot();
-			wait 0.25;
+			self lookAt( self.target_pos );
+			self addGoal( self.target_pos, 36, 4, "move_to_target_pos" );
+			self.currently_moving = true;
 		}
-	}
-
-	fillMode = getDVarInt( "bots_manage_fill_mode" );
-
-	if ( fillMode == 2 || fillMode == 3 )
-		setDvar( "bots_manage_fill", getGoodMapAmount() );
-
-	fillAmount = getDvarInt( "bots_manage_fill" );
-
-	players = 0;
-	bots = 0;
-
-	playercount = level.players.size;
-
-	for ( i = 0; i < playercount; i++ )
-	{
-		player = level.players[i];
-
-		if ( player is_bot() )
-			bots++;
-		else
-			players++;
-	}
-
-	amount = bots;
-
-	if ( fillMode == 0 || fillMode == 2 )
-		amount += players;
-
-	if ( amount < fillAmount )
-		setDvar( "bots_manage_add", 1 );
-	else if ( amount > fillAmount && getDvarInt( "bots_manage_fill_kick" ) )
-	{
-		tempBot = PickRandom( getBotArray() );
-
-		if ( isDefined( tempBot ) )
-			tempBot RemoveTestClient();
+		if ( self hasGoal( "move_to_target_pos" ) )
+		{
+			if ( self atGoal( "move_to_target_pos" ) )
+			{
+				self clearLookat();
+				self.currently_moving = false;
+				if ( isDefined( self.goal_type ) && isDefined( level.bot_at_goal_callback[ self.goal_type ] ) )
+				{
+					self [[ level.bot_at_goal_callback[ self.goal_type ] ]]();
+				}
+			}
+		}
 	}
 }
 
-/*
-	A server thread for monitoring all bot's in game. Will add and kick bots according to server settings.
-*/
-addBots()
+store_powerups_dropped()
 {
-	level endon( "game_ended" );
-
-	bot_wait_for_host();
-
-	for ( ;; )
+	level.zbots_powerups = [];
+	level.zbots_powerups_targeted_for_grab = [];
+	id_num = 0;
+	while ( true )
 	{
-		wait 1.5;
+		level waittill( "powerup_dropped", powerup );
+		if ( !isDefined( powerup ) )
+		{
+			continue;
+		}
+		assign_priority_to_powerup( powerup );
+		level.zbots_powerups = sort_array_by_priority_field( level.zbots_powerups, powerup );
+		powerup thread remove_from_bot_powerups_list_on_death();
+	}
+}
 
-		addBots_loop();
+remove_from_bot_powerups_list_on_death()
+{
+	self waittill( "death" );
+	arrayRemoveValue( level.zbots_powerups, self );
+	arrayRemoveValue( level.zbots_powerups_targeted_for_grab, self );
+	for ( i = 0; i < level.players.size; i++ )
+	{
+		if ( is_true( level.players[ i ].pers[ "isBot" ] ) && isDefined( level.players[ i ].available_powerups ) )
+		{
+			arrayRemoveValue( level.players[ i ].available_powerups, self );
+		}
 	}
 }
