@@ -1,6 +1,6 @@
 #include common_scripts\utility;
-#include maps\mp\_utility;
-#include maps\mp\zombies\_zm_utility;
+#include maps\_utility;
+#include maps\_zombiemode_utility;
 
 register_stats_for_bot_weapon( weapon, score )
 {
@@ -13,8 +13,8 @@ register_stats_for_bot_weapon( weapon, score )
 
 parse_bot_weapon_stats_from_table()
 {
-	const WEAPON_COLUMN = 0;
-	const SCORE_COLUMN = 1;
+	WEAPON_COLUMN = 0;
+	SCORE_COLUMN = 1;
 	/*
 	row = 0;
 	while ( true )
@@ -142,8 +142,10 @@ push( array, val, index )
 	{
 		// use max free integer as index
 		index = 0;
-		foreach ( key in GetArrayKeys( array ) )
+		keys = GetArrayKeys( array );
+		for ( i = 0; i < keys.size; i++ )
 		{
+			key = keys[ i ];
 			if ( IsInt( key ) && ( key >= index ) )
 			{
 				index = key + 1;
@@ -151,7 +153,7 @@ push( array, val, index )
 		}
 	}
 	
-	ArrayInsert( array, val, index );
+	array = array_insert( array, val, index );
 	return array;
 }
 
@@ -257,8 +259,8 @@ find_gaps()
 
 are_enemies_horded()
 {
-	const MINIMUM_PERCENT_TO_BE_HORDE = 0.9;
-	const DISTANCE_SQ = 120 * 120;
+	MINIMUM_PERCENT_TO_BE_HORDE = 0.9;
+	DISTANCE_SQ = 120 * 120;
 	zombies = get_zombies();
 	amount_in_horde = 0;
 	max_eligible_zombies = isDefined( level.speed_change_round ) ? zombies.size - level.speed_change_num  : zombies.size;
@@ -338,7 +340,7 @@ predict_entity_position_seconds( seconds )
 
 any_zombies_targeting_self()
 {
-	const ZOMBIE_TARGETING_DIST_SQ = 10 * 10;
+	ZOMBIE_TARGETING_DIST_SQ = 10 * 10;
 	zombies = get_zombies();
 	if ( !array_validate( zombies ) )
 	{
@@ -426,7 +428,7 @@ assign_priority_to_powerup( powerup )
 	}
 	if ( powerup_is_max_ammo )
 	{
-		const LOW_AMMO_THRESHOLD = 0.3;
+		LOW_AMMO_THRESHOLD = 0.3;
 		
 		for ( i = 0; i < level.players.size; i++ )
 		{

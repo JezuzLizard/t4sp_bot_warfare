@@ -4,6 +4,8 @@
 
 
 #include scripts\sp\bots\bot_actions_common;
+#include scripts\sp\bots\bot_difficulty_presets_common;
+#include scripts\sp\bots\bot_personality_presets_common;
 #include scripts\sp\bots\actions\combat;
 #include scripts\sp\bots\actions\movement;
 #include scripts\sp\bots\actions\objective;
@@ -44,6 +46,19 @@ main()
 	register_bot_action( "movement", "train", ::bot_train, ::bot_train_process_order ::bot_should_train, ::bot_check_complete_train, ::bot_set_complete_train, ::bot_train_on_completion, ::bot_train_should_cancel, ::bot_train_on_cancel, ::bot_train_should_postpone, ::bot_train_on_postpone, ::bot_train_priority );
 	register_bot_action( "movement", "camp", ::bot_camp, ::bot_camp_process_order ::bot_should_camp, ::bot_check_complete_camp, ::bot_set_complete_camp, ::bot_camp_on_completion, ::bot_camp_should_cancel, ::bot_camp_on_cancel, ::bot_camp_should_postpone, ::bot_camp_on_postpone, ::bot_camp_priority );
 	register_bot_action( "movement", "flee", ::bot_flee, ::bot_flee_process_order ::bot_should_flee, ::bot_check_complete_flee, ::bot_set_complete_flee, ::bot_flee_on_completion, ::bot_flee_should_cancel, ::bot_flee_on_cancel, ::bot_flee_should_postpone, ::bot_flee_on_postpone, ::bot_flee_priority );
+	//register_bot_action( "follow" )
+
+	register_bot_personality_type( "aggressive" );
+	register_bot_personality_type( "passive" );
+	register_bot_personality_type( "supportive" );
+	register_bot_personality_type( "mixed" );
+	register_bot_personality_type( "default" );
+
+	register_bot_difficulty( "bone" );
+	register_bot_difficulty( "crossbones" );
+	register_bot_difficulty( "skull" );
+	register_bot_difficulty( "knife" );
+	register_bot_difficulty( "shotguns" );
 
 	level.bot_weapon_quality_poor = 0;
 	level.bot_weapon_quality_fair = 1;
@@ -66,9 +81,14 @@ main()
 	register_bot_powerup_priority( "free_perk", level.bot_powerup_priority_medium, level.bot_powerup_priority_low );
 	register_bot_powerup_priority( "zombie_blood", level.bot_powerup_priority_high, level.bot_powerup_priority_urgent);
 	*/
+
+	level.zbot_path_nodes = getAllNodes();
+
 	level thread store_powerups_dropped();
 	level thread spawn_bots();
 }
+
+//TODO: Make postponing save the settings for the action so when the action is being executed again the bot tries to do/get the same thing
 
 init()
 {
@@ -103,9 +123,9 @@ spawn_bots()
 		bot.action_queue[ "combat" ] = [];
 		bot.action_queue[ "movement" ] = [];
 		bot register_action_queue_actions();
-		bot thread bot_movement_think();
-		//bot thread bot_combat_think();
 		bot thread bot_objective_think();
+		bot thread bot_combat_think();
+		bot thread bot_movement_think();
 		bot_count++;
 	}
 }
@@ -121,43 +141,46 @@ bot_objective_think()
 
 	while ( true )
 	{
-		wait 0.05;
+		wait 0.25;
 		if ( !bot_valid( self ) )
 		{
 			self.action_queue = [];
 			wait 1;
 			continue;
 		}
-		/*
-		action_keys = getArrayKeys( level.zbots_actions );
-		for ( i = 0; i < action_keys.size; i++ )
-		{
-			if ( self.zbot_actions_in_queue[ action_keys[ i ] ].canceled )
-			{
-				self.zbot_actions_in_queue[ action_keys[ i ] ].canceled = false;
-			}
-		}
-		action_keys = getArrayKeys( level.zbots_actions );
-		for ( i = 0; i < action_keys.size; i++ )
-		{
-			if ( self.zbot_actions_in_queue[ action_keys[ i ] ].postponed )
-			{
-				self.zbot_actions_in_queue[ action_keys[ i ] ].postponed = false;
-			}
-		}
-		*/
-		action_keys = getArrayKeys( level.zbots_actions[ group_name ] );
-
-		//TODO: Use process order funcs to determine the order of actions being added to the queue
-		/*
-		for ( i = 0; i < action_keys; i++ )
-		{
-
-		}
-		*/
-		self pick_actions_to_add_to_queue( group_name, action_keys );
-		self.action_queue[ group_name ] = self sort_array_by_priority_field( self.action_queue[ group_name ] );
+		self pick_actions_to_add_to_queue( group_name );
 		self process_next_queued_action();
+
+		self check_if_action_is_completed_in_group( group_name );
+		self check_if_action_should_be_postponed_in_group( group_name );
+		self check_if_action_should_be_canceled_in_group( group_name );
+	}
+}
+
+bot_combat_think()
+{
+	group_name = "combat";
+
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	self waittill( "spawned_player" );
+
+	while ( true )
+	{
+		wait 0.25;
+		if ( !bot_valid( self ) )
+		{
+			self.action_queue = [];
+			wait 1;
+			continue;
+		}
+		self pick_actions_to_add_to_queue( group_name );
+		self process_next_queued_action();
+
+		self check_if_action_is_completed_in_group( group_name );
+		self check_if_action_should_be_postponed_in_group( group_name );
+		self check_if_action_should_be_canceled_in_group( group_name );
 	}
 }
 
@@ -193,6 +216,8 @@ bot_movement_think()
 				}
 			}
 		}
+
+		self doBotMovement_loop();
 	}
 }
 
@@ -210,20 +235,38 @@ store_powerups_dropped()
 		}
 		assign_priority_to_powerup( powerup );
 		level.zbots_powerups = sort_array_by_priority_field( level.zbots_powerups, powerup );
-		powerup thread remove_from_bot_powerups_list_on_death();
 	}
 }
 
-remove_from_bot_powerups_list_on_death()
+doBotMovement_loop()
 {
-	self waittill( "death" );
-	arrayRemoveValue( level.zbots_powerups, self );
-	arrayRemoveValue( level.zbots_powerups_targeted_for_grab, self );
-	for ( i = 0; i < level.players.size; i++ )
+	move_To = self.bot.moveTo;
+	angles = self GetPlayerAngles();
+	dir = ( 0, 0, 0 );
+
+	if ( DistanceSquared( self.origin, move_To ) >= 49 )
 	{
-		if ( is_true( level.players[ i ].pers[ "isBot" ] ) && isDefined( level.players[ i ].available_powerups ) )
-		{
-			arrayRemoveValue( level.players[ i ].available_powerups, self );
-		}
+		cosa = cos( 0 - angles[1] );
+		sina = sin( 0 - angles[1] );
+
+		// get the direction
+		dir = move_To - self.origin;
+
+		// rotate our direction according to our angles
+		dir = ( dir[0] * cosa - dir[1] * sina,
+		        dir[0] * sina + dir[1] * cosa,
+		        0 );
+
+		// make the length 127
+		dir = VectorNormalize( dir ) * 127;
+
+		// invert the second component as the engine requires this
+		dir = ( dir[0], 0 - dir[1], 0 );
 	}
+
+	// move!
+	if ( self.bot.wantsprint && self.bot.issprinting )
+		dir = ( 127, dir[1], 0 );
+
+	self botMovement( int( dir[0] ), int( dir[1] ) );
 }

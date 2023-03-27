@@ -63,14 +63,22 @@ process_next_queued_action( group_name )
 	{
 		return;
 	}
-	self [[ self.action_queue[ group_name ][ 0 ].action ]]();
+
+	if ( self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].queued )
+	{
+		return;
+	}
+
+	self.action_queue[ group_name ] = self sort_array_by_priority_field( self.action_queue[ group_name ] );
+
+	self thread [[ self.action_queue[ group_name ][ 0 ].action ]]();
 
 	self wait_for_action_completion( self.action_queue[ group_name ][ 0 ].action_name );
 }
 
 wait_for_action_completion( group_name, action_name )
 {
-	result = self waittill_any_return( action_name + "_completion", action_name + "_cancel", action_name + "_postpone", "disconnect" );
+	result = self waittill_any_return( action_name + "_complete", action_name + "_cancel", action_name + "_postpone", "disconnect" );
 	if ( !isDefined( result ) )
 	{
 		return;
@@ -79,27 +87,27 @@ wait_for_action_completion( group_name, action_name )
 	{
 		return;
 	}
-	if ( ( result == action_name + "_completion" ) )
+	if ( ( result == action_name + "_complete" ) )
 	{
 		self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].postponed = false;
 		self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].queued = false;
-		arrayRemoveIndex( self.action_queue[ group_name ], 0 );
+		self.action_queue[ group_name ][ 0 ] = undefined;
 		self thread [[ self.action_queue[ group_name ][ 0 ].on_completion_func ]]();
 	}
 	else if ( result == action_name + "_cancel" )
 	{
 		self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].postponed = false;
 		self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].queued = false;
-		arrayRemoveIndex( self.action_queue[ group_name ], 0 );
+		self.action_queue[ group_name ][ 0 ] = undefined;
 		self thread [[ self.action_queue[ group_name ][ 0 ].on_cancel_func ]]();
 	}
 	else if ( result == action_name + "_postpone" )
 	{
 		self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].postponed = true;
 		postponed_action = self.action_queue[ group_name ][ 0 ];
-		arrayRemoveIndex( self.action_queue[ group_name ], 0 );
-		postponed_action.priority = 0;
-		self.action_queue[ group_name ][ self.action_queue[ group_name ].size ] = postponed_action;
+		self.action_queue[ group_name ][ 0 ] = undefined;
+		postponed_action.priority = self [[ level.zbots_actions[ group_name ][ action_keys[ i ] ].priority_func ]]();
+		self.action_queue[ group_name ] = array_insert( self.action_queue[ group_name ], postponed_action, 1 );
 		self thread [[ self.action_queue[ group_name ][ 0 ].on_postpone_func ]]();
 	}
 }
@@ -117,8 +125,21 @@ copy_default_action_settings_to_queue( group_name, action_name )
 	self.priority_func = level.zbots_actions[ group_name ][ action_name ].priority_func;
 }
 
-pick_actions_to_add_to_queue( group_name, action_keys )
+pick_actions_to_add_to_queue( group_name )
 {
+	//TODO: Use process order funcs to determine the order of actions being added to the queue
+	//For now just randomize the order of the keys
+	/*
+	for ( i = 0; i < action_keys; i++ )
+	{
+
+	}
+	*/
+
+	action_keys = getArrayKeys( level.zbots_actions[ group_name ] );
+
+	action_keys = array_randomize( action_keys );
+
 	for ( i = 0; i < action_keys.size; i++ )
 	{
 		if ( !self.zbot_actions_in_queue[ group_name ][ action_keys[ i ] ].queued && [[ level.zbots_actions[ group_name ][ action_keys[ i ] ].should_do_func ]]() )
@@ -131,24 +152,26 @@ pick_actions_to_add_to_queue( group_name, action_keys )
 	}
 }
 
-check_if_actions_should_be_canceled_in_group( group_name, action_keys )
+check_if_action_should_be_canceled_in_group( group_name )
 {
-	for ( i = 0; i < action_keys.size; i++ )
+	if ( [[ level.zbots_actions[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].should_cancel_func ]]() )
 	{
-		if ( self.zbot_actions_in_queue[ group_name ][ action_keys[ i ] ].queued && [[ level.zbots_actions[ group_name ][ action_keys[ i ] ].should_cancel_func ]]() )
-		{
-			self notify( action_keys[ i ] + "_cancel" );
-		}
+		self notify( self.action_queue[ group_name ][ 0 ].action_name + "_cancel" );
 	}
 }
 
-check_if_actions_should_be_postponed_in_group( group_name, action_keys )
+check_if_action_should_be_postponed_in_group( group_name )
 {
-	for ( i = 0; i < action_keys.size; i++ )
+	if ( [[ level.zbots_actions[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].should_postpone_func ]]() )
 	{
-		if ( self.zbot_actions_in_queue[ group_name ][ action_keys[ i ] ].queued && [[ level.zbots_actions[ group_name ][ action_keys[ i ] ].should_postpone_func ]]() )
-		{
-			self notify( action_keys[ i ] + "_postpone" );
-		}
+		self notify( self.action_queue[ group_name ][ 0 ].action_name + "_postpone" );
+	}
+}
+
+check_if_action_is_completed_in_group( group_name )
+{
+	if ( [[ level.zbots_actions[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].check_if_complete_func ]]() )
+	{
+		self notify( self.action_queue[ group_name ][ 0 ].action_name + "_complete" );
 	}
 }

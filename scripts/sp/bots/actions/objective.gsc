@@ -724,12 +724,12 @@ bot_powerup_process_order()
 
 bot_should_grab_powerup()
 {
-	if ( !( isDefined( level.zbots_powerups ) && level.zbots_powerups.size > 0 ) )
+	if ( !isDefined( level.zbots_powerups ) || level.zbots_powerups.size <= 0  )
 	{
 		return false;
 	}
-	const MAX_DISTANCE_SQ = 10000 * 10000;
-	const BOT_SPEED_WHILE_SPRINTING_SQ = 380 * 380;
+	MAX_DISTANCE_SQ = 10000 * 10000;
+	BOT_SPEED_WHILE_SPRINTING_SQ = 285 * 285;
 	self.available_powerups = [];
 	for ( i = 0; i < level.zbots_powerups.size; i++ )
 	{
@@ -783,27 +783,12 @@ bot_set_complete_grab_powerup()
 
 bot_powerup_on_completion()
 {
-	level endon( "end_game" );
-	self endon( "disconnect" );
-	self notify( "powerup_completion_func" );
-	self endon( "powerup_completion_func" );
-	self endon( "pause_bot_think" );
-	self endon( "powerup_cancel" );
-	self endon( "powerup_postpone" );
-	while ( !isDefined( self.target_powerup ) )
-	{
-		wait 0.05;
-	}
-	self.target_powerup waittill( "death" );
-	self.actions_in_queue[ "powerup" ].queued = false;
-	self notify( "powerup_completion" );
-	self.available_powerups = undefined;
-	self.target_pos = undefined;
+
 }
 
 bot_powerup_should_cancel()
 {
-	return false;
+	return ( !isDefined( self.available_powerups ) || self.available_powerups.size <= 0 );
 }
 
 bot_powerup_on_cancel()
