@@ -42,6 +42,7 @@ main()
 	//Movement actions
 	//These all need definitions
 	register_bot_action( "movement", "movetoobjective", ::bot_movetoobjective, ::bot_movetoobjective_process_order ::bot_should_movetoobjective, ::bot_check_complete_movetoobjective, ::bot_set_complete_movetoobjective, ::bot_movetoobjective_on_completion, ::bot_movetoobjective_should_cancel, ::bot_movetoobjective_on_cancel, ::bot_movetoobjective_should_postpone, ::bot_movetoobjective_on_postpone, ::bot_movetoobjective_priority );
+	//register_bot_action( "movement", "atobjective", ::bot_atobjective, ::bot_atobjective_process_order ::bot_should_atobjective, ::bot_check_complete_atobjective, ::bot_set_complete_atobjective, ::bot_atobjective_on_completion, ::bot_atobjective_should_cancel, ::bot_atobjective_on_cancel, ::bot_atobjective_should_postpone, ::bot_atobjective_on_postpone, ::bot_atobjective_priority );
 	register_bot_action( "movement", "train", ::bot_train, ::bot_train_process_order ::bot_should_train, ::bot_check_complete_train, ::bot_set_complete_train, ::bot_train_on_completion, ::bot_train_should_cancel, ::bot_train_on_cancel, ::bot_train_should_postpone, ::bot_train_on_postpone, ::bot_train_priority );
 	register_bot_action( "movement", "camp", ::bot_camp, ::bot_camp_process_order ::bot_should_camp, ::bot_check_complete_camp, ::bot_set_complete_camp, ::bot_camp_on_completion, ::bot_camp_should_cancel, ::bot_camp_on_cancel, ::bot_camp_should_postpone, ::bot_camp_on_postpone, ::bot_camp_priority );
 	register_bot_action( "movement", "flee", ::bot_flee, ::bot_flee_process_order ::bot_should_flee, ::bot_check_complete_flee, ::bot_set_complete_flee, ::bot_flee_on_completion, ::bot_flee_should_cancel, ::bot_flee_on_cancel, ::bot_flee_should_postpone, ::bot_flee_on_postpone, ::bot_flee_priority );
@@ -58,6 +59,20 @@ main()
 	register_bot_difficulty( "skull" );
 	register_bot_difficulty( "knife" );
 	register_bot_difficulty( "shotguns" );
+
+	register_bot_objective( "magicbox" );
+	register_bot_objective( "wallbuy" );
+	register_bot_objective( "wallbuyammo" );
+	register_bot_objective( "perk" );
+	register_bot_objective( "door" );
+	register_bot_objective( "debris" );
+	register_bot_objective( "trap" );
+	register_bot_objective( "packapunch" );
+	register_bot_objective( "revive" );
+	//register_bot_objective( "grabbuildable" );
+	//register_bot_objective( "buildbuildable" );
+	//register_bot_objective( "part" );
+	register_bot_objective( "powerup" );
 
 	level.bot_weapon_quality_poor = 0;
 	level.bot_weapon_quality_fair = 1;
@@ -95,6 +110,14 @@ on_player_connect()
 	{
 		level waittill( "connected", player );
 		player.id = i;
+		if ( player isBot() )
+		{
+			player.successfully_grabbed_powerup = false;
+			player.successfully_revived_player = false;
+			player.successfully_moved_to_objective = false;
+			player.can_do_objective_now = false;
+			player.on_powerup_grab_func = ::bot_on_powerup_grab;
+		}
 		i++;
 	}
 }
@@ -102,6 +125,13 @@ on_player_connect()
 //TODO: Make postponing save the settings for the action so when the action is being executed again the bot tries to do/get the same thing
 //TODO: Make global canceling and postponing functionality
 //TODO: Make shared global objective and normal objective globs work
+//TODO: Allow bots to multitask objectives on the way by using the postpone system
+//TODO: Cancel most objectives if the bot is invalid
+//TODO: Add reset complete functions to reset successfully completed actions variables
+//TODO: Ignore objectives if bot is not able fulfill them at the moment, bot can start doing objectives when they are in a good position to do so
+//TODO: Add the ability to check if a bot is at an objective to start the action think
+//TODO: Add atobjective movement handler to let objectives control movement temporarily
+//TODO: Allow bots to still do actions while down if possible
 
 init()
 {
@@ -225,37 +255,25 @@ bot_think()
 		wait 0.25;
 		if ( !bot_valid( self ) )
 		{
-			self.action_queue = [];
-			wait 1;
-			continue;
+			self notify( "stop_action_think" );
+			self bot_clear_actions_queue();
+			while ( !bot_valid( self ) )
+			{
+				wait 1;
+			}
 		}
-
-		group_name = "objective";
-
-		self pick_actions_to_add_to_queue( group_name );
-		self process_next_queued_action();
-
-		self check_if_action_is_completed_in_group( group_name );
-		self check_if_action_should_be_postponed_in_group( group_name );
-		self check_if_action_should_be_canceled_in_group( group_name );
 
 		group_name = "movement";
 
-		self pick_actions_to_add_to_queue( group_name );
-		self process_next_queued_action();
-
-		self check_if_action_is_completed_in_group( group_name );
-		self check_if_action_should_be_postponed_in_group( group_name );
-		self check_if_action_should_be_canceled_in_group( group_name );
+		self bot_action_think( group_name );
 
 		group_name = "combat";
 
-		self pick_actions_to_add_to_queue( group_name );
-		self process_next_queued_action();
+		self bot_action_think( group_name );
 
-		self check_if_action_is_completed_in_group( group_name );
-		self check_if_action_should_be_postponed_in_group( group_name );
-		self check_if_action_should_be_canceled_in_group( group_name );
+		group_name = "objective";
+
+		self bot_action_think( group_name );
 	}
 }
 
@@ -429,4 +447,9 @@ doBotMovement_loop()
 		dir = ( 127, dir[1], 0 );
 
 	self botMovement( int( dir[0] ), int( dir[1] ) );
+}
+
+bot_on_powerup_grab( powerup )
+{
+	self.successfully_grabbed_powerup = true;
 }

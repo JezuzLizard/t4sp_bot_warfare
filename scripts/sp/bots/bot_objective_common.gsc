@@ -1,4 +1,4 @@
-add_possible_bot_objective( objective_group, id, is_global_shared, target_ent )
+register_bot_objective( objective_group )
 {
 	if ( !isDefined( level.zbot_objective_glob ) )
 	{
@@ -9,6 +9,13 @@ add_possible_bot_objective( objective_group, id, is_global_shared, target_ent )
 		level.zbot_objective_glob[ objective_group ] = spawnStruct();
 		level.zbot_objective_glob[ objective_group ].active_objectives = [];
 	}
+}
+
+add_possible_bot_objective( objective_group, id, is_global_shared, target_ent )
+{
+	assert( isDefined( level.zbot_objective_glob ), "Trying to add objective before calling register_bot_objective" );
+
+	assert( isDefined( level.zbot_objective_glob[ objective_group ] ), "Trying to add objective to group " + objective_group + " before calling register_bot_objective" );
 
 	objective_struct = spawnStruct();
 	objective_struct.group = objective_group;
@@ -16,8 +23,42 @@ add_possible_bot_objective( objective_group, id, is_global_shared, target_ent )
 	objective_struct.is_global_shared = is_global_shared;
 	objective_struct.target_ent = target_ent;
 	objective_struct.owner = undefined;
+	objective_struct.is_objective = true;
 
 	level.zbot_objective_glob[ objective_group ].active_objectives[ "obj_id_" + id ] = objective_struct;
+}
+
+get_bot_objective_by_id( objective_group, id )
+{
+	active_objectives = level.zbot_objective_glob[ objective_group ].active_objectives;
+
+	objective = active_objectives[ "obj_id_" + id ];
+
+	assert( isDefined( objective ), "Objective with " + id + " id does not point to a objective in group " + objective_group );
+
+	return objective;
+}
+
+get_all_objectives_for_group( objective_group )
+{
+	return level.zbot_objective_glob[ objective_group ].active_objectives;
+}
+
+set_objective_for_bot( objective_group, id )
+{
+	possible_objectives = level.zbot_objective_glob[ primary_objective_group ].active_objectives;
+
+	objective = possible_objectives[ "obj_id_" + id ];
+
+	objective_exists = isDefined( primary_objective );
+
+	assert( objective_exists, "Objective with " + id + " id does not point to a objective in group " + objective_group );
+	if ( !objective_exists )
+	{
+		return;
+	}
+
+	self.zbot_current_objective = objective;
 }
 
 set_bot_objective_blocked_by_objective( primary_objective_group, primary_id, blocked_by_objective_group, blocked_by_id )
@@ -71,7 +112,7 @@ set_bot_objective_blocked_by_objective( primary_objective_group, primary_id, blo
 	}
 }
 
-set_bot_global_shared_objective_owner( objective_group, new_owner, id )
+set_bot_global_shared_objective_owner_by_id( objective_group, id, new_owner )
 {
 	active_objectives = level.zbot_objective_glob[ objective_group ].active_objectives;
 
@@ -84,7 +125,24 @@ set_bot_global_shared_objective_owner( objective_group, new_owner, id )
 		return;
 	}
 
-	assert( objective.is_global_shared, "Objective with " + id + " id number cannot be set an owner because is_global_shared field is false in group" + objective_group );
+	assert( objective.is_global_shared, "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group );
+	if ( !objective.is_global_shared )
+	{
+		return;
+	}
+
+	objective.owner = new_owner;
+}
+
+set_bot_global_shared_objective_owner_by_reference( objective_group, objective, new_owner )
+{
+	is_objective = isDefined( objective.is_objective );
+	assert( is_objective, "Objective arg is not a valid objective object" );
+	if ( !is_objective )
+	{
+		return;
+	}
+	assert( objective.is_global_shared, "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group );
 	if ( !objective.is_global_shared )
 	{
 		return;

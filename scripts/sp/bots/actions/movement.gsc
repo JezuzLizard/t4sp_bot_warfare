@@ -1,6 +1,16 @@
 bot_movetoobjective()
 {
-
+	action_id = self.action_queue[ "objective" ][ 0 ].action_id;
+	at_obj_distance_sq = 48 * 48;
+	while ( isDefined( self.action_queue[ "objective" ][ 0 ] ) && action_id == self.action_queue[ "objective" ][ 0 ].action_id )
+	{
+		if ( distanceSquared( self.origin, self.target_pos ) < at_obj_distance_sq )
+		{
+			self bot_set_complete_movetoobjective();
+			break;
+		}
+		wait 0.2;
+	}
 }
 
 bot_movetoobjective_process_order()
@@ -19,17 +29,18 @@ bot_should_movetoobjective()
 
 bot_check_complete_movetoobjective()
 {
-	return self.zbot_actions_in_queue[ "movement" ][ "movetoobjective" ].completed;
+	return self.successfully_moved_to_objective;
 }
 
 bot_set_complete_movetoobjective()
 {
-	self.zbot_actions_in_queue[ "movement" ][ "movetoobjective" ].completed = true;
+	self.successfully_moved_to_objective = true;
 }
 
 bot_movetoobjective_on_completion()
 {
-	
+	self.successfully_moved_to_objective = false;
+	self.can_do_objective_now = true;
 }
 
 bot_movetoobjective_should_cancel()
@@ -39,7 +50,8 @@ bot_movetoobjective_should_cancel()
 
 bot_movetoobjective_on_cancel()
 {
-
+	self.successfully_moved_to_objective = false;
+	self.can_do_objective_now = false;
 }
 
 bot_movetoobjective_should_postpone()
@@ -53,7 +65,8 @@ bot_movetoobjective_should_postpone()
 
 bot_movetoobjective_on_postpone()
 {
-
+	self.successfully_moved_to_objective = false;
+	self.can_do_objective_now = false;
 }
 
 bot_movetoobjective_priority()

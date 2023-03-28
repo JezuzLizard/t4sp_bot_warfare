@@ -486,7 +486,35 @@ bot_packapunch_purchase_priority()
 
 bot_revive_player()
 {
+	if ( !isDefined( self.available_revives ) || self.available_revives.size <= 0 )
+	{
+		return;
+	}
 
+	self endon( "disconnect" );
+	level endon( "end_game" );
+
+	player_to_revive_obj = self.available_revives[ 0 ];
+
+	set_bot_global_shared_objective_owner_by_reference( "revive", player_to_revive_obj, self );
+
+	player_to_revive = player_to_revive_obj.target_ent;
+
+	action_id = self.action_queue[ "objective" ][ 0 ].action_id;
+
+	//If player is no longer valid to revive stop trying to revive
+	//If bot doesn't have an objective anymore or the objective has changed stop trying to revive
+	while ( isDefined( player_to_revive ) && isDefined( player_to_revive_obj ) && isDefined( self.action_queue[ "objective" ][ 0 ] ) && action_id == self.action_queue[ "objective" ][ 0 ].action_id )
+	{
+		self.target_pos = player_to_revive.origin;
+
+		if ( self.can_do_objective_now )
+		{
+			//TODO: Add check to see if another player is reviving target player
+			//TODO: Add code to revive player, possibly add the ability to circle revive?
+		}
+		wait 0.2;
+	}
 }
 
 bot_revive_process_order()
@@ -496,27 +524,49 @@ bot_revive_process_order()
 
 bot_should_revive_player()
 {
-	return false;
+	downed_players_objs = get_all_objectives_for_group( "revive" );
+	if ( downed_players_objs.size <= 0 )
+	{
+		return false;
+	}
+
+	self.available_revives = [];
+
+	obj_keys = getArrayKeys( downed_players_objs );
+	for ( i = 0; i < downed_players_objs.size; i++ )
+	{
+		if ( isDefined( downed_players_objs[ obj_keys[ i ] ].owner ) )
+		{
+			continue;
+		}
+
+		self.available_revives[ self.available_revives.size ] = downed_players[ obj_keys[ i ] ];
+	}
+	return self.available_revives.size > 0;
 }
 
 bot_check_complete_revive_player()
 {
+	if ( self.successfully_revived_player )
+	{
+		return true;
+	}
 	return false;
 }
 
 bot_set_complete_revive_player()
 {
-
+	self.successfully_revived_player = true;
 }
 
 bot_revive_player_on_completion()
 {
-
+	self.successfully_revived_player = false;
 }
 
 bot_revive_player_should_cancel()
 {
-	return false;
+	return !isDefined( self.available_revives[ 0 ].target_ent.revivetrigger );
 }
 
 bot_revive_player_on_cancel()
@@ -706,15 +756,13 @@ bot_part_priority()
 
 bot_grab_powerup()
 {
-	self endon( "disconnect" );
-	self endon( "new_objective" );
 	if ( !isDefined( self.available_powerups ) || self.available_powerups.size <= 0 )
 	{
 		return;
 	}
-	self.target_pos = self.available_powerups[ 0 ].origin;
-	self.target_powerup = self.available_powerups[ 0 ];
-	level.zbots_powerups_targeted_for_grab[ level.zbots_powerups_targeted_for_grab.size ] = self.available_powerups[ 0 ];
+	set_bot_global_shared_objective_owner_by_reference( "powerup", self.available_powerups[ 0 ], self );
+	self.target_pos = self.available_powerups[ 0 ].target_ent.origin;
+	self.should_try_to_move_to_objective = true;
 }
 
 bot_powerup_process_order()
@@ -724,55 +772,51 @@ bot_powerup_process_order()
 
 bot_should_grab_powerup()
 {
-	if ( !isDefined( level.zbots_powerups ) || level.zbots_powerups.size <= 0  )
+	if ( !isDefined( level.zbot_objective_glob[ "powerup" ] ) || !isDefined( level.zbot_objective_glob[ "powerup" ].active_objectives ) || level.zbot_objective_glob[ "powerup" ].active_objectives.size <= 0 )
 	{
 		return false;
 	}
 	MAX_DISTANCE_SQ = 10000 * 10000;
 	BOT_SPEED_WHILE_SPRINTING_SQ = 285 * 285;
 	self.available_powerups = [];
-	for ( i = 0; i < level.zbots_powerups.size; i++ )
+
+	powerup_objectives = level.zbot_objective_glob[ "powerup" ].active_objectives;
+	obj_keys = getArrayKeys( powerup_objectives );
+	for ( i = 0; i < powerup_objectives.size; i++ )
 	{
-		if ( array_validate( level.zbots_powerups_targeted_for_grab ) )
+		if ( isDefined( powerup_objectives[ obj_keys[ i ] ].owner ) )
 		{
-			already_targeted = false;
-			for ( j = 0; j < level.zbots_powerups_targeted_for_grab.size; j++ )
-			{
-				if ( level.zbots_powerups_targeted_for_grab[ j ] == level.zbots_powerups[ i ] )
-				{
-					already_targeted = true;
-					break;
-				}
-			}
-			if ( already_targeted )
-			{
-				continue;
-			}
+			continue;
 		}
-		time_left = level.zbots_powerups[ i ].time_left_until_timeout;
-		distance_required_to_reach_powerup = distanceSquared( level.zbots_powerups[ i ].origin, self.origin );
+		time_left = powerup_objectives[ obj_keys[ i ] ].target_ent.time_left_until_timeout;
+		distance_required_to_reach_powerup = distanceSquared( powerup_objectives[ obj_keys[ i ] ].target_ent.origin, self.origin );
 		if ( distance_required_to_reach_powerup > BOT_SPEED_WHILE_SPRINTING_SQ * time_left )
 		{
 			continue;
 		}
-		if ( distanceSquared( level.zbots_powerups[ i ].origin, self.origin ) > MAX_DISTANCE_SQ )
+		if ( distanceSquared( powerup_objectives[ obj_keys[ i ] ].target_ent.origin, self.origin ) > MAX_DISTANCE_SQ )
 		{
 			continue;
 		}
-		if ( !findPath( self.origin, level.zbots_powerups[ i ].origin ) )
+		if ( !findPath( self.origin, powerup_objectives[ obj_keys[ i ] ].target_ent.origin ) )
 		{
 			continue;
 		}
-		self.available_powerups[ self.available_powerups.size ] = level.zbots_powerups[ i ];
+		self.available_powerups[ self.available_powerups.size ] = powerup_objectives[ obj_keys[ i ] ];
 	}
+
+	//TODO: Sort powerups by priority here
 	time_left = undefined;
 	distance_required_to_reach_powerup = undefined;
-	already_targeted = undefined;
 	return self.available_powerups.size > 0;
 }
 
 bot_check_complete_grab_powerup()
 {
+	if ( self.successfully_grabbed_powerup )
+	{
+		return true;
+	}
 	return false;
 }
 
@@ -783,7 +827,7 @@ bot_set_complete_grab_powerup()
 
 bot_powerup_on_completion()
 {
-
+	self.successfully_grabbed_powerup = false;
 }
 
 bot_powerup_should_cancel()
@@ -812,5 +856,5 @@ bot_powerup_priority()
 	{
 		return 0;
 	}
-	return self.available_powerups[ 0 ].priority;
+	return self.available_powerups[ 0 ].target_ent.priority;
 }
