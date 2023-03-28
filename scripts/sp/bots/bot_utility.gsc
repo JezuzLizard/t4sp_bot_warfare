@@ -1,6 +1,6 @@
 #include common_scripts\utility;
 #include maps\_utility;
-#include maps\_zombiemode_utility;
+#include maps\so\zm_common\_zm_utility;
 
 register_stats_for_bot_weapon( weapon, score )
 {

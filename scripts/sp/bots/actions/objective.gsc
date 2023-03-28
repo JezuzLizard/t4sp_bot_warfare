@@ -47,7 +47,7 @@ bot_should_purchase_magicbox()
 
 bot_check_complete_magicbox() 
 {
-
+	return false;
 }
 
 bot_set_complete_magicbox()
@@ -116,7 +116,7 @@ bot_should_purchase_wallbuy()
 
 bot_check_complete_wallbuy()
 {
-
+	return false;
 }
 
 bot_set_complete_wallbuy()
@@ -171,7 +171,7 @@ bot_should_purchase_wallbuy_ammo()
 
 bot_check_complete_wallbuy_ammo()
 {
-
+	return false;
 }
 
 bot_set_complete_wallbuy_ammo()
@@ -226,7 +226,7 @@ bot_should_purchase_perk()
 
 bot_check_complete_perk_purchase()
 {
-
+	return false;
 }
 
 bot_set_complete_perk_purchase()
@@ -281,7 +281,7 @@ bot_should_purchase_door()
 
 bot_check_complete_door_purchase()
 {
-
+	return false;
 }
 
 bot_set_complete_door_purchase()
@@ -336,7 +336,7 @@ bot_should_purchase_debris()
 
 bot_check_complete_debris_purchase()
 {
-
+	return false;
 }
 
 bot_set_complete_debris_purchase()
@@ -391,7 +391,7 @@ bot_should_purchase_trap()
 
 bot_check_complete_trap_purchase()
 {
-
+	return false;
 }
 
 bot_set_complete_trap_purchase()
@@ -446,7 +446,7 @@ bot_should_purchase_packapunch()
 
 bot_check_complete_packapunch_purchase()
 {
-
+	return false;
 }
 
 bot_set_complete_packapunch_purchase()
@@ -501,7 +501,7 @@ bot_should_revive_player()
 
 bot_check_complete_revive_player()
 {
-
+	return false;
 }
 
 bot_set_complete_revive_player()
@@ -556,7 +556,7 @@ bot_should_grab_buildable()
 
 bot_check_complete_grab_buildable()
 {
-
+	return false;
 }
 
 bot_set_complete_grab_buildable()
@@ -611,7 +611,7 @@ bot_should_build_buildable()
 
 bot_check_complete_build_buildable()
 {
-	
+	return false;	
 }
 
 bot_set_complete_build_buildable()
@@ -676,7 +676,7 @@ bot_part_should_cancel()
 
 bot_check_complete_grab_part()
 {
-
+	return false;
 }
 
 bot_set_complete_grab_part()
@@ -773,7 +773,7 @@ bot_should_grab_powerup()
 
 bot_check_complete_grab_powerup()
 {
-
+	return false;
 }
 
 bot_set_complete_grab_powerup()

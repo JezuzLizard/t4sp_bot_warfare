@@ -1,9 +1,9 @@
 #include common_scripts\utility;
 #include maps\_utility;
-#include maps\_zombiemode_utility;
-
+#include maps\so\zm_common\_zm_utility;
 
 #include scripts\sp\bots\bot_actions_common;
+#include scripts\sp\bots\bot_objective_common;
 #include scripts\sp\bots\bot_difficulty_presets_common;
 #include scripts\sp\bots\bot_personality_presets_common;
 #include scripts\sp\bots\actions\combat;
@@ -12,9 +12,8 @@
 
 main()
 {
-	//3 separate bot think threads
 	//Objective group is for things to go to usually allowing the bot to kill zombies on the way and survive as normal
-	//Objectives can be canceled/postponed by combat thread, movement thread or by other objectives
+	//Objectives can be canceled/postponed by combat, movement or by other objectives
 	register_bot_action( "objective", "magicbox", ::bot_magicbox_purchase, ::bot_magicbox_process_order, ::bot_should_purchase_magicbox, ::bot_check_complete_magicbox, ::bot_set_complete_magicbox, ::bot_magicbox_purchase_on_completion, ::bot_magicbox_purchase_should_cancel, ::bot_magicbox_purchase_on_cancel, ::bot_magicbox_purchase_should_postpone, ::bot_magicbox_purchase_on_postpone, ::bot_magicbox_purchase_priority );
 	register_bot_action( "objective", "wallbuy", ::bot_wallbuy_purchase, ::bot_wallbuy_process_order, ::bot_should_purchase_wallbuy, ::bot_check_complete_wallbuy, ::bot_set_complete_wallbuy, ::bot_wallbuy_purchase_on_completion, ::bot_wallbuy_purchase_should_cancel, ::bot_wallbuy_purchase_on_cancel, ::bot_wallbuy_purchase_should_postpone, ::bot_wallbuy_purchase_on_postpone, ::bot_wallbuy_purchase_priority );
 	register_bot_action( "objective", "wallbuyammo", ::bot_wallbuy_ammo_purchase, ::bot_wallbuyammo_process_order, ::bot_should_purchase_wallbuy_ammo, ::bot_check_complete_wallbuy_ammo, ::bot_set_complete_wallbuy_ammo, ::bot_wallbuy_ammo_purchase_on_completion, ::bot_wallbuy_ammo_purchase_should_cancel, ::bot_wallbuy_ammo_purchase_on_cancel, ::bot_wallbuy_ammo_purchase_should_postpone, ::bot_wallbuy_ammo_purchase_on_postpone, ::bot_wallbuy_ammo_purchase_priority );
@@ -24,12 +23,12 @@ main()
 	register_bot_action( "objective", "trap", ::bot_trap_purchase, ::bot_trap_process_order, ::bot_should_purchase_trap, ::bot_check_complete_trap_purchase, ::bot_set_complete_trap_purchase, ::bot_trap_purchase_on_completion, ::bot_trap_purchase_should_cancel, ::bot_trap_purchase_on_cancel, ::bot_trap_purchase_should_postpone, ::bot_trap_purchase_on_postpone, ::bot_trap_purchase_priority );
 	register_bot_action( "objective", "packapunch", ::bot_packapunch_purchase, ::bot_packapunch_process_order, ::bot_should_purchase_packapunch, ::bot_check_complete_packapunch_purchase, ::bot_set_complete_packapunch_purchase, ::bot_packapunch_purchase_on_completion, ::bot_packapunch_purchase_should_cancel, ::bot_packapunch_purchase_on_cancel, ::bot_packapunch_purchase_should_postpone, ::bot_packapunch_purchase_on_postpone, ::bot_packapunch_purchase_priority );
 	register_bot_action( "objective", "revive", ::bot_revive_player, ::bot_revive_process_order, ::bot_should_revive_player, ::bot_check_complete_revive_player, ::bot_set_complete_revive_player, ::bot_revive_player_on_completion, ::bot_revive_player_should_cancel, ::bot_revive_player_on_cancel, ::bot_revive_player_should_postpone, ::bot_revive_player_on_postpone, ::bot_revive_player_priority );
-	register_bot_action( "objective", "grabbuildable", ::bot_grab_buildable, ::bot_grab_buildable_process_order, ::bot_should_grab_buildable, ::bot_check_complete_grab_buildable, ::bot_set_complete_grab_buildable, ::bot_grab_buildable_on_completion, ::bot_grab_buildable_should_cancel, ::bot_grabbuild_buildable_on_cancel, ::bot_grab_buildable_should_postpone, ::bot_grab_buildable_on_postpone, ::bot_grab_buildable_priority  );
-	register_bot_action( "objective", "buildbuildable", ::bot_build_buildable, ::bot_build_buildable_process_order, ::bot_should_build_buildable, ::bot_check_complete_build_buildable, ::bot_set_complete_build_buildable, ::bot_build_buildable_on_completion, ::bot_build_buildable_should_cancel, ::bot_build_buildable_on_cancel, ::bot_build_buildable_should_postpone, ::bot_build_buildable_on_postpone, ::bot_build_buildable_priority );
-	register_bot_action( "objective", "part", ::bot_grab_part, ::bot_part_process_order, ::bot_should_grab_part, ::bot_check_complete_grab_part, ::bot_set_complete_grab_part, ::bot_part_on_completion, ::bot_part_should_cancel, ::bot_part_on_cancel, ::bot_part_should_postpone, ::bot_part_on_postpone, ::bot_part_priority );
+	//register_bot_action( "objective", "grabbuildable", ::bot_grab_buildable, ::bot_grab_buildable_process_order, ::bot_should_grab_buildable, ::bot_check_complete_grab_buildable, ::bot_set_complete_grab_buildable, ::bot_grab_buildable_on_completion, ::bot_grab_buildable_should_cancel, ::bot_grabbuild_buildable_on_cancel, ::bot_grab_buildable_should_postpone, ::bot_grab_buildable_on_postpone, ::bot_grab_buildable_priority  );
+	//register_bot_action( "objective", "buildbuildable", ::bot_build_buildable, ::bot_build_buildable_process_order, ::bot_should_build_buildable, ::bot_check_complete_build_buildable, ::bot_set_complete_build_buildable, ::bot_build_buildable_on_completion, ::bot_build_buildable_should_cancel, ::bot_build_buildable_on_cancel, ::bot_build_buildable_should_postpone, ::bot_build_buildable_on_postpone, ::bot_build_buildable_priority );
+	//register_bot_action( "objective", "part", ::bot_grab_part, ::bot_part_process_order, ::bot_should_grab_part, ::bot_check_complete_grab_part, ::bot_set_complete_grab_part, ::bot_part_on_completion, ::bot_part_should_cancel, ::bot_part_on_cancel, ::bot_part_should_postpone, ::bot_part_on_postpone, ::bot_part_priority );
 	register_bot_action( "objective", "powerup", ::bot_grab_powerup, ::bot_powerup_process_order, ::bot_should_grab_powerup, ::bot_check_complete_grab_powerup, ::bot_set_complete_grab_powerup, ::bot_powerup_on_completion, ::bot_powerup_should_cancel, ::bot_powerup_on_cancel, ::bot_powerup_should_postpone, ::bot_powerup_on_postpone, ::bot_powerup_priority );
 
-	//Combat thread actions
+	//Combat actions
 	//These all need definitions
 	register_bot_action( "combat", "aimatsinglenormalzombie", ::bot_aimatsinglenormalzombie, ::bot_aimatsinglenormalzombie_process_order ::bot_should_aimatsinglenormalzombie, ::bot_check_complete_aimatsinglenormalzombie, ::bot_set_complete_aimatsinglenormalzombie, ::bot_aimatsinglenormalzombie_on_completion, ::bot_aimatsinglenormalzombie_should_cancel, ::bot_aimatsinglenormalzombie_on_cancel, ::bot_aimatsinglenormalzombie_should_postpone, ::bot_aimatsinglenormalzombie_on_postpone, ::bot_aimatsinglenormalzombie_priority );
 	register_bot_action( "combat", "shootsinglenormalzombie", ::bot_shootsinglenormalzombie, ::bot_shootsinglenormalzombie_process_order ::bot_should_shootsinglenormalzombie, ::bot_check_complete_shootsinglenormalzombie, ::bot_set_complete_shootsinglenormalzombie, ::bot_shootsinglenormalzombie_on_completion, ::bot_shootsinglenormalzombie_should_cancel, ::bot_shootsinglenormalzombie_on_cancel, ::bot_shootsinglenormalzombie_should_postpone, ::bot_shootsinglenormalzombie_on_postpone, ::bot_shootsinglenormalzombie_priority );
@@ -40,7 +39,7 @@ main()
 	register_bot_action( "combat", "shootmultipledogzombies", ::bot_shootmultipledogzombies, ::bot_shootmultipledogzombies_process_order ::bot_should_shootmultipledogzombies, ::bot_check_complete_shootmultipledogzombies, ::bot_set_complete_shootmultipledogzombies, ::bot_shootmultipledogzombies_on_completion, ::bot_shootmultipledogzombies_should_cancel, ::bot_shootmultipledogzombies_on_cancel, ::bot_shootmultipledogzombies_should_postpone, ::bot_shootmultipledogzombies_on_postpone, ::bot_shootmultipledogzombies_priority );
 	register_bot_action( "combat", "meleesingledogzombie", ::bot_meleesingledogzombie, ::bot_meleesingledogzombie_process_order ::bot_should_meleesingledogzombie, ::bot_check_complete_meleesingledogzombie, ::bot_set_complete_meleesingledogzombie, ::bot_meleesingledogzombie_on_completion, ::bot_meleesingledogzombie_should_cancel, ::bot_meleesingledogzombie_on_cancel, ::bot_meleesingledogzombie_should_postpone, ::bot_meleesingledogzombie_on_postpone, ::bot_meleesingledogzombie_priority );
 
-	//Movement thread actions
+	//Movement actions
 	//These all need definitions
 	register_bot_action( "movement", "movetoobjective", ::bot_movetoobjective, ::bot_movetoobjective_process_order ::bot_should_movetoobjective, ::bot_check_complete_movetoobjective, ::bot_set_complete_movetoobjective, ::bot_movetoobjective_on_completion, ::bot_movetoobjective_should_cancel, ::bot_movetoobjective_on_cancel, ::bot_movetoobjective_should_postpone, ::bot_movetoobjective_on_postpone, ::bot_movetoobjective_priority );
 	register_bot_action( "movement", "train", ::bot_train, ::bot_train_process_order ::bot_should_train, ::bot_check_complete_train, ::bot_set_complete_train, ::bot_train_on_completion, ::bot_train_should_cancel, ::bot_train_on_cancel, ::bot_train_should_postpone, ::bot_train_on_postpone, ::bot_train_priority );
@@ -84,14 +83,100 @@ main()
 
 	level.zbot_path_nodes = getAllNodes();
 
-	level thread store_powerups_dropped();
 	level thread spawn_bots();
+
+	level thread on_player_connect();
+}
+
+on_player_connect()
+{
+	i = 0;
+	while ( true )
+	{
+		level waittill( "connected", player );
+		player.id = i;
+		i++;
+	}
 }
 
 //TODO: Make postponing save the settings for the action so when the action is being executed again the bot tries to do/get the same thing
+//TODO: Make global canceling and postponing functionality
+//TODO: Make shared global objective and normal objective globs work
 
 init()
 {
+	if ( isDefined( level.chests ) && level.chests.size > 0 )
+	{
+		for ( i = 0; i < level.chests.size; i++ )
+		{
+			level.chests[ i ].id = i;
+		}
+		level thread watch_magicbox_objectives();
+	}
+
+	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" ); 
+
+	if ( isDefined( weapon_spawns ) && weapon_spawns.size > 0 )
+	{
+		for( i = 0; i < weapon_spawns.size; i++ )
+		{
+			weapon_spawns[ i ].id = i;
+			add_possible_bot_objective( "wallbuy", i, false, weapon_spawns[ i ] );
+			add_possible_bot_objective( "wallbuyammo", i, false, weapon_spawns[ i ] );
+		}
+	}
+
+	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+
+	if ( isDefined( vending_triggers ) && vending_triggers.size > 0 )
+	{
+		for ( i = 0; i < vending_triggers.size; i++ )
+		{
+			vending_triggers[ i ].id = i;
+			add_possible_bot_objective( "perk", i, false, vending_triggers[ i ] );
+		}
+	}
+
+	//TODO: See if its possible to automatically detect if a door is blocking an objective
+	zombie_doors = GetEntArray( "zombie_door", "targetname" ); 
+	
+	if ( isDefined( zombie_doors ) && zombie_doors.size > 0 )
+	{
+		for ( i = 0; i < zombie_doors.size; i++ )
+		{
+			zombie_doors[ i ].id = i;
+			add_possible_bot_objective( "door", i, true, zombie_doors[ i ] );
+		}
+		level thread watch_door_objectives( zombie_doors );
+	}
+
+	zombie_debris = GetEntArray( "zombie_debris", "targetname" ); 
+
+	if ( isDefined( zombie_debris ) && zombie_debris.size > 0 )
+	{
+		for ( i = 0; i < zombie_debris.size; i++ )
+		{
+			zombie_debris.id = i;
+			add_possible_bot_objective( "debris", i, true, zombie_debris[ i ] );
+		}
+		level thread watch_debris_objectives( zombie_debris );
+	}
+
+	vending_upgrade_trigger = GetEntArray("zombie_vending_upgrade", "targetname");
+
+	if ( isDefined( vending_upgrade_trigger ) && vending_upgrade_trigger.size > 0 )
+	{
+		for ( i = 0; i < vending_upgrade_trigger.size; i++ )
+		{
+			vending_upgrade_trigger[ i ].id = i;
+			add_possible_bot_objective( "packapunch", i, false, vending_upgrade_trigger[ i ] );
+		}
+	}
+
+	level thread watch_for_downed_players();
+
+	level thread store_powerups_dropped();
+
 	parse_bot_weapon_stats_from_table();
 }
 
@@ -123,17 +208,13 @@ spawn_bots()
 		bot.action_queue[ "combat" ] = [];
 		bot.action_queue[ "movement" ] = [];
 		bot register_action_queue_actions();
-		bot thread bot_objective_think();
-		bot thread bot_combat_think();
-		bot thread bot_movement_think();
+		bot thread bot_think();
 		bot_count++;
 	}
 }
 
-bot_objective_think()
+bot_think()
 {
-	group_name = "objective";
-
 	level endon( "end_game" );
 	self endon( "disconnect" );
 
@@ -148,33 +229,27 @@ bot_objective_think()
 			wait 1;
 			continue;
 		}
+
+		group_name = "objective";
+
 		self pick_actions_to_add_to_queue( group_name );
 		self process_next_queued_action();
 
 		self check_if_action_is_completed_in_group( group_name );
 		self check_if_action_should_be_postponed_in_group( group_name );
 		self check_if_action_should_be_canceled_in_group( group_name );
-	}
-}
 
-bot_combat_think()
-{
-	group_name = "combat";
+		group_name = "movement";
 
-	level endon( "end_game" );
-	self endon( "disconnect" );
+		self pick_actions_to_add_to_queue( group_name );
+		self process_next_queued_action();
 
-	self waittill( "spawned_player" );
+		self check_if_action_is_completed_in_group( group_name );
+		self check_if_action_should_be_postponed_in_group( group_name );
+		self check_if_action_should_be_canceled_in_group( group_name );
 
-	while ( true )
-	{
-		wait 0.25;
-		if ( !bot_valid( self ) )
-		{
-			self.action_queue = [];
-			wait 1;
-			continue;
-		}
+		group_name = "combat";
+
 		self pick_actions_to_add_to_queue( group_name );
 		self process_next_queued_action();
 
@@ -221,11 +296,53 @@ bot_movement_think()
 	}
 }
 
+watch_door_objectives( zombie_doors )
+{
+	level endon( "end_game" );
+
+	for ( doors_opened_count = 0; doors_opened_count < zombie_doors.size; doors_opened_count++ )
+	{
+		level waittill( "door_opened", door, player );
+		free_bot_objective( "door", door.id );
+	}
+}
+
+watch_debris_objectives( zombie_debris )
+{
+	level endon( "end_game" );
+
+	for ( debris_opened_count = 0; debris_opened_count < zombie_debris.size; debris_opened_count++ )
+	{
+		level waittill( "door_opened", debris, player );
+		free_bot_objective( "door", debris.id );
+	}
+}
+
+watch_magicbox_objectives()
+{
+	level endon( "end_game" );
+
+	prev_magicbox = maps\so\zm_common\_zm_magicbox::get_active_magicbox();
+	while ( true )
+	{
+		cur_magicbox = maps\so\zm_common\_zm_magicbox::get_active_magicbox();
+		if ( prev_magicbox != cur_magicbox )
+		{
+			add_possible_bot_objective( "magicbox", cur_magicbox.id, false, cur_magicbox );
+			free_bot_objective( "magicbox", prev_magicbox.id );
+			prev_magicbox = cur_magicbox;
+		}
+		wait 1;
+	}
+}
+
 store_powerups_dropped()
 {
+	level endon( "end_game" );
+
 	level.zbots_powerups = [];
 	level.zbots_powerups_targeted_for_grab = [];
-	id_num = 0;
+	id = 0;
 	while ( true )
 	{
 		level waittill( "powerup_dropped", powerup );
@@ -233,9 +350,52 @@ store_powerups_dropped()
 		{
 			continue;
 		}
+		powerup.id = id;
+		add_possible_bot_objective( "powerup", id, true, powerup );
 		assign_priority_to_powerup( powerup );
 		level.zbots_powerups = sort_array_by_priority_field( level.zbots_powerups, powerup );
+		id++;
 	}
+}
+
+free_powerups_dropped()
+{
+	level endon( "end_game" );
+
+	while ( true )
+	{
+		level waittill( "powerup_freed", powerup );
+		free_bot_objective( "powerup", powerup.id );
+	}
+}
+
+watch_for_downed_players()
+{
+	level endon( "end_game" );
+
+	while ( true )
+	{
+		level waittill( "player_entered_laststand", player );
+		if ( !isDefined( player ) )
+		{
+			continue;
+		}
+		add_possible_bot_objective( "revive", player.id, true, player );
+		player thread free_revive_objective_when_needed();
+	}
+}
+
+free_revive_objective_when_needed()
+{
+	level endon( "end_game" );
+
+	id = self.id;
+	while ( isDefined( self ) && isDefined( self.revivetrigger ) )
+	{
+		wait 0.05;
+	}
+
+	free_bot_objective( "revive", id );
 }
 
 doBotMovement_loop()

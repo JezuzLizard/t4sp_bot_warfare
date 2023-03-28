@@ -15,7 +15,7 @@ bot_should_aimatsinglenormalzombie()
 
 bot_check_complete_aimatsinglenormalzombie()
 {
-
+	return false;
 }
 
 bot_set_complete_aimatsinglenormalzombie()
@@ -70,7 +70,7 @@ bot_should_shootsinglenormalzombie()
 
 bot_check_complete_shootsinglenormalzombie()
 {
-
+	return false;
 }
 
 bot_set_complete_shootsinglenormalzombie()
@@ -125,7 +125,7 @@ bot_should_aimatmultiplenormalzombies()
 
 bot_check_complete_aimatmultiplenormalzombies()
 {
-
+	return false;
 }
 
 bot_set_complete_aimatmultiplenormalzombies()
@@ -180,7 +180,7 @@ bot_should_shootmultiplenormalzombies()
 
 bot_check_complete_shootmultiplenormalzombies()
 {
-
+	return false;
 }
 
 bot_set_complete_shootmultiplenormalzombies()
@@ -235,7 +235,7 @@ bot_should_meleesinglenormalzombie()
 
 bot_check_complete_meleesinglenormalzombie()
 {
-
+	return false;
 }
 
 bot_set_complete_meleesinglenormalzombie()
@@ -290,7 +290,7 @@ bot_should_shootsingledogzombie()
 
 bot_check_complete_shootsingledogzombie()
 {
-
+	return false;
 }
 
 bot_set_complete_shootsingledogzombie()
@@ -345,7 +345,7 @@ bot_should_shootmultipledogzombies()
 
 bot_check_complete_shootmultipledogzombies()
 {
-
+	return false;
 }
 
 bot_set_complete_shootmultipledogzombies()
@@ -400,7 +400,7 @@ bot_should_meleesingledogzombie()
 
 bot_check_complete_meleesingledogzombie()
 {
-
+	return false;
 }
 
 bot_set_complete_meleesingledogzombie()
