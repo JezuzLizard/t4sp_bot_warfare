@@ -9,6 +9,7 @@
 #include scripts\sp\bots\actions\combat;
 #include scripts\sp\bots\actions\movement;
 #include scripts\sp\bots\actions\objective;
+#include scripts\sp\bots\actions\look;
 
 main()
 {
@@ -30,23 +31,26 @@ main()
 
 	//Combat actions
 	//These all need definitions
-	register_bot_action( "combat", "aimatsinglenormalzombie", ::bot_aimatsinglenormalzombie, ::bot_aimatsinglenormalzombie_process_order ::bot_should_aimatsinglenormalzombie, ::bot_check_complete_aimatsinglenormalzombie, ::bot_set_complete_aimatsinglenormalzombie, ::bot_aimatsinglenormalzombie_on_completion, ::bot_aimatsinglenormalzombie_should_cancel, ::bot_aimatsinglenormalzombie_on_cancel, ::bot_aimatsinglenormalzombie_should_postpone, ::bot_aimatsinglenormalzombie_on_postpone, ::bot_aimatsinglenormalzombie_priority );
-	register_bot_action( "combat", "shootsinglenormalzombie", ::bot_shootsinglenormalzombie, ::bot_shootsinglenormalzombie_process_order ::bot_should_shootsinglenormalzombie, ::bot_check_complete_shootsinglenormalzombie, ::bot_set_complete_shootsinglenormalzombie, ::bot_shootsinglenormalzombie_on_completion, ::bot_shootsinglenormalzombie_should_cancel, ::bot_shootsinglenormalzombie_on_cancel, ::bot_shootsinglenormalzombie_should_postpone, ::bot_shootsinglenormalzombie_on_postpone, ::bot_shootsinglenormalzombie_priority );
-	register_bot_action( "combat", "aimatmultiplenormalzombies", ::bot_aimatmultiplenormalzombies, ::bot_aimatmultiplenormalzombies_process_order ::bot_should_aimatmultiplenormalzombies, ::bot_check_complete_aimatmultiplenormalzombies, ::bot_set_complete_aimatmultiplenormalzombies, ::bot_aimatmultiplenormalzombies_on_completion, ::bot_aimatmultiplenormalzombies_should_cancel, ::bot_aimatmultiplenormalzombies_on_cancel, ::bot_aimatmultiplenormalzombies_should_postpone, ::bot_aimatmultiplenormalzombies_on_postpone, ::bot_aimatmultiplenormalzombies_priority );
-	register_bot_action( "combat", "shootmultiplenormalzombies", ::bot_shootmultiplenormalzombies, ::bot_shootmultiplenormalzombies_process_order ::bot_should_shootmultiplenormalzombies, ::bot_check_complete_shootmultiplenormalzombies, ::bot_set_complete_shootmultiplenormalzombies, ::bot_shootmultiplenormalzombie_on_completion, ::bot_shootmultiplenormalzombie_should_cancel, ::bot_shootmultiplenormalzombie_on_cancel, ::bot_shootmultiplenormalzombie_should_postpone, ::bot_shootmultiplenormalzombie_on_postpone, ::bot_shootmultiplenormalzombie_priority );
-	register_bot_action( "combat", "meleesinglenormalzombie", ::bot_meleesinglenormalzombie, ::bot_meleesinglenormalzombie_process_order ::bot_should_meleesinglenormalzombie, ::bot_check_complete_meleesinglenormalzombie, ::bot_set_complete_meleesinglenormalzombie, ::bot_meleesinglenormalzombie_on_completion, ::bot_meleesinglenormalzombie_should_cancel, ::bot_meleesinglenormalzombie_on_cancel, ::bot_meleesinglenormalzombie_should_postpone, ::bot_meleesinglenormalzombie_on_postpone, ::bot_meleesinglenormalzombie_priority );
-	register_bot_action( "combat", "shootsingledogzombie", ::bot_shootsingledogzombie, ::bot_shootsingledogzombie_process_order ::bot_should_shootsingledogzombie, ::bot_check_complete_shootsingledogzombie, ::bot_set_complete_shootsingledogzombie, ::bot_shootsingledogzombie_on_completion, ::bot_shootsingledogzombie_should_cancel, ::bot_shootsingledogzombie_on_cancel, ::bot_shootsingledogzombie_should_postpone, ::bot_shootsingledogzombie_on_postpone, ::bot_shootsingledogzombie_priority );
-	register_bot_action( "combat", "shootmultipledogzombies", ::bot_shootmultipledogzombies, ::bot_shootmultipledogzombies_process_order ::bot_should_shootmultipledogzombies, ::bot_check_complete_shootmultipledogzombies, ::bot_set_complete_shootmultipledogzombies, ::bot_shootmultipledogzombies_on_completion, ::bot_shootmultipledogzombies_should_cancel, ::bot_shootmultipledogzombies_on_cancel, ::bot_shootmultipledogzombies_should_postpone, ::bot_shootmultipledogzombies_on_postpone, ::bot_shootmultipledogzombies_priority );
-	register_bot_action( "combat", "meleesingledogzombie", ::bot_meleesingledogzombie, ::bot_meleesingledogzombie_process_order ::bot_should_meleesingledogzombie, ::bot_check_complete_meleesingledogzombie, ::bot_set_complete_meleesingledogzombie, ::bot_meleesingledogzombie_on_completion, ::bot_meleesingledogzombie_should_cancel, ::bot_meleesingledogzombie_on_cancel, ::bot_meleesingledogzombie_should_postpone, ::bot_meleesingledogzombie_on_postpone, ::bot_meleesingledogzombie_priority );
+	register_bot_action( "combat", "shoot", ::bot_shoot, ::bot_shoot_process_order, ::bot_should_shoot, ::bot_check_complete_shoot, ::bot_set_complete_shoot, ::bot_shoot_on_completion, ::bot_shoot_should_cancel, ::bot_shoot_on_cancel, ::bot_shoot_should_postpone, ::bot_shoot_on_postpone, ::bot_shoot_priority );
+	register_bot_action( "combat", "reload", ::bot_reload, ::bot_reload_process_order, ::bot_should_reload, ::bot_check_complete_reload, ::bot_set_complete_reload, ::bot_reload_on_completion, ::bot_reload_should_cancel, ::bot_reload_on_cancel, ::bot_reload_should_postpone, ::bot_reload_on_postpone, ::bot_reload_priority );
+	register_bot_action( "combat", "frag", ::bot_frag, ::bot_frag_process_order, ::bot_should_frag, ::bot_check_complete_frag, ::bot_set_complete_frag, ::bot_frag_on_completion, ::bot_frag_should_cancel, ::bot_frag_on_cancel, ::bot_frag_should_postpone, ::bot_frag_on_postpone, ::bot_frag_priority );
+	register_bot_action( "combat", "tactical", ::bot_tactical, ::bot_tactical_process_order, ::bot_should_tactical, ::bot_check_complete_tactical, ::bot_set_complete_tactical, ::bot_tactical_on_completion, ::bot_tactical_should_cancel, ::bot_tactical_on_cancel, ::bot_tactical_should_postpone, ::bot_tactical_on_postpone, ::bot_tactical_priority );
+	//register_bot_action( "combat", "combatoverride", ::bot_combatoverride, ::bot_combatoverride_process_order ::bot_should_combatoverride, ::bot_check_complete_combatoverride, ::bot_set_complete_combatoverride, ::bot_combatoverride_on_completion, ::bot_combatoverride_should_cancel, ::bot_combatoverride_on_cancel, ::bot_combatoverride_should_postpone, ::bot_combatoverride_on_postpone, ::bot_combatoverride_priority );
 
 	//Movement actions
 	//These all need definitions
 	register_bot_action( "movement", "movetoobjective", ::bot_movetoobjective, ::bot_movetoobjective_process_order ::bot_should_movetoobjective, ::bot_check_complete_movetoobjective, ::bot_set_complete_movetoobjective, ::bot_movetoobjective_on_completion, ::bot_movetoobjective_should_cancel, ::bot_movetoobjective_on_cancel, ::bot_movetoobjective_should_postpone, ::bot_movetoobjective_on_postpone, ::bot_movetoobjective_priority );
-	//register_bot_action( "movement", "atobjective", ::bot_atobjective, ::bot_atobjective_process_order ::bot_should_atobjective, ::bot_check_complete_atobjective, ::bot_set_complete_atobjective, ::bot_atobjective_on_completion, ::bot_atobjective_should_cancel, ::bot_atobjective_on_cancel, ::bot_atobjective_should_postpone, ::bot_atobjective_on_postpone, ::bot_atobjective_priority );
-	register_bot_action( "movement", "train", ::bot_train, ::bot_train_process_order ::bot_should_train, ::bot_check_complete_train, ::bot_set_complete_train, ::bot_train_on_completion, ::bot_train_should_cancel, ::bot_train_on_cancel, ::bot_train_should_postpone, ::bot_train_on_postpone, ::bot_train_priority );
-	register_bot_action( "movement", "camp", ::bot_camp, ::bot_camp_process_order ::bot_should_camp, ::bot_check_complete_camp, ::bot_set_complete_camp, ::bot_camp_on_completion, ::bot_camp_should_cancel, ::bot_camp_on_cancel, ::bot_camp_should_postpone, ::bot_camp_on_postpone, ::bot_camp_priority );
-	register_bot_action( "movement", "flee", ::bot_flee, ::bot_flee_process_order ::bot_should_flee, ::bot_check_complete_flee, ::bot_set_complete_flee, ::bot_flee_on_completion, ::bot_flee_should_cancel, ::bot_flee_on_cancel, ::bot_flee_should_postpone, ::bot_flee_on_postpone, ::bot_flee_priority );
+	//register_bot_action( "movement", "moveoverride", ::bot_moveoverride, ::bot_moveoverride_process_order, ::bot_should_moveoverride, ::bot_check_complete_moveoverride, ::bot_set_complete_moveoverride, ::bot_moveoverride_on_completion, ::bot_moveoverride_should_cancel, ::bot_moveoverride_on_cancel, ::bot_moveoverride_should_postpone, ::bot_moveoverride_on_postpone, ::bot_moveoverride_priority );
+	register_bot_action( "movement", "train", ::bot_train, ::bot_train_process_order, ::bot_should_train, ::bot_check_complete_train, ::bot_set_complete_train, ::bot_train_on_completion, ::bot_train_should_cancel, ::bot_train_on_cancel, ::bot_train_should_postpone, ::bot_train_on_postpone, ::bot_train_priority );
+	register_bot_action( "movement", "camp", ::bot_camp, ::bot_camp_process_order, ::bot_should_camp, ::bot_check_complete_camp, ::bot_set_complete_camp, ::bot_camp_on_completion, ::bot_camp_should_cancel, ::bot_camp_on_cancel, ::bot_camp_should_postpone, ::bot_camp_on_postpone, ::bot_camp_priority );
+	register_bot_action( "movement", "flee", ::bot_flee, ::bot_flee_process_order, ::bot_should_flee, ::bot_check_complete_flee, ::bot_set_complete_flee, ::bot_flee_on_completion, ::bot_flee_should_cancel, ::bot_flee_on_cancel, ::bot_flee_should_postpone, ::bot_flee_on_postpone, ::bot_flee_priority );
 	//register_bot_action( "follow" )
+
+	register_bot_action( "look", "lookatobjective", ::bot_lookatobjective, ::bot_lookatobjective_process_order ::bot_should_lookatobjective, ::bot_check_complete_lookatobjective, ::bot_set_complete_lookatobjective, ::bot_lookatobjective_on_completion, ::bot_lookatobjective_should_cancel, ::bot_lookatobjective_on_cancel, ::bot_lookatobjective_should_postpone, ::bot_lookatobjective_on_postpone, ::bot_lookatobjective_priority );
+	register_bot_action( "look", "lookattarget", ::bot_lookattarget, ::bot_lookattarget_process_order, ::bot_should_lookattarget, ::bot_check_complete_lookattarget, ::bot_set_complete_lookattarget, ::bot_lookattarget_on_completion, ::bot_lookattarget_should_cancel, ::bot_lookattarget_on_cancel, ::bot_lookattarget_should_postpone, ::bot_lookattarget_on_postpone, ::bot_lookattarget_priority );
+	register_bot_action( "look", "lookatgoal", ::bot_lookatgoal, ::bot_lookatgoal_process_order, ::bot_should_lookatgoal, ::bot_check_complete_lookatgoal, ::bot_set_complete_lookatgoal, ::bot_lookatgoal_on_completion, ::bot_lookatgoal_should_cancel, ::bot_lookatgoal_on_cancel, ::bot_lookatgoal_should_postpone, ::bot_lookatgoal_on_postpone, ::bot_lookatgoal_priority );
+	//register_bot_action( "look", "ads", ::bot_ads, ::bot_ads_process_order, ::bot_should_ads, ::bot_check_complete_ads, ::bot_set_complete_ads, ::bot_ads_on_completion, ::bot_ads_should_cancel, ::bot_ads_on_cancel, ::bot_ads_should_postpone, ::bot_ads_on_postpone, ::bot_ads_priority );
+	//register_bot_action( "look", "lookahead", ::bot_lookahead, ::bot_lookahead_process_order, ::bot_should_lookahead, ::bot_check_complete_lookahead, ::bot_set_complete_lookahead, ::bot_lookahead_on_completion, ::bot_lookahead_should_cancel, ::bot_lookahead_on_cancel, ::bot_lookahead_should_postpone, ::bot_lookahead_on_postpone, ::bot_lookahead_priority );
 
 	register_bot_personality_type( "aggressive" );
 	register_bot_personality_type( "passive" );
@@ -264,6 +268,10 @@ bot_think()
 		}
 
 		group_name = "movement";
+
+		self bot_action_think( group_name );
+
+		group_name = "look";
 
 		self bot_action_think( group_name );
 
