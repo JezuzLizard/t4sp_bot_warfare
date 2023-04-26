@@ -162,3 +162,57 @@ bot_lookatgoal_priority()
 {
 	return 0;
 }
+
+bot_lookat( pos, time, vel, doAimPredict )
+{
+	self notify( "bots_aim_overlap" );
+	self endon( "bots_aim_overlap" );
+	self endon( "disconnect" );
+	self endon( "player_downed" );
+	level endon( "end_game" );
+
+	if ( level.gameEnded || level.inPrematchPeriod || self.bot.isfrozen || !getDvarInt( "bots_play_aim" ) )
+		return;
+
+	if ( !isDefined( pos ) )
+		return;
+
+	if ( !isDefined( doAimPredict ) )
+		doAimPredict = false;
+
+	if ( !isDefined( time ) )
+		time = 0.05;
+
+	if ( !isDefined( vel ) )
+		vel = ( 0, 0, 0 );
+
+	steps = int( time * 20 );
+
+	if ( steps < 1 )
+		steps = 1;
+
+	myEye = self GetEyePos(); // get our eye pos
+
+	if ( doAimPredict )
+	{
+		myEye += ( self getVelocity() * 0.05 ) * ( steps - 1 ); // account for our velocity
+
+		pos += ( vel * 0.05 ) * ( steps - 1 ); // add the velocity vector
+	}
+
+	myAngle = self getPlayerAngles();
+	angles = VectorToAngles( ( pos - myEye ) - anglesToForward( myAngle ) );
+
+	X = AngleClamp180( angles[0] - myAngle[0] );
+	X = X / steps;
+
+	Y = AngleClamp180( angles[1] - myAngle[1] );
+	Y = Y / steps;
+
+	for ( i = 0; i < steps; i++ )
+	{
+		myAngle = ( AngleClamp180(myAngle[0] + X), AngleClamp180(myAngle[1] + Y), 0 );
+		self setPlayerAngles( myAngle );
+		wait 0.05;
+	}
+}

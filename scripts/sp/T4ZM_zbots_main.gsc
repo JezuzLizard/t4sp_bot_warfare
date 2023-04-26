@@ -78,6 +78,9 @@ main()
 	//register_bot_objective( "part" );
 	register_bot_objective( "powerup" );
 
+	register_bot_target_type( "zombie" );
+	register_bot_target_type( "zombie_dog" );
+
 	level.bot_weapon_quality_poor = 0;
 	level.bot_weapon_quality_fair = 1;
 	level.bot_weapon_quality_good = 2;
@@ -136,6 +139,7 @@ on_player_connect()
 //TODO: Add the ability to check if a bot is at an objective to start the action think
 //TODO: Add atobjective movement handler to let objectives control movement temporarily
 //TODO: Allow bots to still do actions while down if possible
+//TODO: Track zombies targetting players
 
 init()
 {
@@ -190,7 +194,7 @@ init()
 	{
 		for ( i = 0; i < zombie_debris.size; i++ )
 		{
-			zombie_debris.id = i;
+			zombie_debris[ i ].id = i;
 			add_possible_bot_objective( "debris", i, true, zombie_debris[ i ] );
 		}
 		level thread watch_debris_objectives( zombie_debris );
@@ -207,11 +211,37 @@ init()
 		}
 	}
 
+	level.callbackActorSpawned = ::zbots_actor_spawned;
+	level.callbackActorKilled = ::zbots_actor_killed;
+
 	level thread watch_for_downed_players();
 
 	level thread store_powerups_dropped();
 
 	parse_bot_weapon_stats_from_table();
+}
+
+zbots_actor_spawned()
+{
+	self thread add_actor_to_target_glob();
+}
+
+add_actor_to_target_glob()
+{
+	wait 1; //Wait long enough for the actor to be initialized in script
+	assert( isDefined( self.targetname ), "Actor doesn't have a targetname set" );
+	if ( !isDefined( self.targetname ) )
+	{
+		return;
+	}
+	add_possible_bot_target( self.targetname, level.zbot_target_glob_ids[ self.targetname ], self );
+	self.target_id = level.zbot_target_glob_ids[ self.targetname ];
+	level.zbot_target_glob_ids[ self.targetname ]++;
+}
+
+zbots_actor_killed( eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, iTimeOffset )
+{
+	free_bot_target( self.targetname, self.target_id );
 }
 
 spawn_bots()
