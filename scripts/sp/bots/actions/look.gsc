@@ -55,7 +55,14 @@ bot_lookatobjective_priority()
 
 bot_lookattarget()
 {
-
+	self endon( "disconnect" );
+	while ( self bot_has_target() && isAlive( self.zbot_current_target.target_ent ) )
+	{
+		target = self.zbot_current_target;
+		target_ent = target.target_ent;
+		self bot_lookat( target_ent getTagOrigin( "j_head" ), time, vel, doAimPredict );
+		wait 0.05;
+	}
 }
 
 bot_lookattarget_process_order()
@@ -65,12 +72,12 @@ bot_lookattarget_process_order()
 
 bot_should_lookattarget()
 {
-	return false;
+	return self bot_has_target();
 }
 
 bot_check_complete_lookattarget()
 {
-	return false;
+	return !self bot_has_target();
 }
 
 bot_set_complete_lookattarget()
@@ -170,9 +177,6 @@ bot_lookat( pos, time, vel, doAimPredict )
 	self endon( "disconnect" );
 	self endon( "player_downed" );
 	level endon( "end_game" );
-
-	if ( level.gameEnded || level.inPrematchPeriod || self.bot.isfrozen || !getDvarInt( "bots_play_aim" ) )
-		return;
 
 	if ( !isDefined( pos ) )
 		return;

@@ -61,6 +61,11 @@ set_objective_for_bot( objective_group, id )
 	self.zbot_current_objective = objective;
 }
 
+clear_objective_for_bot()
+{
+	self.zbot_current_objective = undefined;
+}
+
 set_bot_objective_blocked_by_objective( primary_objective_group, primary_id, blocked_by_objective_group, blocked_by_id )
 {
 	primary_active_objectives = level.zbot_objective_glob[ primary_objective_group ].active_objectives;
@@ -162,6 +167,18 @@ free_bot_objective( objective_group, id )
 	if ( !objective_exists )
 	{
 		return;
+	}
+
+	players = getPlayers();
+	for ( i = 0; i < players.size; i++ )
+	{
+		if ( players[ i ].pers[ "isBot" ] )
+		{
+			if ( players[ i ].zbot_current_objective == objective )
+			{
+				players[ i ].zbot_current_objective = undefined;
+			}
+		}
 	}
 
 	objective = undefined;

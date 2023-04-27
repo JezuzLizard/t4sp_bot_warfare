@@ -6,6 +6,8 @@
 #include scripts\sp\bots\bot_objective_common;
 #include scripts\sp\bots\bot_difficulty_presets_common;
 #include scripts\sp\bots\bot_personality_presets_common;
+#include scripts\sp\bots\bot_pathing;
+#include scripts\sp\bots\bot_target_common;
 #include scripts\sp\bots\actions\combat;
 #include scripts\sp\bots\actions\movement;
 #include scripts\sp\bots\actions\objective;
@@ -116,7 +118,7 @@ on_player_connect()
 	while ( true )
 	{
 		level waittill( "connected", player );
-		player.id = i;
+		player.client_id = i;
 		if ( player isBot() )
 		{
 			player.successfully_grabbed_powerup = false;
@@ -213,6 +215,7 @@ init()
 
 	level.callbackActorSpawned = ::zbots_actor_spawned;
 	level.callbackActorKilled = ::zbots_actor_killed;
+	level.callbackActorDamage = ::zbots_actor_damage;
 
 	level thread watch_for_downed_players();
 
@@ -223,6 +226,7 @@ init()
 
 zbots_actor_spawned()
 {
+	self.is_actor = true;
 	self thread add_actor_to_target_glob();
 }
 
@@ -242,6 +246,30 @@ add_actor_to_target_glob()
 zbots_actor_killed( eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, iTimeOffset )
 {
 	free_bot_target( self.targetname, self.target_id );
+}
+
+zbots_actor_damage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset )
+{
+	if ( isPlayer( eAttacker ) && iDamage > 0 )
+	{
+		eAttacker set_target_damaged_by( self.targetname, self.target_id );
+		eAttacker thread remove_target_damaged_by_after_time( self, self.target_id );
+	}
+	
+	self FinishActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset );
+}
+
+remove_target_damaged_by_after_time( target_ent, id )
+{
+	player_entnum = self getEntityNumber();
+	self endon( "disconnect" );
+	target_ent notify( "damaged_by_player_" + player_entnum );
+	target_ent endon( "damaged_by_player_" + player_entnum );
+	target_ent endon( "death" );
+
+	wait 6;
+
+	self clear_target_damaged_by( target_ent.targetname, id );
 }
 
 spawn_bots()
@@ -271,6 +299,7 @@ spawn_bots()
 		bot.action_queue[ "objective" ] = [];
 		bot.action_queue[ "combat" ] = [];
 		bot.action_queue[ "movement" ] = [];
+		bot.action_queue[ "look" ] = [];
 		bot register_action_queue_actions();
 		bot thread bot_think();
 		bot_count++;
@@ -436,7 +465,7 @@ watch_for_downed_players()
 		{
 			continue;
 		}
-		add_possible_bot_objective( "revive", player.id, true, player );
+		add_possible_bot_objective( "revive", player.client_id, true, player );
 		player thread free_revive_objective_when_needed();
 	}
 }
