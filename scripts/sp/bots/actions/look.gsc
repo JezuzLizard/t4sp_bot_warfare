@@ -1,3 +1,5 @@
+#include scripts\sp\bots\bot_target_common;
+
 bot_lookatobjective()
 {
 
@@ -60,7 +62,7 @@ bot_lookattarget()
 	{
 		target = self.zbot_current_target;
 		target_ent = target.target_ent;
-		self bot_lookat( target_ent getTagOrigin( "j_head" ), time, vel, doAimPredict );
+		self bot_lookat( target_ent getTagOrigin( "j_head" ) );
 		wait 0.05;
 	}
 }
@@ -195,7 +197,7 @@ bot_lookat( pos, time, vel, doAimPredict )
 	if ( steps < 1 )
 		steps = 1;
 
-	myEye = self GetEyePos(); // get our eye pos
+	myEye = self scripts\sp\bots\_bot_utility::GetEyePos(); // get our eye pos
 
 	if ( doAimPredict )
 	{

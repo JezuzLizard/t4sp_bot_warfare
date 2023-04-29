@@ -47,12 +47,7 @@ parse_bot_weapon_stats_from_table()
 	*/
 }
 
-array_validate( array )
-{
-	return isDefined( array ) && isArray( array ) && array.size > 0;
-}
-
-array_add( array, item )
+array_add2( array, item )
 {
 	array[ array.size ] = item;
 }
@@ -79,12 +74,12 @@ merge_sort( current_list, func_sort, param )
 	
 	for ( x = 0; x < middle; x++ )
 	{
-		array_add( left, current_list[ x ] );
+		array_add2( left, current_list[ x ] );
 	}
 	
 	for ( ; x < current_list.size; x++ )
 	{
-		array_add( right, current_list[ x ] );
+		array_add2( right, current_list[ x ] );
 	}
 	
 	left = merge_sort( left, func_sort, param );
@@ -97,7 +92,7 @@ merge_sort( current_list, func_sort, param )
 
 quickSort(array, compare_func) 
 {
-	return quickSortMid(array, 0, array.size -1, compare_func);     
+	return quickSortMid(array, 0, array.size - 1, compare_func);     
 }
 
 quickSortMid( array, start, end, compare_func )
@@ -136,112 +131,6 @@ quicksort_compare(left, right)
 	return left <= right;
 }
 
-push( array, val, index )
-{
-	if ( !isdefined( index ) )
-	{
-		// use max free integer as index
-		index = 0;
-		keys = GetArrayKeys( array );
-		for ( i = 0; i < keys.size; i++ )
-		{
-			key = keys[ i ];
-			if ( IsInt( key ) && ( key >= index ) )
-			{
-				index = key + 1;
-			}
-		}
-	}
-	
-	array = array_insert( array, val, index );
-	return array;
-}
-
-bot_spawn_init()
-{
-	time = gettime();
-
-	if ( !isdefined( self.bot ) )
-	{
-		self.bot = spawnstruct();
-		self.bot.threat = spawnstruct();
-	}
-
-	self.bot.glass_origin = undefined;
-	self.bot.ignore_entity = [];
-	self.bot.previous_origin = self.origin;
-	self.bot.time_ads = 0;
-	self.bot.update_c4 = time + randomintrange( 1000, 3000 );
-	self.bot.update_crate = time + randomintrange( 1000, 3000 );
-	self.bot.update_crouch = time + randomintrange( 1000, 3000 );
-	self.bot.update_failsafe = time + randomintrange( 1000, 3000 );
-	self.bot.update_idle_lookat = time + randomintrange( 1000, 3000 );
-	self.bot.update_killstreak = time + randomintrange( 1000, 3000 );
-	self.bot.update_lookat = time + randomintrange( 1000, 3000 );
-	self.bot.update_objective = time + randomintrange( 1000, 3000 );
-	self.bot.update_objective_patrol = time + randomintrange( 1000, 3000 );
-	self.bot.update_patrol = time + randomintrange( 1000, 3000 );
-	self.bot.update_toss = time + randomintrange( 1000, 3000 );
-	self.bot.update_launcher = time + randomintrange( 1000, 3000 );
-	self.bot.update_weapon = time + randomintrange( 1000, 3000 );
-
-	self.bot.threat.entity = undefined;
-	self.bot.threat.position = ( 0, 0, 0 );
-	self.bot.threat.time_first_sight = 0;
-	self.bot.threat.time_recent_sight = 0;
-	self.bot.threat.time_aim_interval = 0;
-	self.bot.threat.time_aim_correct = 0;
-	self.bot.threat.update_riotshield = 0;
-}
-
-bot_should_hip_fire()
-{
-	enemy = self.bot.threat.entity;
-	weapon = self getcurrentweapon();
-
-	if ( weapon == "none" )
-		return 0;
-
-	if ( weaponisdualwield( weapon ) )
-		return 1;
-
-	weapon_class = weaponclass( weapon );
-
-	if ( isplayer( enemy ) && weapon_class == "spread" )
-		return 1;
-
-	distsq = distancesquared( self.origin, enemy.origin );
-	distcheck = 0;
-
-	switch ( weapon_class )
-	{
-		case "mg":
-			distcheck = 250;
-			break;
-		case "smg":
-			distcheck = 350;
-			break;
-		case "spread":
-			distcheck = 400;
-			break;
-		case "pistol":
-			distcheck = 200;
-			break;
-		case "rocketlauncher":
-			distcheck = 0;
-			break;
-		case "rifle":
-		default:
-			distcheck = 300;
-			break;
-	}
-
-	if ( isweaponscopeoverlay( weapon ) )
-		distcheck = 500;
-
-	return distsq < distcheck * distcheck;
-}
-
 get_allies()
 {
 	return getPlayers( self.team );
@@ -263,7 +152,14 @@ are_enemies_horded()
 	DISTANCE_SQ = 120 * 120;
 	zombies = get_zombies();
 	amount_in_horde = 0;
-	max_eligible_zombies = isDefined( level.speed_change_round ) ? zombies.size - level.speed_change_num  : zombies.size;
+	if ( isDefined( level.speed_change_round ) )
+	{
+		max_eligible_zombies = zombies.size - level.speed_change_num;
+	}
+	else 
+	{
+		max_eligible_zombies = zombies.size;
+	}
 	expected_amount_in_horde_min = int( max_eligible_zombies * MINIMUM_PERCENT_TO_BE_HORDE );
 	if ( isDefined( level.speed_change_round ) )
 	{
@@ -448,7 +344,7 @@ assign_priority_to_powerup( powerup )
 		}
 	}
 
-	if ( maps\mp\zombies\_zm_laststand::player_any_player_in_laststand() )
+	if ( maps\_laststand::player_any_player_in_laststand() )
 	{
 		switch ( powerup.powerup_name )
 		{

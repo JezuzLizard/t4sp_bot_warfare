@@ -4,6 +4,7 @@
 #include common_scripts\utility;
 #include maps\_utility;
 #include maps\so\zm_common\_zm_utility;
+#include scripts\sp\bots\bot_utility;
 
 register_bot_action( group_name, action_name, action_func, action_process_order_func, should_do_func, check_if_complete_func, set_complete_func, on_completion_func, should_cancel_func, on_cancel_func, should_postpone_func, on_postpone_func, priority_func )
 {
@@ -118,7 +119,7 @@ wait_for_action_completion( group_name, action_name )
 		self.zbot_actions_in_queue[ group_name ][ action_name ].postponed = true;
 		postponed_action = self.action_queue[ group_name ][ 0 ];
 		self.action_queue[ group_name ][ 0 ] = undefined;
-		postponed_action.priority = self [[ level.zbots_actions[ group_name ][ action_keys[ i ] ].priority_func ]]();
+		postponed_action.priority = self [[ level.zbots_actions[ group_name ][ action_name ].priority_func ]]();
 		self.action_queue[ group_name ] = array_insert( self.action_queue[ group_name ], postponed_action, 1 );
 		self thread [[ self.action_queue[ group_name ][ 0 ].on_postpone_func ]]();
 	}
@@ -230,7 +231,7 @@ check_for_forced_action( group_name )
 {
 	action_keys = getArrayKeys( level.zbots_actions[ group_name ] );
 	action_priorities_array = [];
-	for ( i = 0; i < action_keys.size; i++ );
+	for ( i = 0; i < action_keys.size; i++ )
 	{
 		action_priorities_array[ action_priorities_array.size ] = spawnStruct();
 		action_priorities_array[ action_priorities_array.size - 1 ].priority = self [[ level.zbots_actions[ group_name ][ action_keys[ i ] ].priority_func ]]();

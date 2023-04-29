@@ -1,3 +1,6 @@
+#include common_scripts\utility;
+#include scripts\sp\bots\_bot_utility;
+
 register_bot_target_type( target_group )
 {
 	if ( !isDefined( level.zbot_target_glob ) )
@@ -21,7 +24,7 @@ add_possible_bot_target( target_group, id, target_ent )
 
 	target_struct = spawnStruct();
 	target_struct.group = target_group;
-	target_struct.id = id;
+	target_struct.target_id = id;
 	target_struct.damaged_by = [];
 	target_struct.targeted_by = [];
 	target_struct.target_ent = target_ent;
@@ -44,6 +47,11 @@ get_bot_target_by_id( target_group, id )
 get_all_targets_for_group( target_group )
 {
 	return level.zbot_target_glob[ target_group ].active_targets;
+}
+
+get_all_groups_for_targets()
+{
+	return getArrayKeys( level.zbot_target_glob );
 }
 
 bot_has_target()
@@ -188,25 +196,15 @@ free_bot_target( target_group, id )
 /*
 	The main target thread, will update the bot's main target. Will auto target enemy players and handle script targets.
 */
-target_loop()
+/*
+bot_pick_target()
 {
 	myEye = self GetEyePos();
-	theTime = getTime();
 	myAngles = self GetPlayerAngles();
-	myFov = self.pers["bots"]["skill"]["fov"];
-	bestTargets = [];
-	bestTime = 2147483647;
-	rememberTime = self.pers["bots"]["skill"]["remember_time"];
-	initReactTime = self.pers["bots"]["skill"]["init_react_time"];
-	hasTarget = isDefined( self.bot.target );
+	myFov = 90;
+	hasTarget = self bot_has_target();
 	adsAmount = self PlayerADS();
-	adsFovFact = self.pers["bots"]["skill"]["ads_fov_multi"];
-
-	if ( hasTarget && !isDefined( self.bot.target.entity ) )
-	{
-		self.bot.target = undefined;
-		hasTarget = false;
-	}
+	adsFovFact = 1;
 
 	// reduce fov if ads'ing
 	if ( adsAmount > 0 )
@@ -214,180 +212,46 @@ target_loop()
 		myFov *= 1 - adsFovFact * adsAmount;
 	}
 
-	playercount = level.players.size;
+	groups = get_all_groups_for_targets();
 
-	for ( i = -1; i < playercount; i++ )
+	ents = [];
+	for ( i = 0; i < groups.size; i++ )
 	{
-		obj = undefined;
-
-		if ( i == -1 )
+		targets = level.zbot_target_glob[ groups[ i ] ].active_targets;
+		for ( j = 0; j < targets; j++ )
 		{
-			if ( !isDefined( self.bot.script_target ) )
-				continue;
-
-			ent = self.bot.script_target;
-			key = ent getEntityNumber() + "";
-			daDist = distanceSquared( self.origin, ent.origin );
-			obj = self.bot.targets[key];
-			isObjDef = isDefined( obj );
-			entOrigin = ent.origin;
-
-			if ( isDefined( self.bot.script_target_offset ) )
-				entOrigin += self.bot.script_target_offset;
-
-			if ( SmokeTrace( myEye, entOrigin, level.smokeRadius ) && bulletTracePassed( myEye, entOrigin, false, ent ) )
-			{
-				if ( !isObjDef )
-				{
-					obj = self createTargetObj( ent, theTime );
-					obj.offset = self.bot.script_target_offset;
-
-					self.bot.targets[key] = obj;
-				}
-
-				self targetObjUpdateTraced( obj, daDist, ent, theTime, true );
-			}
-			else
-			{
-				if ( !isObjDef )
-					continue;
-
-				self targetObjUpdateNoTrace( obj );
-
-				if ( obj.no_trace_time > rememberTime )
-				{
-					self.bot.targets[key] = undefined;
-					continue;
-				}
-			}
+			ents[ ents.size ] = targets[ j ].target_ent;
 		}
-		else
-		{
-			player = level.players[i];
-
-			if ( !player IsPlayerModelOK() )
-				continue;
-
-			if ( player == self )
-				continue;
-
-			key = player getEntityNumber() + "";
-			obj = self.bot.targets[key];
-			daDist = distanceSquared( self.origin, player.origin );
-			isObjDef = isDefined( obj );
-
-			if ( ( level.teamBased && self.team == player.team ) || player.sessionstate != "playing" || !isAlive( player ) )
-			{
-				if ( isObjDef )
-					self.bot.targets[key] = undefined;
-
-				continue;
-			}
-
-			targetHead = player getTagOrigin( "j_head" );
-			targetAnkleLeft = player getTagOrigin( "j_ankle_le" );
-			targetAnkleRight = player getTagOrigin( "j_ankle_ri" );
-
-			traceHead = bulletTrace( myEye, targetHead, false, undefined );
-			traceAnkleLeft = bulletTrace( myEye, targetAnkleLeft, false, undefined );
-			traceAnkleRight = bulletTrace( myEye, targetAnkleRight, false, undefined );
-
-			canTargetPlayer = ( ( sightTracePassed( myEye, targetHead, false, undefined ) ||
-			            sightTracePassed( myEye, targetAnkleLeft, false, undefined ) ||
-			            sightTracePassed( myEye, targetAnkleRight, false, undefined ) )
-
-			        && ( ( traceHead["fraction"] >= 1.0 || traceHead["surfacetype"] == "glass" ) ||
-			            ( traceAnkleLeft["fraction"] >= 1.0 || traceAnkleLeft["surfacetype"] == "glass" ) ||
-			            ( traceAnkleRight["fraction"] >= 1.0 || traceAnkleRight["surfacetype"] == "glass" ) )
-
-			        && ( SmokeTrace( myEye, player.origin, level.smokeRadius ) ||
-			            daDist < level.bots_maxKnifeDistance * 4 )
-
-			        && ( getConeDot( player.origin, self.origin, myAngles ) >= myFov ||
-			            ( isObjDef && obj.trace_time ) ) );
-
-			if ( isDefined( self.bot.target_this_frame ) && self.bot.target_this_frame == player )
-			{
-				self.bot.target_this_frame = undefined;
-
-				canTargetPlayer = true;
-			}
-
-			if ( canTargetPlayer )
-			{
-				if ( !isObjDef )
-				{
-					obj = self createTargetObj( player, theTime );
-
-					self.bot.targets[key] = obj;
-				}
-
-				self targetObjUpdateTraced( obj, daDist, player, theTime, false );
-			}
-			else
-			{
-				if ( !isObjDef )
-					continue;
-
-				self targetObjUpdateNoTrace( obj );
-
-				if ( obj.no_trace_time > rememberTime )
-				{
-					self.bot.targets[key] = undefined;
-					continue;
-				}
-			}
-		}
-
-		if ( !isdefined( obj ) )
-			continue;
-
-		if ( theTime - obj.time < initReactTime )
-			continue;
-
-		timeDiff = theTime - obj.trace_time_time;
-
-		if ( timeDiff < bestTime )
-		{
-			bestTargets = [];
-			bestTime = timeDiff;
-		}
-
-		if ( timeDiff == bestTime )
-			bestTargets[key] = obj;
 	}
 
-	if ( hasTarget && isDefined( bestTargets[self.bot.target.entity getEntityNumber() + ""] ) )
-		return;
+	ents = get_array_of_closest( self.origin, ents );
 
-	closest = 2147483647;
-	toBeTarget = undefined;
-
-	bestKeys = getArrayKeys( bestTargets );
-
-	for ( i = bestKeys.size - 1; i >= 0; i-- )
+	for ( i = 0; i < ents.size; i++ )
 	{
-		theDist = bestTargets[bestKeys[i]].dist;
+		ent = ents[ i ];
+		targetHead = ent getTagOrigin( "j_head" );
+		targetAnkleLeft = ent getTagOrigin( "j_ankle_le" );
+		targetAnkleRight = ent getTagOrigin( "j_ankle_ri" );
 
-		if ( theDist > closest )
-			continue;
+		traceHead = bulletTrace( myEye, targetHead, false, undefined );
+		traceAnkleLeft = bulletTrace( myEye, targetAnkleLeft, false, undefined );
+		traceAnkleRight = bulletTrace( myEye, targetAnkleRight, false, undefined );
 
-		closest = theDist;
-		toBeTarget = bestTargets[bestKeys[i]];
-	}
+		canTargetEnt = ( ( sightTracePassed( myEye, targetHead, false, undefined ) ||
+							  sightTracePassed( myEye, targetAnkleLeft, false, undefined ) ||
+							  sightTracePassed( myEye, targetAnkleRight, false, undefined ) )
 
-	beforeTargetID = -1;
-	newTargetID = -1;
+							&& ( traceHead["fraction"] >= 1.0 ||
+								 traceAnkleLeft["fraction"] >= 1.0 ||
+								 traceAnkleRight["fraction"] >= 1.0 )
 
-	if ( hasTarget && isDefined( self.bot.target.entity ) )
-		beforeTargetID = self.bot.target.entity getEntityNumber();
-
-	if ( isDefined( toBeTarget ) && isDefined( toBeTarget.entity ) )
-		newTargetID = toBeTarget.entity getEntityNumber();
-
-	if ( beforeTargetID != newTargetID )
-	{
-		self.bot.target = toBeTarget;
-		self notify( "new_enemy" );
+							&& ( getConeDot( ent.origin, self.origin, myAngles ) >= myFov ||
+								( isObjDef && obj.trace_time ) ) );
+		if ( canTargetEnt )
+		{
+			self set_target_for_bot( ent.targetname, ent.target_id );
+			break;
+		}
 	}
 }
+*/

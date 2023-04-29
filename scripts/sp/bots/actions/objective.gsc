@@ -1,3 +1,5 @@
+#include scripts\sp\bots\bot_objective_common;
+
 bot_magicbox_purchase()
 {
 	self.target_pos = self.available_chests[ 0 ].origin;
@@ -37,7 +39,7 @@ bot_should_purchase_magicbox()
 		{
 			if ( isDefined( self.available_chests[ i ].chest_user ) )
 			{
-				arrayRemoveIndex( self.available_chests, i );
+				maps\_utility::array_remove_index( self.available_chests, i );
 				i--;
 			}
 		}
@@ -83,7 +85,7 @@ bot_magicbox_purchase_on_postpone()
 bot_magicbox_purchase_priority()
 {
 	priority = 0;
-	const LOW_AMMO_THRESHOLD = 0.3;
+	LOW_AMMO_THRESHOLD = 0.3;
 	weapons = self getWeaponsListPrimaries();
 	if ( weapons.size < 2 )
 	{
@@ -540,7 +542,7 @@ bot_should_revive_player()
 			continue;
 		}
 
-		self.available_revives[ self.available_revives.size ] = downed_players[ obj_keys[ i ] ];
+		self.available_revives[ self.available_revives.size ] = downed_players_objs[ obj_keys[ i ] ];
 	}
 	return self.available_revives.size > 0;
 }

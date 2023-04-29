@@ -46,11 +46,11 @@ get_all_objectives_for_group( objective_group )
 
 set_objective_for_bot( objective_group, id )
 {
-	possible_objectives = level.zbot_objective_glob[ primary_objective_group ].active_objectives;
+	possible_objectives = level.zbot_objective_glob[ objective_group ].active_objectives;
 
 	objective = possible_objectives[ "obj_id_" + id ];
 
-	objective_exists = isDefined( primary_objective );
+	objective_exists = isDefined( objective );
 
 	assert( objective_exists, "Objective with " + id + " id does not point to a objective in group " + objective_group );
 	if ( !objective_exists )
@@ -147,7 +147,7 @@ set_bot_global_shared_objective_owner_by_reference( objective_group, objective, 
 	{
 		return;
 	}
-	assert( objective.is_global_shared, "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group );
+	assert( objective.is_global_shared, "Objective with " + objective.id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group );
 	if ( !objective.is_global_shared )
 	{
 		return;

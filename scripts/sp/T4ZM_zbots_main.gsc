@@ -2,16 +2,19 @@
 #include maps\_utility;
 #include maps\so\zm_common\_zm_utility;
 
+#include scripts\sp\bots\_bot_internal;
+
 #include scripts\sp\bots\bot_actions_common;
 #include scripts\sp\bots\bot_objective_common;
 #include scripts\sp\bots\bot_difficulty_presets_common;
 #include scripts\sp\bots\bot_personality_presets_common;
-#include scripts\sp\bots\bot_pathing;
 #include scripts\sp\bots\bot_target_common;
 #include scripts\sp\bots\actions\combat;
 #include scripts\sp\bots\actions\movement;
 #include scripts\sp\bots\actions\objective;
 #include scripts\sp\bots\actions\look;
+
+#include scripts\sp\bots\bot_utility;
 
 main()
 {
@@ -41,14 +44,14 @@ main()
 
 	//Movement actions
 	//These all need definitions
-	register_bot_action( "movement", "movetoobjective", ::bot_movetoobjective, ::bot_movetoobjective_process_order ::bot_should_movetoobjective, ::bot_check_complete_movetoobjective, ::bot_set_complete_movetoobjective, ::bot_movetoobjective_on_completion, ::bot_movetoobjective_should_cancel, ::bot_movetoobjective_on_cancel, ::bot_movetoobjective_should_postpone, ::bot_movetoobjective_on_postpone, ::bot_movetoobjective_priority );
+	register_bot_action( "movement", "movetoobjective", ::bot_movetoobjective, ::bot_movetoobjective_process_order, ::bot_should_movetoobjective, ::bot_check_complete_movetoobjective, ::bot_set_complete_movetoobjective, ::bot_movetoobjective_on_completion, ::bot_movetoobjective_should_cancel, ::bot_movetoobjective_on_cancel, ::bot_movetoobjective_should_postpone, ::bot_movetoobjective_on_postpone, ::bot_movetoobjective_priority );
 	//register_bot_action( "movement", "moveoverride", ::bot_moveoverride, ::bot_moveoverride_process_order, ::bot_should_moveoverride, ::bot_check_complete_moveoverride, ::bot_set_complete_moveoverride, ::bot_moveoverride_on_completion, ::bot_moveoverride_should_cancel, ::bot_moveoverride_on_cancel, ::bot_moveoverride_should_postpone, ::bot_moveoverride_on_postpone, ::bot_moveoverride_priority );
 	register_bot_action( "movement", "train", ::bot_train, ::bot_train_process_order, ::bot_should_train, ::bot_check_complete_train, ::bot_set_complete_train, ::bot_train_on_completion, ::bot_train_should_cancel, ::bot_train_on_cancel, ::bot_train_should_postpone, ::bot_train_on_postpone, ::bot_train_priority );
 	register_bot_action( "movement", "camp", ::bot_camp, ::bot_camp_process_order, ::bot_should_camp, ::bot_check_complete_camp, ::bot_set_complete_camp, ::bot_camp_on_completion, ::bot_camp_should_cancel, ::bot_camp_on_cancel, ::bot_camp_should_postpone, ::bot_camp_on_postpone, ::bot_camp_priority );
 	register_bot_action( "movement", "flee", ::bot_flee, ::bot_flee_process_order, ::bot_should_flee, ::bot_check_complete_flee, ::bot_set_complete_flee, ::bot_flee_on_completion, ::bot_flee_should_cancel, ::bot_flee_on_cancel, ::bot_flee_should_postpone, ::bot_flee_on_postpone, ::bot_flee_priority );
 	//register_bot_action( "follow" )
 
-	register_bot_action( "look", "lookatobjective", ::bot_lookatobjective, ::bot_lookatobjective_process_order ::bot_should_lookatobjective, ::bot_check_complete_lookatobjective, ::bot_set_complete_lookatobjective, ::bot_lookatobjective_on_completion, ::bot_lookatobjective_should_cancel, ::bot_lookatobjective_on_cancel, ::bot_lookatobjective_should_postpone, ::bot_lookatobjective_on_postpone, ::bot_lookatobjective_priority );
+	register_bot_action( "look", "lookatobjective", ::bot_lookatobjective, ::bot_lookatobjective_process_order, ::bot_should_lookatobjective, ::bot_check_complete_lookatobjective, ::bot_set_complete_lookatobjective, ::bot_lookatobjective_on_completion, ::bot_lookatobjective_should_cancel, ::bot_lookatobjective_on_cancel, ::bot_lookatobjective_should_postpone, ::bot_lookatobjective_on_postpone, ::bot_lookatobjective_priority );
 	register_bot_action( "look", "lookattarget", ::bot_lookattarget, ::bot_lookattarget_process_order, ::bot_should_lookattarget, ::bot_check_complete_lookattarget, ::bot_set_complete_lookattarget, ::bot_lookattarget_on_completion, ::bot_lookattarget_should_cancel, ::bot_lookattarget_on_cancel, ::bot_lookattarget_should_postpone, ::bot_lookattarget_on_postpone, ::bot_lookattarget_priority );
 	register_bot_action( "look", "lookatgoal", ::bot_lookatgoal, ::bot_lookatgoal_process_order, ::bot_should_lookatgoal, ::bot_check_complete_lookatgoal, ::bot_set_complete_lookatgoal, ::bot_lookatgoal_on_completion, ::bot_lookatgoal_should_cancel, ::bot_lookatgoal_on_cancel, ::bot_lookatgoal_should_postpone, ::bot_lookatgoal_on_postpone, ::bot_lookatgoal_priority );
 	//register_bot_action( "look", "ads", ::bot_ads, ::bot_ads_process_order, ::bot_should_ads, ::bot_check_complete_ads, ::bot_set_complete_ads, ::bot_ads_on_completion, ::bot_ads_should_cancel, ::bot_ads_on_cancel, ::bot_ads_should_postpone, ::bot_ads_on_postpone, ::bot_ads_priority );
@@ -89,6 +92,22 @@ main()
 	level.bot_weapon_quality_excellent = 3;
 	level.bot_weapon_quality_best = 4;
 
+	level.bots_minSprintDistance = 315;
+	level.bots_minSprintDistance *= level.bots_minSprintDistance;
+	level.bots_minGrenadeDistance = 256;
+	level.bots_minGrenadeDistance *= level.bots_minGrenadeDistance;
+	level.bots_maxGrenadeDistance = 1024;
+	level.bots_maxGrenadeDistance *= level.bots_maxGrenadeDistance;
+	level.bots_maxKnifeDistance = 80;
+	level.bots_maxKnifeDistance *= level.bots_maxKnifeDistance;
+	level.bots_goalDistance = 27.5;
+	level.bots_goalDistance *= level.bots_goalDistance;
+	level.bots_noADSDistance = 200;
+	level.bots_noADSDistance *= level.bots_noADSDistance;
+	level.bots_maxShotgunDistance = 500;
+	level.bots_maxShotgunDistance *= level.bots_maxShotgunDistance;
+	level.bots_listenDist = 100;
+
 	/*
 	level.bot_powerup_priority_none = 0;
 	level.bot_powerup_priority_low = 1;
@@ -105,11 +124,121 @@ main()
 	register_bot_powerup_priority( "zombie_blood", level.bot_powerup_priority_high, level.bot_powerup_priority_urgent);
 	*/
 
-	level.zbot_path_nodes = getAllNodes();
-
-	level thread spawn_bots();
+	level thread spawn_bots_for_host();
 
 	level thread on_player_connect();
+
+	level.waypoints = getAllNodes();
+
+	level.waypoints_inside_playable_area = get_nodes_in_playable_area();
+
+	level.waypointCount = level.waypoints.size;
+
+	level.waypoint_count_inside_playable_area = level.waypoints_inside_playable_area.size;
+}
+
+/*
+	We clear all of the script variables and other stuff for the bots.
+*/
+resetBotVars()
+{
+	self.bot = spawnStruct();
+	self.bot.script_target = undefined;
+	self.bot.script_target_offset = undefined;
+	self.bot.target = undefined;
+	self.bot.targets = [];
+	self.bot.target_this_frame = undefined;
+	self.bot.after_target = undefined;
+	self.bot.after_target_pos = undefined;
+	self.bot.moveTo = self.origin;
+
+	self.bot.script_aimpos = undefined;
+
+	self.bot.script_goal = undefined;
+	self.bot.script_goal_dist = 0.0;
+
+	self.bot.next_wp = -1;
+	self.bot.second_next_wp = -1;
+	self.bot.towards_goal = undefined;
+	self.bot.astar = [];
+	self.bot.stop_move = false;
+	self.bot.greedy_path = false;
+	self.bot.climbing = false;
+	self.bot.wantsprint = false;
+	self.bot.last_next_wp = -1;
+	self.bot.last_second_next_wp = -1;
+
+	self.bot.isfrozen = false;
+	self.bot.sprintendtime = -1;
+	self.bot.isreloading = false;
+	self.bot.issprinting = false;
+	self.bot.isfragging = false;
+	self.bot.issmoking = false;
+	self.bot.isfraggingafter = false;
+	self.bot.issmokingafter = false;
+	self.bot.isknifing = false;
+	self.bot.isknifingafter = false;
+
+	self.bot.semi_time = false;
+	self.bot.jump_time = undefined;
+	self.bot.last_fire_time = -1;
+
+	self.bot.is_cur_full_auto = false;
+	self.bot.cur_weap_dist_multi = 1;
+	self.bot.is_cur_sniper = false;
+
+	self.bot.rand = randomInt( 100 );
+
+	self botStop();
+}
+
+get_nodes_in_playable_area()
+{
+	total_nodes = getAllNodes();
+	filtered_nodes = [];
+	for ( i = 0; i < total_nodes.size; i++ )
+	{
+		if ( !is_point_in_playable_area( total_nodes[ i ].origin ) )
+		{
+			continue;
+		}
+		filtered_nodes[ filtered_nodes.size ] = total_nodes[ i ];
+		if ( ( i % 10 ) == 0 )
+		{
+			wait 0.05;
+		}
+	}
+	return filtered_nodes;
+}
+
+is_point_in_playable_area( point )
+{
+	playable_area = getentarray( "playable_area", "targetname" );
+
+	in_playable_area = false;
+
+	if ( !isDefined( playable_area ) || playable_area.size < 1 )
+	{
+		in_playable_area = true;
+	}
+
+	temp_ent = spawn( "script_origin", point );
+
+	if ( !in_playable_area )
+	{
+		for ( p = 0; p < playable_area.size; p++ )
+		{
+			if ( temp_ent isTouching( playable_area[ p ] ) )
+			{
+				in_playable_area = true;
+				break;
+			}
+		}
+	}
+
+	temp_ent delete();
+
+	return in_playable_area;
 }
 
 on_player_connect()
@@ -118,16 +247,82 @@ on_player_connect()
 	while ( true )
 	{
 		level waittill( "connected", player );
+		player thread on_player_spawned();
 		player.client_id = i;
 		if ( player isBot() )
 		{
+			player resetBotVars();
 			player.successfully_grabbed_powerup = false;
 			player.successfully_revived_player = false;
 			player.successfully_moved_to_objective = false;
 			player.can_do_objective_now = false;
 			player.on_powerup_grab_func = ::bot_on_powerup_grab;
+			player thread zbot_spawn();
+		}
+		else
+		{
+			player thread bot_control();
 		}
 		i++;
+	}
+}
+
+bot_control()
+{
+	self endon( "disconnect" );
+	self notifyOnPlayerCommand( "+smoke", "new_script_goal" );
+	while ( true )
+	{
+		self waittill( "new_script_goal" );
+		players = getPlayers();
+		for ( i = 0; i < players.size; i++ )
+		{
+			if ( players[ i ] isBot() )
+			{
+				players[ i ] scripts\sp\bots\_bot_utility::SetScriptGoal( self.origin );
+				players[ i ] thread clear_script_on_event();
+			}
+		}
+		self iPrintLn( "Set new goal for bots" );
+	}
+}
+
+clear_script_on_event()
+{
+	self endon( "disconnect" );
+	result = self waittill_any_return( "new_goal", "goal", "bad_path" );
+	if ( result != "new_goal" )
+	{
+		self scripts\sp\bots\_bot_utility::ClearScriptGoal();
+	}
+}
+
+on_player_spawned()
+{
+	self waittill( "spawned_player" );
+	self.score = 100000;
+}
+
+zbot_spawn()
+{
+	level endon( "end_game" );
+	self endon( "disconnect" );
+
+	while ( true )
+	{
+		self waittill( "spawned_player" );
+		self thread doBotMovement();
+		//self thread grenade_danger();
+		//self thread check_reload();
+		//self thread stance();
+		self thread walk();
+		//self thread target();
+		//self thread updateBones();
+		//self thread aim();
+		//self thread watchHoldBreath();
+		//self thread onNewEnemy();
+		//self thread watchGrenadeFire();
+		//self thread watchPickupGun();
 	}
 }
 
@@ -151,7 +346,7 @@ init()
 		{
 			level.chests[ i ].id = i;
 		}
-		level thread watch_magicbox_objectives();
+		//level thread watch_magicbox_objectives();
 	}
 
 	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" ); 
@@ -272,15 +467,11 @@ remove_target_damaged_by_after_time( target_ent, id )
 	self clear_target_damaged_by( target_ent.targetname, id );
 }
 
-spawn_bots()
+spawn_bots_for_host()
 {
 	level waittill( "connected", player );
 
-	while ( true )
-	{
-		spawn_bots();
-		wait 1;
-	}
+	spawn_bots();
 }
 
 spawn_bots()
@@ -290,9 +481,13 @@ spawn_bots()
 	while ( bot_count < required_bots )
 	{
 		bot = undefined;
-		while ( !isDefined( bot ) )
+		while ( !isDefined( bot ) && getPlayers().size < getDvarInt( "sv_maxclients" ) )
 		{
 			bot = addTestClient();
+		}
+		if ( !isDefined( bot ) )
+		{
+			return;
 		}
 		bot.pers[ "isBot" ] = true;
 		bot.action_queue = [];
@@ -300,8 +495,8 @@ spawn_bots()
 		bot.action_queue[ "combat" ] = [];
 		bot.action_queue[ "movement" ] = [];
 		bot.action_queue[ "look" ] = [];
-		bot register_action_queue_actions();
-		bot thread bot_think();
+		//bot register_action_queue_actions();
+		//bot thread bot_think();
 		bot_count++;
 	}
 }
@@ -316,11 +511,11 @@ bot_think()
 	while ( true )
 	{
 		wait 0.25;
-		if ( !bot_valid( self ) )
+		if ( !scripts\sp\bots\bot_utility::bot_valid( self ) )
 		{
 			self notify( "stop_action_think" );
 			self bot_clear_actions_queue();
-			while ( !bot_valid( self ) )
+			while ( !scripts\sp\bots\bot_utility::bot_valid( self ) )
 			{
 				wait 1;
 			}
@@ -336,48 +531,13 @@ bot_think()
 
 		group_name = "combat";
 
+		//self scripts\sp\bots\bot_target_common::bot_pick_target();
+
 		self bot_action_think( group_name );
 
 		group_name = "objective";
 
 		self bot_action_think( group_name );
-	}
-}
-
-bot_movement_think()
-{
-	level endon( "end_game" );
-	self endon( "disconnect" );
-	/*
-	if ( self any_zombies_targeting_self() )
-	{
-
-	}
-	*/
-	self.currently_moving = false;
-	while ( true )
-	{
-		wait 0.05;
-		if ( isDefined( self.target_pos ) && !self.currently_moving )
-		{
-			self lookAt( self.target_pos );
-			self addGoal( self.target_pos, 36, 4, "move_to_target_pos" );
-			self.currently_moving = true;
-		}
-		if ( self hasGoal( "move_to_target_pos" ) )
-		{
-			if ( self atGoal( "move_to_target_pos" ) )
-			{
-				self clearLookat();
-				self.currently_moving = false;
-				if ( isDefined( self.goal_type ) && isDefined( level.bot_at_goal_callback[ self.goal_type ] ) )
-				{
-					self [[ level.bot_at_goal_callback[ self.goal_type ] ]]();
-				}
-			}
-		}
-
-		self doBotMovement_loop();
 	}
 }
 
@@ -406,6 +566,8 @@ watch_debris_objectives( zombie_debris )
 watch_magicbox_objectives()
 {
 	level endon( "end_game" );
+
+	level waittill( "connected", player );
 
 	prev_magicbox = maps\so\zm_common\_zm_magicbox::get_active_magicbox();
 	while ( true )
@@ -437,8 +599,8 @@ store_powerups_dropped()
 		}
 		powerup.id = id;
 		add_possible_bot_objective( "powerup", id, true, powerup );
-		assign_priority_to_powerup( powerup );
-		level.zbots_powerups = sort_array_by_priority_field( level.zbots_powerups, powerup );
+		scripts\sp\bots\bot_utility::assign_priority_to_powerup( powerup );
+		level.zbots_powerups = scripts\sp\bots\bot_utility::sort_array_by_priority_field( level.zbots_powerups, powerup );
 		id++;
 	}
 }
@@ -481,39 +643,6 @@ free_revive_objective_when_needed()
 	}
 
 	free_bot_objective( "revive", id );
-}
-
-doBotMovement_loop()
-{
-	move_To = self.bot.moveTo;
-	angles = self GetPlayerAngles();
-	dir = ( 0, 0, 0 );
-
-	if ( DistanceSquared( self.origin, move_To ) >= 49 )
-	{
-		cosa = cos( 0 - angles[1] );
-		sina = sin( 0 - angles[1] );
-
-		// get the direction
-		dir = move_To - self.origin;
-
-		// rotate our direction according to our angles
-		dir = ( dir[0] * cosa - dir[1] * sina,
-		        dir[0] * sina + dir[1] * cosa,
-		        0 );
-
-		// make the length 127
-		dir = VectorNormalize( dir ) * 127;
-
-		// invert the second component as the engine requires this
-		dir = ( dir[0], 0 - dir[1], 0 );
-	}
-
-	// move!
-	if ( self.bot.wantsprint && self.bot.issprinting )
-		dir = ( 127, dir[1], 0 );
-
-	self botMovement( int( dir[0] ), int( dir[1] ) );
 }
 
 bot_on_powerup_grab( powerup )
