@@ -16,6 +16,8 @@ init()
 	level thread print_new_rounds();
 	level thread onPlayerConnect();
 	level thread spitOutTime();
+
+	setDvar( "killtest_bot_debug", 1 );
 	level thread addBot();
 
 	level thread setupcallbacks();
@@ -198,6 +200,9 @@ spitOutTime()
 
 addBot()
 {
+	if ( !getDvarInt( "killtest_bot_debug" ) )
+		return;
+
 	// level waittill("connected", player);
 	wait 5;
 
