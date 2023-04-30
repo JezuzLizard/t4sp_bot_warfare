@@ -477,7 +477,7 @@ target_loop()
 		myFov *= 1 - adsFovFact * adsAmount;
 	}
 
-	enemies = GetAISpeciesArray("axis", "all");
+	enemies = GetAISpeciesArray( "axis", "all" );
 
 	enemycount = enemies.size;
 
@@ -545,7 +545,7 @@ target_loop()
 				targetAnkleLeft = enemy getTagOrigin( "j_ankle_le" );
 				targetAnkleRight = enemy getTagOrigin( "j_ankle_ri" );
 			}
-			else 
+			else
 			{
 				targetHead = enemy getTagOrigin( "j_head" );
 				targetAnkleLeft = enemy getTagOrigin( "j_ankle_le" );
@@ -679,7 +679,7 @@ selectBoneForTarget( enemy, bones )
 	{
 		return PickRandom( bones );
 	}
-	else 
+	else
 	{
 		return PickRandom( bones );
 	}

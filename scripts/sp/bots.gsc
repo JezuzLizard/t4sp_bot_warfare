@@ -6,7 +6,9 @@ init()
 {
 	level thread maps\bots\_bot::init();
 
-	setDvar( "player_debug_bots", 1 );
+	if ( getDvar( "player_debug_bots" ) == "" )
+		setDvar( "player_debug_bots", 1 );
+
 	thread test_bot_pathing();
 }
 

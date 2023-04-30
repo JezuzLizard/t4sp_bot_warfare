@@ -17,7 +17,9 @@ init()
 	level thread onPlayerConnect();
 	level thread spitOutTime();
 
-	setDvar( "killtest_bot_debug", 1 );
+	if ( getDvar( "killtest_bot_debug" ) == "" )
+		setDvar( "killtest_bot_debug", 1 );
+
 	level thread addBot();
 
 	level thread setupcallbacks();
@@ -220,9 +222,10 @@ addBot()
 	if ( !isDefined( guy ) )
 		return;
 
-	guy.killingAll = true;
-	guy giveWeapon( "ptrs41_zombie" ); // ptrs41_zombie zombie_doublebarrel
-	guy switchToWeapon( "ptrs41_zombie" ); // colt_dirty_harry
+	// guy.killingAll = true;
+	weapon = "zombie_thompson";
+	guy giveWeapon( weapon ); // ptrs41_zombie zombie_doublebarrel
+	guy switchToWeapon( weapon ); // colt_dirty_harry
 
 	//guy thread walk_to_player();
 	//guy thread do_move();
@@ -235,6 +238,8 @@ addBot()
 			guy removeTestClient();
 			break;
 		}
+
+		guy giveMaxAmmo( weapon );
 
 		wait 0.05;
 	}
