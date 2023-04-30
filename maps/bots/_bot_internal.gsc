@@ -270,10 +270,31 @@ spawned()
 	self thread doBotMovement();
 	self thread walk();
 	self thread target();
+	self thread target_cleanup();
 	self thread updateBones();
 	self thread aim();
 
 	self notify( "bot_spawned" );
+}
+
+target_cleanup()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+	while ( true )
+	{
+		wait 10;
+		curTime = getTime();
+		targetKeys = getArrayKeys( self.bot.targets );
+		for ( i = 0; i < targetKeys.size; i++ )
+		{
+			obj = self.bot.targets[ targetKeys[ i ] ];
+			if ( ( curTime - obj.time ) > 30000 )
+			{
+				self.bot.targets[ targetKeys[ i ] ] = undefined;
+			}
+		}
+	}
 }
 
 /*
