@@ -545,11 +545,17 @@ target_loop()
 				targetAnkleLeft = enemy getTagOrigin( "j_ankle_le" );
 				targetAnkleRight = enemy getTagOrigin( "j_ankle_ri" );
 			}
-			else
+			else if ( !enemy targetIsGibbed() )
 			{
 				targetHead = enemy getTagOrigin( "j_head" );
 				targetAnkleLeft = enemy getTagOrigin( "j_ankle_le" );
 				targetAnkleRight = enemy getTagOrigin( "j_ankle_ri" );
+			}
+			else
+			{
+				targetHead = enemy getTagOrigin( "j_spinelower" );
+				targetAnkleLeft = enemy getTagOrigin( "j_spinelower" );
+				targetAnkleRight = enemy getTagOrigin( "j_spinelower" );
 			}
 
 			traceHead = bulletTrace( myEye, targetHead, false, enemy );
@@ -677,11 +683,15 @@ selectBoneForTarget( enemy, bones )
 {
 	if ( enemy targetIsDog() )
 	{
+		return "j_head";
+	}
+	else if ( !enemy targetIsGibbed() )
+	{
 		return PickRandom( bones );
 	}
 	else
 	{
-		return PickRandom( bones );
+		return "j_spineupper";
 	}
 }
 

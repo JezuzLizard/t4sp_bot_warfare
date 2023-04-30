@@ -993,7 +993,18 @@ getRandomGoal()
 	return PickRandom( level.waypointsInPlayableArea ).origin;
 }
 
+/*
+	Checks if target is dog
+*/
 targetIsDog()
 {
 	return isDefined( self.targetname ) && self.targetname == "zombie_dog";
+}
+
+/*
+	Checks if target is gibbed
+*/
+targetIsGibbed()
+{
+	return isDefined( self.gibbed ) && self.gibbed;
 }

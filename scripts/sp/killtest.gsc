@@ -223,13 +223,14 @@ addBot()
 		return;
 
 	// guy.killingAll = true;
-	weapon = "zombie_thompson";
+	weapon = "ray_gun";
 	guy giveWeapon( weapon ); // ptrs41_zombie zombie_doublebarrel
 	guy switchToWeapon( weapon ); // colt_dirty_harry
 
 	//guy thread walk_to_player();
 	//guy thread do_move();
 
+	/*
 	while ( isDefined( guy ) )
 	{
 		if ( isDefined( level.isPlayerDead ) && [[level.isPlayerDead]]( guy ) )
@@ -243,6 +244,7 @@ addBot()
 
 		wait 0.05;
 	}
+	*/
 }
 
 onPlayerConnect()

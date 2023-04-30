@@ -8,6 +8,8 @@
 added()
 {
 	self endon( "disconnect" );
+
+	self set_diff();
 }
 
 /*
@@ -269,6 +271,62 @@ difficulty()
 		}
 
 		wait 5;
+	}
+}
+
+/*
+	Sets the bot difficulty.
+*/
+set_diff()
+{
+	rankVar = GetDvarInt( "bots_skill" );
+
+	switch ( rankVar )
+	{
+		case 0:
+			self.pers["bots"]["skill"]["base"] = Round( random_normal_distribution( 3.5, 1.75, 1, 7 ) );
+			break;
+
+		case 8:
+			break;
+
+		case 9:
+			self.pers["bots"]["skill"]["base"] = randomIntRange( 1, 7 );
+			self.pers["bots"]["skill"]["aim_time"] = 0.05 * randomIntRange( 1, 20 );
+			self.pers["bots"]["skill"]["init_react_time"] = 50 * randomInt( 100 );
+			self.pers["bots"]["skill"]["reaction_time"] = 50 * randomInt( 100 );
+			self.pers["bots"]["skill"]["no_trace_ads_time"] = 50 * randomInt( 100 );
+			self.pers["bots"]["skill"]["no_trace_look_time"] = 50 * randomInt( 100 );
+			self.pers["bots"]["skill"]["remember_time"] = 50 * randomInt( 100 );
+			self.pers["bots"]["skill"]["fov"] = randomFloatRange( -1, 1 );
+
+			randomNum = randomIntRange( 500, 25000 );
+			self.pers["bots"]["skill"]["dist_start"] = randomNum;
+			self.pers["bots"]["skill"]["dist_max"] = randomNum * 2;
+
+			self.pers["bots"]["skill"]["spawn_time"] = 0.05 * randomInt( 20 );
+			self.pers["bots"]["skill"]["help_dist"] = randomIntRange( 500, 25000 );
+			self.pers["bots"]["skill"]["semi_time"] = randomFloatRange( 0.05, 1 );
+			self.pers["bots"]["skill"]["shoot_after_time"] = randomFloatRange( 0.05, 1 );
+			self.pers["bots"]["skill"]["aim_offset_time"] = randomFloatRange( 0.05, 1 );
+			self.pers["bots"]["skill"]["aim_offset_amount"] = randomFloatRange( 0.05, 1 );
+			self.pers["bots"]["skill"]["bone_update_interval"] = randomFloatRange( 0.05, 1 );
+			self.pers["bots"]["skill"]["bones"] = "j_head,j_spineupper,j_ankle_ri,j_ankle_le";
+
+			self.pers["bots"]["behavior"]["strafe"] = randomInt( 100 );
+			self.pers["bots"]["behavior"]["nade"] = randomInt( 100 );
+			self.pers["bots"]["behavior"]["sprint"] = randomInt( 100 );
+			self.pers["bots"]["behavior"]["camp"] = randomInt( 100 );
+			self.pers["bots"]["behavior"]["follow"] = randomInt( 100 );
+			self.pers["bots"]["behavior"]["crouch"] = randomInt( 100 );
+			self.pers["bots"]["behavior"]["switch"] = randomInt( 100 );
+			self.pers["bots"]["behavior"]["class"] = randomInt( 100 );
+			self.pers["bots"]["behavior"]["jump"] = randomInt( 100 );
+			break;
+
+		default:
+			self.pers["bots"]["skill"]["base"] = rankVar;
+			break;
 	}
 }
 
