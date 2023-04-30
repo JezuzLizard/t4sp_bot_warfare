@@ -270,6 +270,8 @@ spawned()
 	self thread doBotMovement();
 	self thread walk();
 	self thread target();
+	self thread updateBones();
+	self thread aim();
 
 	self notify( "bot_spawned" );
 }
@@ -576,7 +578,7 @@ target_loop()
 			{
 				if ( !isObjDef )
 				{
-					obj = self createTargetObj( enemy, theTime );
+					obj = self createTargetObj( enemy, theTime, true );
 
 					self.bot.targets[key] = obj;
 				}
@@ -668,9 +670,47 @@ target()
 }
 
 /*
+	Picks a valid bone for enemy
+*/
+
+selectBoneForTarget( enemy, bones )
+{
+	if ( enemy targetIsDog() )
+	{
+		return PickRandom( bones );
+	}
+	else 
+	{
+		return PickRandom( bones );
+	}
+}
+
+/*
+	Updates the bot's target bone
+*/
+updateBones()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	bones = strtok( self.pers["bots"]["skill"]["bones"], "," );
+	waittime = self.pers["bots"]["skill"]["bone_update_interval"];
+
+	for ( ;; )
+	{
+		self waittill_notify_or_timeout( "new_enemy", waittime );
+
+		if ( !isDefined( self.bot.target ) || !isDefined( self.bot.target.entity ) )
+			continue;
+
+		self.bot.target.bone = selectBoneForTarget( self.bot.target.entity, bones );
+	}
+}
+
+/*
 	Creates the base target obj
 */
-createTargetObj( ent, theTime )
+createTargetObj( ent, theTime, isActor )
 {
 	obj = spawnStruct();
 	obj.entity = ent;
@@ -682,6 +722,7 @@ createTargetObj( ent, theTime )
 	obj.trace_time_time = 0;
 	obj.rand = randomInt( 100 );
 	obj.didlook = false;
+	obj.isactor = isDefined( isActor ) && isActor;
 	obj.offset = undefined;
 	obj.bone = undefined;
 	obj.aim_offset = undefined;
@@ -758,6 +799,303 @@ targetObjUpdateNoTrace( obj )
 	obj.no_trace_time += 50;
 	obj.trace_time = 0;
 	obj.didlook = false;
+}
+
+/*
+	Assigns the bot's after target (bot will keep firing at a target after no sight or death)
+*/
+start_bot_after_target( who )
+{
+	self endon( "disconnect" );
+	self endon( "death" );
+
+	self.bot.after_target = who;
+	self.bot.after_target_pos = who.origin;
+
+	self notify( "kill_after_target" );
+	self endon( "kill_after_target" );
+
+	wait self.pers["bots"]["skill"]["shoot_after_time"];
+
+	self.bot.after_target = undefined;
+}
+
+/*
+	Clears the bot's after target
+*/
+clear_bot_after_target()
+{
+	self.bot.after_target = undefined;
+	self notify( "kill_after_target" );
+}
+
+/*
+	This is the bot's main aimming thread. The bot will aim at its targets or a node its going towards. Bots will aim, fire, ads, grenade.
+*/
+aim_loop()
+{
+	aimspeed = self.pers["bots"]["skill"]["aim_time"];
+
+	eyePos = self getEyePos();
+	curweap = self getCurrentWeapon();
+	angles = self GetPlayerAngles();
+	adsAmount = self PlayerADS();
+	adsAimSpeedFact = self.pers["bots"]["skill"]["ads_aimspeed_multi"];
+
+	// reduce aimspeed if ads'ing
+	if ( adsAmount > 0 )
+	{
+		aimspeed *= 1 + adsAimSpeedFact * adsAmount;
+	}
+
+	if ( isDefined( self.bot.target ) && isDefined( self.bot.target.entity ) )
+	{
+		no_trace_time = self.bot.target.no_trace_time;
+		no_trace_look_time = self.pers["bots"]["skill"]["no_trace_look_time"];
+
+		if ( no_trace_time <= no_trace_look_time )
+		{
+			trace_time = self.bot.target.trace_time;
+			last_pos = self.bot.target.last_seen_pos;
+			target = self.bot.target.entity;
+			conedot = 0;
+			isActor = self.bot.target.isactor;
+
+			offset = self.bot.target.offset;
+
+			if ( !isDefined( offset ) )
+				offset = ( 0, 0, 0 );
+
+			aimoffset = self.bot.target.aim_offset;
+
+			if ( !isDefined( aimoffset ) )
+				aimoffset = ( 0, 0, 0 );
+
+			dist = self.bot.target.dist;
+			rand = self.bot.target.rand;
+			no_trace_ads_time = self.pers["bots"]["skill"]["no_trace_ads_time"];
+			reaction_time = self.pers["bots"]["skill"]["reaction_time"];
+			nadeAimOffset = 0;
+
+			bone = self.bot.target.bone;
+
+			if ( !isDefined( bone ) )
+				bone = "j_spineupper";
+
+			if ( self.bot.isfraggingafter || self.bot.issmokingafter )
+				nadeAimOffset = dist / 3000;
+			else if ( curweap != "none" && weaponClass( curweap ) == "grenade" )
+			{
+				if ( true /*maps\mp\gametypes\_missions::getWeaponClass( curweap ) == "weapon_projectile"*/ )
+					nadeAimOffset = dist / 16000;
+				else
+					nadeAimOffset = dist / 3000;
+			}
+
+			if ( no_trace_time && ( !isDefined( self.bot.after_target ) || self.bot.after_target != target ) )
+			{
+				if ( no_trace_time > no_trace_ads_time )
+				{
+					if ( isActor )
+					{
+						//better room to nade? cook time function with dist?
+						if ( !self.bot.isfraggingafter && !self.bot.issmokingafter )
+						{
+							nade = self getValidGrenade();
+
+							if ( isDefined( nade ) && rand <= self.pers["bots"]["behavior"]["nade"] && bulletTracePassed( eyePos, eyePos + ( 0, 0, 75 ), false, self ) && bulletTracePassed( last_pos, last_pos + ( 0, 0, 100 ), false, target ) && dist > level.bots_minGrenadeDistance && dist < level.bots_maxGrenadeDistance && getDvarInt( "bots_play_nade" ) )
+							{
+								time = 0.5;
+
+								if ( nade == "stielhandgranate" )
+									time = 2;
+
+								if ( !isSecondaryGrenade( nade ) )
+									self thread frag( time );
+								else
+									self thread smoke( time );
+
+								self notify( "kill_goal" );
+							}
+						}
+					}
+				}
+				else
+				{
+					if ( self canAds( dist, curweap ) )
+					{
+						if ( !self.bot.is_cur_sniper || !self.pers["bots"]["behavior"]["quickscope"] )
+							self thread pressAds();
+					}
+				}
+
+				self thread bot_lookat( last_pos + ( 0, 0, self getEyeHeight() + nadeAimOffset ), aimspeed );
+				return;
+			}
+
+			if ( trace_time )
+			{
+				if ( isActor )
+				{
+					aimpos = target getTagOrigin( bone );
+
+					if ( !isDefined( aimpos ) )
+						return;
+
+					aimpos += offset;
+					aimpos += aimoffset;
+					aimpos += ( 0, 0, nadeAimOffset );
+
+					conedot = getConeDot( aimpos, eyePos, angles );
+
+					if ( !nadeAimOffset && conedot > 0.999 && lengthsquared( aimoffset ) < 0.05 )
+						self thread bot_lookat( aimpos, 0.05 );
+					else
+						self thread bot_lookat( aimpos, aimspeed, target getAiVelocity(), true );
+				}
+				else
+				{
+					aimpos = target.origin;
+					aimpos += offset;
+					aimpos += aimoffset;
+					aimpos += ( 0, 0, nadeAimOffset );
+
+					conedot = getConeDot( aimpos, eyePos, angles );
+
+					self thread bot_lookat( aimpos, aimspeed );
+				}
+
+				if ( isActor && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && getDvarInt( "bots_play_knife" ) )
+				{
+					self clear_bot_after_target();
+					self thread knife();
+					return;
+				}
+
+				if ( !self canFire( curweap ) || !self isInRange( dist, curweap ) )
+					return;
+
+				canADS = ( self canAds( dist, curweap ) && conedot > 0.75 );
+
+				if ( canADS )
+				{
+					stopAdsOverride = false;
+
+					if ( self.bot.is_cur_sniper )
+					{
+						if ( self.pers["bots"]["behavior"]["quickscope"] && self.bot.last_fire_time != -1 && getTime() - self.bot.last_fire_time < 1000 )
+							stopAdsOverride = true;
+						else
+							self notify( "kill_goal" );
+					}
+
+					if ( !stopAdsOverride )
+						self thread pressAds();
+				}
+
+				if ( trace_time > reaction_time )
+				{
+					if ( ( !canADS || adsAmount >= 1.0 || self InLastStand() || self GetStance() == "prone" ) && ( conedot > 0.99 || dist < level.bots_maxKnifeDistance ) && getDvarInt( "bots_play_fire" ) )
+						self botFire();
+
+					if ( isActor )
+						self thread start_bot_after_target( target );
+				}
+
+				return;
+			}
+		}
+	}
+
+	if ( isDefined( self.bot.after_target ) )
+	{
+		nadeAimOffset = 0;
+		last_pos = self.bot.after_target_pos;
+		dist = DistanceSquared( self.origin, last_pos );
+
+		if ( self.bot.isfraggingafter || self.bot.issmokingafter )
+			nadeAimOffset = dist / 3000;
+		else if ( curweap != "none" && weaponClass( curweap ) == "grenade" )
+		{
+			if ( true /*maps\mp\gametypes\_missions::getWeaponClass( curweap ) == "weapon_projectile"*/ )
+				nadeAimOffset = dist / 16000;
+			else
+				nadeAimOffset = dist / 3000;
+		}
+
+		aimpos = last_pos + ( 0, 0, self getEyeHeight() + nadeAimOffset );
+		conedot = getConeDot( aimpos, eyePos, angles );
+
+		self thread bot_lookat( aimpos, aimspeed );
+
+		if ( !self canFire( curweap ) || !self isInRange( dist, curweap ) )
+			return;
+
+		canADS = ( self canAds( dist, curweap ) && conedot > 0.75 );
+
+		if ( canADS )
+		{
+			stopAdsOverride = false;
+
+			if ( self.bot.is_cur_sniper )
+			{
+				if ( self.pers["bots"]["behavior"]["quickscope"] && self.bot.last_fire_time != -1 && getTime() - self.bot.last_fire_time < 1000 )
+					stopAdsOverride = true;
+				else
+					self notify( "kill_goal" );
+			}
+
+			if ( !stopAdsOverride )
+				self thread pressAds();
+		}
+
+		if ( ( !canADS || adsAmount >= 1.0 || self InLastStand() || self GetStance() == "prone" ) && ( conedot > 0.95 || dist < level.bots_maxKnifeDistance ) && getDvarInt( "bots_play_fire" ) )
+			self botFire();
+
+		return;
+	}
+
+	if ( self.bot.next_wp != -1 && isDefined( level.waypoints[self.bot.next_wp].angles ) && false )
+	{
+		forwardPos = anglesToForward( level.waypoints[self.bot.next_wp].angles ) * 1024;
+
+		self thread bot_lookat( eyePos + forwardPos, aimspeed );
+	}
+	else if ( isDefined( self.bot.script_aimpos ) )
+	{
+		self thread bot_lookat( self.bot.script_aimpos, aimspeed );
+	}
+	else
+	{
+		lookat = undefined;
+
+		if ( self.bot.second_next_wp != -1 && !self.bot.issprinting && !self.bot.climbing )
+			lookat = level.waypoints[self.bot.second_next_wp].origin;
+		else if ( isDefined( self.bot.towards_goal ) )
+			lookat = self.bot.towards_goal;
+
+		if ( isDefined( lookat ) )
+			self thread bot_lookat( lookat + ( 0, 0, self getEyeHeight() ), aimspeed );
+	}
+}
+
+/*
+	This is the bot's main aimming thread. The bot will aim at its targets or a node its going towards. Bots will aim, fire, ads, grenade.
+*/
+aim()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		wait 0.05;
+
+		if ( level.intermission || self.bot.isfrozen )
+			continue;
+
+		self aim_loop();
+	}
 }
 
 /*
