@@ -992,3 +992,8 @@ getRandomGoal()
 {
 	return PickRandom( level.waypointsInPlayableArea ).origin;
 }
+
+targetIsDog()
+{
+	return isDefined( self.targetname ) && self.targetname == "zombie_dog";
+}

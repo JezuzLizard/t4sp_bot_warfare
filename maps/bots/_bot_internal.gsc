@@ -269,6 +269,7 @@ spawned()
 
 	self thread doBotMovement();
 	self thread walk();
+	self thread target();
 
 	self notify( "bot_spawned" );
 }
@@ -443,6 +444,320 @@ isInRange( dist, curweap )
 canAds( dist, curweap )
 {
 	return true;
+}
+
+/*
+	The main target thread, will update the bot's main target. Will auto target enemy players and handle script targets.
+*/
+target_loop()
+{
+	myEye = self GetEyePos();
+	theTime = getTime();
+	myAngles = self GetPlayerAngles();
+	myFov = self.pers["bots"]["skill"]["fov"];
+	bestTargets = [];
+	bestTime = 2147483647;
+	rememberTime = self.pers["bots"]["skill"]["remember_time"];
+	initReactTime = self.pers["bots"]["skill"]["init_react_time"];
+	hasTarget = isDefined( self.bot.target );
+	adsAmount = self PlayerADS();
+	adsFovFact = self.pers["bots"]["skill"]["ads_fov_multi"];
+
+	if ( hasTarget && !isDefined( self.bot.target.entity ) )
+	{
+		self.bot.target = undefined;
+		hasTarget = false;
+	}
+
+	// reduce fov if ads'ing
+	if ( adsAmount > 0 )
+	{
+		myFov *= 1 - adsFovFact * adsAmount;
+	}
+
+	enemies = GetAISpeciesArray("axis", "all");
+
+	enemycount = enemies.size;
+
+	for ( i = -1; i < enemycount; i++ )
+	{
+		obj = undefined;
+
+		if ( i == -1 )
+		{
+			if ( !isDefined( self.bot.script_target ) )
+				continue;
+
+			ent = self.bot.script_target;
+			key = ent getEntityNumber() + "";
+			daDist = distanceSquared( self.origin, ent.origin );
+			obj = self.bot.targets[key];
+			isObjDef = isDefined( obj );
+			entOrigin = ent.origin;
+
+			if ( isDefined( self.bot.script_target_offset ) )
+				entOrigin += self.bot.script_target_offset;
+
+			if ( bulletTracePassed( myEye, entOrigin, false, ent ) )
+			{
+				if ( !isObjDef )
+				{
+					obj = self createTargetObj( ent, theTime );
+					obj.offset = self.bot.script_target_offset;
+
+					self.bot.targets[key] = obj;
+				}
+
+				self targetObjUpdateTraced( obj, daDist, ent, theTime, true );
+			}
+			else
+			{
+				if ( !isObjDef )
+					continue;
+
+				self targetObjUpdateNoTrace( obj );
+
+				if ( obj.no_trace_time > rememberTime )
+				{
+					self.bot.targets[key] = undefined;
+					continue;
+				}
+			}
+		}
+		else
+		{
+			enemy = enemies[i];
+
+			key = enemy getEntityNumber() + "";
+			obj = self.bot.targets[key];
+			daDist = distanceSquared( self.origin, enemy.origin );
+			isObjDef = isDefined( obj );
+
+			targetHead = undefined;
+			targetAnkleLeft = undefined;
+			targetAnkleRight = undefined;
+
+			if ( enemy targetIsDog() )
+			{
+				targetHead = enemy getTagOrigin( "j_head" );
+				targetAnkleLeft = enemy getTagOrigin( "j_ankle_le" );
+				targetAnkleRight = enemy getTagOrigin( "j_ankle_ri" );
+			}
+			else 
+			{
+				targetHead = enemy getTagOrigin( "j_head" );
+				targetAnkleLeft = enemy getTagOrigin( "j_ankle_le" );
+				targetAnkleRight = enemy getTagOrigin( "j_ankle_ri" );
+			}
+
+			traceHead = bulletTrace( myEye, targetHead, false, enemy );
+			traceAnkleLeft = bulletTrace( myEye, targetAnkleLeft, false, enemy );
+			traceAnkleRight = bulletTrace( myEye, targetAnkleRight, false, enemy );
+
+			canTargetEnemy = ( ( sightTracePassed( myEye, targetHead, false, enemy ) ||
+			            sightTracePassed( myEye, targetAnkleLeft, false, enemy ) ||
+			            sightTracePassed( myEye, targetAnkleRight, false, enemy ) )
+
+			        && ( ( traceHead["fraction"] >= 1.0 || traceHead["surfacetype"] == "glass" ) ||
+			            ( traceAnkleLeft["fraction"] >= 1.0 || traceAnkleLeft["surfacetype"] == "glass" ) ||
+			            ( traceAnkleRight["fraction"] >= 1.0 || traceAnkleRight["surfacetype"] == "glass" ) )
+
+			        && ( getConeDot( enemy.origin, self.origin, myAngles ) >= myFov ||
+			            ( isObjDef && obj.trace_time ) ) );
+
+			if ( isDefined( self.bot.target_this_frame ) && self.bot.target_this_frame == enemy )
+			{
+				self.bot.target_this_frame = undefined;
+
+				canTargetEnemy = true;
+			}
+
+			if ( canTargetEnemy )
+			{
+				if ( !isObjDef )
+				{
+					obj = self createTargetObj( enemy, theTime );
+
+					self.bot.targets[key] = obj;
+				}
+
+				self targetObjUpdateTraced( obj, daDist, enemy, theTime, false );
+			}
+			else
+			{
+				if ( !isObjDef )
+					continue;
+
+				self targetObjUpdateNoTrace( obj );
+
+				if ( obj.no_trace_time > rememberTime )
+				{
+					self.bot.targets[key] = undefined;
+					continue;
+				}
+			}
+		}
+
+		if ( !isdefined( obj ) )
+			continue;
+
+		if ( theTime - obj.time < initReactTime )
+			continue;
+
+		timeDiff = theTime - obj.trace_time_time;
+
+		if ( timeDiff < bestTime )
+		{
+			bestTargets = [];
+			bestTime = timeDiff;
+		}
+
+		if ( timeDiff == bestTime )
+			bestTargets[key] = obj;
+	}
+
+	if ( hasTarget && isDefined( bestTargets[self.bot.target.entity getEntityNumber() + ""] ) )
+		return;
+
+	closest = 2147483647;
+	toBeTarget = undefined;
+
+	bestKeys = getArrayKeys( bestTargets );
+
+	for ( i = bestKeys.size - 1; i >= 0; i-- )
+	{
+		theDist = bestTargets[bestKeys[i]].dist;
+
+		if ( theDist > closest )
+			continue;
+
+		closest = theDist;
+		toBeTarget = bestTargets[bestKeys[i]];
+	}
+
+	beforeTargetID = -1;
+	newTargetID = -1;
+
+	if ( hasTarget && isDefined( self.bot.target.entity ) )
+		beforeTargetID = self.bot.target.entity getEntityNumber();
+
+	if ( isDefined( toBeTarget ) && isDefined( toBeTarget.entity ) )
+		newTargetID = toBeTarget.entity getEntityNumber();
+
+	if ( beforeTargetID != newTargetID )
+	{
+		self.bot.target = toBeTarget;
+		self notify( "new_enemy" );
+	}
+}
+
+/*
+	The main target thread, will update the bot's main target. Will auto target enemy players and handle script targets.
+*/
+target()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		wait 0.05;
+
+		self target_loop();
+	}
+}
+
+/*
+	Creates the base target obj
+*/
+createTargetObj( ent, theTime )
+{
+	obj = spawnStruct();
+	obj.entity = ent;
+	obj.last_seen_pos = ( 0, 0, 0 );
+	obj.dist = 0;
+	obj.time = theTime;
+	obj.trace_time = 0;
+	obj.no_trace_time = 0;
+	obj.trace_time_time = 0;
+	obj.rand = randomInt( 100 );
+	obj.didlook = false;
+	obj.offset = undefined;
+	obj.bone = undefined;
+	obj.aim_offset = undefined;
+	obj.aim_offset_base = undefined;
+
+	return obj;
+}
+
+/*
+	Updates the target object's difficulty missing aim, inaccurate shots
+*/
+updateAimOffset( obj )
+{
+	if ( !isDefined( obj.aim_offset_base ) )
+	{
+		diffAimAmount = self.pers["bots"]["skill"]["aim_offset_amount"];
+
+		if ( diffAimAmount > 0 )
+			obj.aim_offset_base = ( randomFloatRange( 0 - diffAimAmount, diffAimAmount ),
+			        randomFloatRange( 0 - diffAimAmount, diffAimAmount ),
+			        randomFloatRange( 0 - diffAimAmount, diffAimAmount ) );
+		else
+			obj.aim_offset_base = ( 0, 0, 0 );
+	}
+
+	aimDiffTime = self.pers["bots"]["skill"]["aim_offset_time"] * 1000;
+	objCreatedFor = obj.trace_time;
+
+	if ( objCreatedFor >= aimDiffTime )
+		offsetScalar = 0;
+	else
+		offsetScalar = 1 - objCreatedFor / aimDiffTime;
+
+	obj.aim_offset = obj.aim_offset_base * offsetScalar;
+}
+
+/*
+	Updates the target object to be traced Has LOS
+*/
+targetObjUpdateTraced( obj, daDist, ent, theTime, isScriptObj )
+{
+	distClose = self.pers["bots"]["skill"]["dist_start"];
+	distClose *= self.bot.cur_weap_dist_multi;
+	distClose *= distClose;
+
+	distMax = self.pers["bots"]["skill"]["dist_max"];
+	distMax *= self.bot.cur_weap_dist_multi;
+	distMax *= distMax;
+
+	timeMulti = 1;
+
+	if ( !isScriptObj )
+	{
+		if ( daDist > distMax )
+			timeMulti = 0;
+		else if ( daDist > distClose )
+			timeMulti = 1 - ( ( daDist - distClose ) / ( distMax - distClose ) );
+	}
+
+	obj.no_trace_time = 0;
+	obj.trace_time += int( 50 * timeMulti );
+	obj.dist = daDist;
+	obj.last_seen_pos = ent.origin;
+	obj.trace_time_time = theTime;
+
+	self updateAimOffset( obj );
+}
+
+/*
+	Updates the target object to be not traced No LOS
+*/
+targetObjUpdateNoTrace( obj )
+{
+	obj.no_trace_time += 50;
+	obj.trace_time = 0;
+	obj.didlook = false;
 }
 
 /*
