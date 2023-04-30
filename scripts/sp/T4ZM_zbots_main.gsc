@@ -495,8 +495,8 @@ spawn_bots()
 		bot.action_queue[ "combat" ] = [];
 		bot.action_queue[ "movement" ] = [];
 		bot.action_queue[ "look" ] = [];
-		//bot register_action_queue_actions();
-		//bot thread bot_think();
+		bot register_action_queue_actions();
+		bot thread bot_think();
 		bot_count++;
 	}
 }
@@ -521,19 +521,19 @@ bot_think()
 			}
 		}
 
-		group_name = "movement";
+		//group_name = "movement";
 
-		self bot_action_think( group_name );
+		//self bot_action_think( group_name );
 
-		group_name = "look";
+		//group_name = "look";
 
-		self bot_action_think( group_name );
+		//self bot_action_think( group_name );
 
-		group_name = "combat";
+		//group_name = "combat";
 
 		//self scripts\sp\bots\bot_target_common::bot_pick_target();
 
-		self bot_action_think( group_name );
+		//self bot_action_think( group_name );
 
 		group_name = "objective";
 
@@ -558,7 +558,7 @@ watch_debris_objectives( zombie_debris )
 
 	for ( debris_opened_count = 0; debris_opened_count < zombie_debris.size; debris_opened_count++ )
 	{
-		level waittill( "door_opened", debris, player );
+		level waittill( "debris_opened", debris, player );
 		free_bot_objective( "door", debris.id );
 	}
 }
@@ -587,6 +587,8 @@ store_powerups_dropped()
 {
 	level endon( "end_game" );
 
+	level thread free_powerups_dropped();
+
 	level.zbots_powerups = [];
 	level.zbots_powerups_targeted_for_grab = [];
 	id = 0;
@@ -599,6 +601,7 @@ store_powerups_dropped()
 		}
 		powerup.id = id;
 		add_possible_bot_objective( "powerup", id, true, powerup );
+		level thread objective_think( "powerup", id );
 		scripts\sp\bots\bot_utility::assign_priority_to_powerup( powerup );
 		level.zbots_powerups = scripts\sp\bots\bot_utility::sort_array_by_priority_field( level.zbots_powerups, powerup );
 		id++;

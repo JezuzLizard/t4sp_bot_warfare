@@ -90,14 +90,6 @@ wait_for_action_completion( group_name, action_name )
 	level endon( "end_game" );
 
 	result = self waittill_any_return( action_name + "_complete", action_name + "_cancel", action_name + "_postpone" );
-	if ( !isDefined( result ) )
-	{
-		return;
-	}
-	if ( result == "disconnect" )
-	{
-		return;
-	}
 	if ( ( result == action_name + "_complete" ) )
 	{
 		self.zbot_actions_in_queue[ group_name ][ action_name ].postponed = false;
@@ -108,7 +100,7 @@ wait_for_action_completion( group_name, action_name )
 	}
 	else if ( result == action_name + "_cancel" )
 	{
-		self.zbot_actions_in_queue[ group_name ][ action_name].postponed = false;
+		self.zbot_actions_in_queue[ group_name ][ action_name ].postponed = false;
 		self.zbot_actions_in_queue[ group_name ][ action_name ].queued = false;
 		self.zbot_actions_in_queue[ group_name ][ action_name ].completed = false;
 		self.action_queue[ group_name ][ 0 ] = undefined;
@@ -123,6 +115,8 @@ wait_for_action_completion( group_name, action_name )
 		self.action_queue[ group_name ] = array_insert( self.action_queue[ group_name ], postponed_action, 1 );
 		self thread [[ self.action_queue[ group_name ][ 0 ].on_postpone_func ]]();
 	}
+
+	self notify( action_name + "_end_think" );
 
 	self.zbot_actions_in_queue[ group_name ][ action_name ].is_current = false;
 }

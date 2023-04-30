@@ -758,13 +758,18 @@ bot_part_priority()
 
 bot_grab_powerup()
 {
+	self endon( "powerup_end_think" );
+
 	if ( !isDefined( self.available_powerups ) || self.available_powerups.size <= 0 )
 	{
 		return;
 	}
 	set_bot_global_shared_objective_owner_by_reference( "powerup", self.available_powerups[ 0 ], self );
-	self.target_pos = self.available_powerups[ 0 ].target_ent.origin;
-	self.should_try_to_move_to_objective = true;
+	while ( true )
+	{
+		self SetScriptGoal( self.available_powerups[ 0 ].target_ent.origin );
+		wait 0.05;
+	}
 }
 
 bot_powerup_process_order()
@@ -774,7 +779,7 @@ bot_powerup_process_order()
 
 bot_should_grab_powerup()
 {
-	if ( !isDefined( level.zbot_objective_glob[ "powerup" ] ) || !isDefined( level.zbot_objective_glob[ "powerup" ].active_objectives ) || level.zbot_objective_glob[ "powerup" ].active_objectives.size <= 0 )
+	if ( level.zbot_objective_glob[ "powerup" ].active_objectives.size <= 0 )
 	{
 		return false;
 	}
@@ -786,30 +791,30 @@ bot_should_grab_powerup()
 	obj_keys = getArrayKeys( powerup_objectives );
 	for ( i = 0; i < powerup_objectives.size; i++ )
 	{
-		if ( isDefined( powerup_objectives[ obj_keys[ i ] ].owner ) )
+		obj = powerup_objectives[ obj_keys[ i ] ];
+		powerup = obj.target_ent;
+		if ( isDefined( obj.owner ) )
 		{
 			continue;
 		}
-		time_left = powerup_objectives[ obj_keys[ i ] ].target_ent.time_left_until_timeout;
-		distance_required_to_reach_powerup = distanceSquared( powerup_objectives[ obj_keys[ i ] ].target_ent.origin, self.origin );
+		time_left = powerup.time_left_until_timeout;
+		distance_required_to_reach_powerup = distanceSquared( powerup.origin, self.origin );
 		if ( distance_required_to_reach_powerup > BOT_SPEED_WHILE_SPRINTING_SQ * time_left )
 		{
 			continue;
 		}
-		if ( distanceSquared( powerup_objectives[ obj_keys[ i ] ].target_ent.origin, self.origin ) > MAX_DISTANCE_SQ )
+		if ( distanceSquared( powerup.origin, self.origin ) > MAX_DISTANCE_SQ )
 		{
 			continue;
 		}
-		if ( !findPath( self.origin, powerup_objectives[ obj_keys[ i ] ].target_ent.origin ) )
+		if ( !isDefined( generatePath( self.origin, powerup.origin, self.team, false ) ) )
 		{
 			continue;
 		}
-		self.available_powerups[ self.available_powerups.size ] = powerup_objectives[ obj_keys[ i ] ];
+		self.available_powerups[ self.available_powerups.size ] = obj;
 	}
 
 	//TODO: Sort powerups by priority here
-	time_left = undefined;
-	distance_required_to_reach_powerup = undefined;
 	return self.available_powerups.size > 0;
 }
 

@@ -183,3 +183,25 @@ free_bot_objective( objective_group, id )
 
 	objective = undefined;
 }
+
+objective_think( objective_group, id )
+{
+	active_objectives = level.zbot_global_shared_objective_glob[ objective_group ].active_objectives;
+
+	objective = active_objectives[ "obj_id_" + id ];
+
+	objective_exists = isDefined( objective );
+	assert( objective_exists, "Objective with " + id + " id number does not point to a objective in group " + objective_group );
+	if ( !objective_exists )
+	{
+		return;
+	}
+
+	level endon( "end_obj_think_" + objective.target_ent getEntityNumber() );
+
+	while ( true )
+	{
+		if ( )
+		wait 0.05;
+	}
+}
