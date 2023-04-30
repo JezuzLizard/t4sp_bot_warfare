@@ -15,11 +15,12 @@ test_bot_pathing()
 	if ( !getDvarInt( "player_debug_bots" ) )
 		return;
 
-	level waittill( "connected", player );
+	player = undefined;
 
-	while ( !player is_bot() )
+	while ( !isDefined( player ) || player is_bot() )
 		level waittill( "connected", player );
 
+	PrintConsole( "player has CMDS! " + player.playername );
 	player endon( "disconnect" );
 
 	while ( true )
