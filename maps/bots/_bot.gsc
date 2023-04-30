@@ -185,6 +185,21 @@ onDisconnectAll()
 }
 
 /*
+	When any client spawns
+*/
+onSpawnedAll()
+{
+	self endon( "disconnect" );
+
+	for ( ;; )
+	{
+		self waittill( "spawned_player" );
+
+		self.lastSpawnTime = getTime();
+	}
+}
+
+/*
 	When a bot disconnects.
 */
 onDisconnect()
@@ -206,6 +221,8 @@ connected()
 
 	level.players[level.players.size] = self;
 	self thread onDisconnectAll();
+
+	self thread onSpawnedAll();
 
 	if ( !self is_bot() )
 		return;

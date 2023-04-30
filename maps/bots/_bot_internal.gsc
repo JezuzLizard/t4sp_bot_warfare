@@ -42,7 +42,6 @@ added()
 	self.pers["bots"]["behavior"]["follow"] = 50; // percentage of how often the bot will follow
 	self.pers["bots"]["behavior"]["crouch"] = 10; // percentage of how often the bot will crouch
 	self.pers["bots"]["behavior"]["switch"] = 1; // percentage of how often the bot will switch weapons
-	self.pers["bots"]["behavior"]["class"] = 1; // percentage of how often the bot will change classes
 	self.pers["bots"]["behavior"]["jump"] = 100; // percentage of how often the bot will jumpshot and dropshot
 
 	self.pers["bots"]["behavior"]["quickscope"] = false; // is a quickscoper
@@ -73,7 +72,6 @@ resetBotVars()
 	self.bot.towards_goal = undefined;
 	self.bot.astar = [];
 	self.bot.stop_move = false;
-	self.bot.greedy_path = false;
 	self.bot.climbing = false;
 	self.bot.wantsprint = false;
 	self.bot.last_next_wp = -1;
@@ -146,6 +144,20 @@ onPlayerSpawned()
 }
 
 /*
+	Is the weap a sniper
+*/
+IsWeapSniper( weap )
+{
+	if ( weap == "none" )
+		return false;
+
+	if ( false /*maps\mp\gametypes\_missions::getWeaponClass( weap ) != "weapon_sniper"*/ )
+		return false;
+
+	return true;
+}
+
+/*
 	When the bot changes weapon.
 */
 onWeaponChange()
@@ -169,7 +181,7 @@ onWeaponChange()
 
 		self.bot.is_cur_full_auto = WeaponIsFullAuto( newWeapon );
 		self.bot.cur_weap_dist_multi = SetWeaponDistMulti( newWeapon );
-		self.bot.is_cur_sniper = /* IsWeapSniper( newWeapon ) */ false;
+		self.bot.is_cur_sniper = IsWeapSniper( newWeapon );
 	}
 }
 
@@ -273,27 +285,293 @@ spawned()
 	self thread target_cleanup();
 	self thread updateBones();
 	self thread aim();
+	self thread watchHoldBreath();
+	self thread stance();
+	self thread onNewEnemy();
+	self thread check_reload();
 
 	self notify( "bot_spawned" );
+}
+
+/*
+	When the bot gets a new enemy.
+*/
+onNewEnemy()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		self waittill( "new_enemy" );
+
+		if ( !isDefined( self.bot.target ) )
+			continue;
+
+		if ( !isDefined( self.bot.target.entity ) || !self.bot.target.isactor )
+			continue;
+
+		if ( self.bot.target.didlook )
+			continue;
+
+		self thread watchToLook();
+	}
+}
+
+/*
+	Bots will jump or dropshot their enemy player.
+*/
+watchToLook()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+	self endon( "new_enemy" );
+
+	for ( ;; )
+	{
+		while ( isDefined( self.bot.target ) && self.bot.target.didlook )
+			wait 0.05;
+
+		while ( isDefined( self.bot.target ) && self.bot.target.no_trace_time )
+			wait 0.05;
+
+		if ( !isDefined( self.bot.target ) )
+			break;
+
+		self.bot.target.didlook = true;
+
+		if ( self.bot.isfrozen )
+			continue;
+
+		if ( self.bot.target.dist > level.bots_maxShotgunDistance * 2 )
+			continue;
+
+		if ( self.bot.target.dist <= level.bots_maxKnifeDistance )
+			continue;
+
+		if ( !self canFire( self getCurrentWEapon() ) )
+			continue;
+
+		if ( !self isInRange( self.bot.target.dist, self getCurrentWEapon() ) )
+			continue;
+
+		if ( self.bot.is_cur_sniper )
+			continue;
+
+		if ( randomInt( 100 ) > self.pers["bots"]["behavior"]["jump"] )
+			continue;
+
+		if ( !getDvarInt( "bots_play_jumpdrop" ) )
+			continue;
+
+		if ( isDefined( self.bot.jump_time ) && getTime() - self.bot.jump_time <= 5000 )
+			continue;
+
+		if ( self.bot.target.rand <= self.pers["bots"]["behavior"]["strafe"] )
+		{
+			if ( self getStance() != "stand" )
+				continue;
+
+			self.bot.jump_time = getTime();
+			self jump();
+		}
+		else
+		{
+			if ( getConeDot( self.bot.target.last_seen_pos, self.origin, self getPlayerAngles() ) < 0.8 || self.bot.target.dist <= level.bots_noADSDistance )
+				continue;
+
+			self.bot.jump_time = getTime();
+			self prone();
+			self notify( "kill_goal" );
+			wait 2.5;
+			self crouch();
+		}
+	}
+}
+
+/*
+	Bots will update its needed stance according to the nodes on the level. Will also allow the bot to sprint when it can.
+*/
+stance_loop()
+{
+	self.bot.climbing = false;
+
+	if ( self.bot.isfrozen )
+		return;
+
+	toStance = "stand";
+
+	if ( self.bot.next_wp != -1 )
+		toStance = level.waypoints[self.bot.next_wp].type;
+
+	if ( !isDefined( toStance ) )
+		toStance = "stand";
+
+	if ( toStance == "stand" && randomInt( 100 ) <= self.pers["bots"]["behavior"]["crouch"] )
+		toStance = "crouch";
+
+	if ( toStance == "climb" )
+	{
+		self.bot.climbing = true;
+		toStance = "stand";
+	}
+
+	if ( toStance != "stand" && toStance != "crouch" && toStance != "prone" )
+		toStance = "crouch";
+
+	if ( toStance == "stand" )
+		self stand();
+	else if ( toStance == "crouch" )
+		self crouch();
+	else
+		self prone();
+
+	curweap = self getCurrentWeapon();
+	time = getTime();
+	chance = self.pers["bots"]["behavior"]["sprint"];
+
+	if ( time - self.lastSpawnTime < 5000 )
+		chance *= 2;
+
+	if ( isDefined( self.bot.script_goal ) && DistanceSquared( self.origin, self.bot.script_goal ) > 256 * 256 )
+		chance *= 2;
+
+	if ( toStance != "stand" || self.bot.isreloading || self.bot.issprinting || self.bot.isfraggingafter || self.bot.issmokingafter )
+		return;
+
+	if ( randomInt( 100 ) > chance )
+		return;
+
+	if ( isDefined( self.bot.target ) && self canFire( curweap ) && self isInRange( self.bot.target.dist, curweap ) )
+		return;
+
+	if ( self.bot.sprintendtime != -1 && time - self.bot.sprintendtime < 2000 )
+		return;
+
+	if ( !isDefined( self.bot.towards_goal ) || DistanceSquared( self.origin, physicsTrace( self getEyePos(), self getEyePos() + anglesToForward( self getPlayerAngles() ) * 1024, false, undefined ) ) < level.bots_minSprintDistance || getConeDot( self.bot.towards_goal, self.origin, self GetPlayerAngles() ) < 0.75 )
+		return;
+
+	self thread sprint();
+	self thread setBotWantSprint();
+}
+
+/*
+	Stops the sprint fix when goal is completed
+*/
+setBotWantSprint()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	self notify( "setBotWantSprint" );
+	self endon( "setBotWantSprint" );
+
+	self.bot.wantsprint = true;
+
+	self waittill_notify_or_timeout( "kill_goal", 10 );
+
+	self.bot.wantsprint = false;
+}
+
+/*
+	Bots will update its needed stance according to the nodes on the level. Will also allow the bot to sprint when it can.
+*/
+stance()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		self waittill_either( "finished_static_waypoints", "new_static_waypoint" );
+
+		self stance_loop();
+	}
+}
+
+/*
+	Bot will wait until firing.
+*/
+check_reload()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		self waittill_notify_or_timeout( "weapon_fired", 5 );
+		self thread reload_thread();
+	}
+}
+
+/*
+	Bot will reload after firing if needed.
+*/
+reload_thread()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+	self endon( "weapon_fired" );
+
+	wait 2.5;
+
+	if ( isDefined( self.bot.target ) || self.bot.isreloading || self.bot.isfraggingafter || self.bot.issmokingafter || self.bot.isfrozen )
+		return;
+
+	cur = self getCurrentWEapon();
+
+	if ( cur == "" || cur == "none" )
+		return;
+
+	if ( IsWeaponClipOnly( cur ) || !self GetWeaponAmmoStock( cur ) )
+		return;
+
+	maxsize = WeaponClipSize( cur );
+	cursize = self GetWeaponammoclip( cur );
+
+	if ( cursize / maxsize < 0.5 )
+		self thread reload();
 }
 
 target_cleanup()
 {
 	self endon( "disconnect" );
 	self endon( "zombified" );
+
 	while ( true )
 	{
 		wait 10;
 		curTime = getTime();
 		targetKeys = getArrayKeys( self.bot.targets );
+
 		for ( i = 0; i < targetKeys.size; i++ )
 		{
 			obj = self.bot.targets[ targetKeys[ i ] ];
+
 			if ( ( curTime - obj.time ) > 30000 )
 			{
 				self.bot.targets[ targetKeys[ i ] ] = undefined;
 			}
 		}
+	}
+}
+
+/*
+	The hold breath thread.
+*/
+watchHoldBreath()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		wait 1;
+
+		if ( self.bot.isfrozen )
+			continue;
+
+		self holdbreath( self playerADS() > 0 );
 	}
 }
 
@@ -458,6 +736,17 @@ canFire( curweap )
 */
 isInRange( dist, curweap )
 {
+	if ( curweap == "none" )
+		return false;
+
+	weapclass = weaponClass( curweap );
+
+	if ( weapclass == "spread" && dist > level.bots_maxShotgunDistance )
+		return false;
+
+	if ( curweap == "m2_flamethrower_mp" && dist > level.bots_maxShotgunDistance )
+		return false;
+
 	return true;
 }
 
@@ -466,6 +755,25 @@ isInRange( dist, curweap )
 */
 canAds( dist, curweap )
 {
+	if ( curweap == "none" )
+		return false;
+
+	if ( !getDvarInt( "bots_play_ads" ) )
+		return false;
+
+	far = level.bots_noADSDistance;
+
+	if ( self hasPerk( "specialty_bulletaccuracy" ) )
+		far *= 1.4;
+
+	if ( dist < far )
+		return false;
+
+	weapclass = ( weaponClass( curweap ) );
+
+	if ( weapclass == "spread" || weapclass == "grenade" )
+		return false;
+
 	return true;
 }
 
@@ -1583,6 +1891,17 @@ frag( time )
 }
 
 /*
+	Bot will hold breath if true or not
+*/
+holdbreath( what )
+{
+	if ( what )
+		self botAction( "+holdbreath" );
+	else
+		self botAction( "-holdbreath" );
+}
+
+/*
 	Bot will hold the 'smoke' button for a time.
 */
 smoke( time )
@@ -1679,6 +1998,21 @@ pressFire( time )
 		wait time;
 
 	self botAction( "-fire" );
+}
+
+/*
+	Bot will reload.
+*/
+reload()
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	self notify( "bot_reload" );
+	self endon( "bot_reload" );
+
+	self botAction( "+reload" );
+	wait 0.05;
+	self botAction( "-reload" );
 }
 
 /*
