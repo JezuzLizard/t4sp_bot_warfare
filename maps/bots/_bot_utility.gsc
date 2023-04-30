@@ -69,15 +69,15 @@ BotSetStance( stance )
 	switch ( stance )
 	{
 		case "stand":
-			//self scripts\sp\bots\_bot_internal::stand();
+			self maps\bots\_bot_internal::stand();
 			break;
 
 		case "crouch":
-			//self scripts\sp\bots\_bot_internal::crouch();
+			self maps\bots\_bot_internal::crouch();
 			break;
 
 		case "prone":
-			//self scripts\sp\bots\_bot_internal::prone();
+			self maps\bots\_bot_internal::prone();
 			break;
 	}
 }
@@ -95,7 +95,7 @@ BotChangeToWeapon( weap )
 */
 BotPressAttack( time )
 {
-	self scripts\sp\bots\_bot_internal::pressFire( time );
+	self maps\bots\_bot_internal::pressFire( time );
 }
 
 /*
@@ -103,7 +103,7 @@ BotPressAttack( time )
 */
 BotPressADS( time )
 {
-	self scripts\sp\bots\_bot_internal::pressADS( time );
+	self maps\bots\_bot_internal::pressADS( time );
 }
 
 /*
@@ -111,7 +111,7 @@ BotPressADS( time )
 */
 BotPressUse( time )
 {
-	self scripts\sp\bots\_bot_internal::use( time );
+	self maps\bots\_bot_internal::use( time );
 }
 
 /*
@@ -119,7 +119,7 @@ BotPressUse( time )
 */
 BotPressFrag( time )
 {
-	self scripts\sp\bots\_bot_internal::frag( time );
+	self maps\bots\_bot_internal::frag( time );
 }
 
 /*
@@ -127,7 +127,7 @@ BotPressFrag( time )
 */
 BotPressSmoke( time )
 {
-	self scripts\sp\bots\_bot_internal::smoke( time );
+	self maps\bots\_bot_internal::smoke( time );
 }
 
 /*
@@ -378,12 +378,7 @@ getValidTube()
 getValidGrenade()
 {
 	grenadeTypes = [];
-	grenadeTypes[grenadeTypes.size] = "frag_grenade_mp";
-	grenadeTypes[grenadeTypes.size] = "molotov_mp";
-	grenadeTypes[grenadeTypes.size] = "m8_white_smoke_mp";
-	grenadeTypes[grenadeTypes.size] = "tabun_gas_mp";
-	grenadeTypes[grenadeTypes.size] = "sticky_grenade_mp";
-	grenadeTypes[grenadeTypes.size] = "signal_flare_mp";
+	grenadeTypes[grenadeTypes.size] = "stielhandgranate";
 
 	possibles = [];
 
@@ -417,7 +412,7 @@ PickRandom( arr )
 */
 isSecondaryGrenade( gnade )
 {
-	return ( gnade == "tabun_gas_mp" || gnade == "m8_white_smoke_mp" || gnade == "signal_flare_mp" );
+	return ( gnade == "zombie_cymbal_monkey" );
 }
 
 /*
@@ -655,128 +650,57 @@ float( num )
 	return GetDvarFloat( "temp_dvar_bot_util" );
 }
 
-/*
-	Tokenizes a string (strtok has limits...) (only one char tok)
-*/
-tokenizeLine( line, tok )
+get_nodes_in_playable_area()
 {
-	tokens = [];
+	total_nodes = getAllNodes();
+	filtered_nodes = [];
 
-	token = "";
-
-	for ( i = 0; i < line.size; i++ )
+	for ( i = 0; i < total_nodes.size; i++ )
 	{
-		c = line[i];
-
-		if ( c == tok )
+		if ( !is_point_in_playable_area( total_nodes[ i ].origin ) )
 		{
-			tokens[tokens.size] = token;
-			token = "";
 			continue;
 		}
 
-		token += c;
-	}
+		filtered_nodes[ filtered_nodes.size ] = total_nodes[ i ];
 
-	tokens[tokens.size] = token;
-
-	return tokens;
-}
-
-/*
-	Parses tokens into a waypoint obj
-*/
-parseTokensIntoWaypoint( tokens )
-{
-	waypoint = spawnStruct();
-
-	orgStr = tokens[0];
-	orgToks = strtok( orgStr, " " );
-	waypoint.origin = ( float( orgToks[0] ), float( orgToks[1] ), float( orgToks[2] ) );
-
-	childStr = tokens[1];
-	childToks = strtok( childStr, " " );
-	waypoint.children = [];
-
-	for ( j = 0; j < childToks.size; j++ )
-		waypoint.children[j] = int( childToks[j] );
-
-	type = tokens[2];
-	waypoint.type = type;
-
-	anglesStr = tokens[3];
-
-	if ( isDefined( anglesStr ) && anglesStr != "" )
-	{
-		anglesToks = strtok( anglesStr, " " );
-		waypoint.angles = ( float( anglesToks[0] ), float( anglesToks[1] ), float( anglesToks[2] ) );
-	}
-
-	return waypoint;
-}
-
-/*
-	Returns an array of each line
-*/
-getWaypointLinesFromFile( filename )
-{
-	result = spawnStruct();
-	result.lines = [];
-
-	waypointStr = fileRead( filename );
-
-	if ( !isDefined( waypointStr ) )
-		return result;
-
-	line = "";
-
-	for ( i = 0; i < waypointStr.size; i++ )
-	{
-		c = waypointStr[i];
-
-		if ( c == "\n" )
+		if ( ( i % 10 ) == 0 )
 		{
-			result.lines[result.lines.size] = line;
-
-			line = "";
-			continue;
+			wait 0.05;
 		}
-
-		line += c;
 	}
 
-	result.lines[result.lines.size] = line;
-
-	return result;
+	return filtered_nodes;
 }
 
-/*
-	Read from file a csv, and returns an array of waypoints
-*/
-readWpsFromFile( mapname )
+is_point_in_playable_area( point )
 {
-	waypoints = [];
-	filename = "waypoints/" + mapname + "_wp.csv";
+	playable_area = getentarray( "playable_area", "targetname" );
 
-	res = getWaypointLinesFromFile( filename );
+	in_playable_area = false;
 
-	if ( !res.lines.size )
-		return waypoints;
-
-	PrintConsole( "Attempting to read waypoints from " + filename + "\n" );
-
-	waypointCount = int( res.lines[0] );
-
-	for ( i = 1; i <= waypointCount; i++ )
+	if ( !isDefined( playable_area ) || playable_area.size < 1 )
 	{
-		tokens = tokenizeLine( res.lines[i], "," );
-
-		waypoint = parseTokensIntoWaypoint( tokens );
-
-		waypoints[i - 1] = waypoint;
+		in_playable_area = true;
 	}
 
-	return waypoints;
+	temp_ent = spawn( "script_origin", point );
+
+	if ( !in_playable_area )
+	{
+		for ( p = 0; p < playable_area.size; p++ )
+		{
+			if ( temp_ent isTouching( playable_area[ p ] ) )
+			{
+				in_playable_area = true;
+				break;
+			}
+		}
+	}
+
+	temp_ent delete ();
+
+	return in_playable_area;
 }
 
 /*
@@ -784,143 +708,10 @@ readWpsFromFile( mapname )
 */
 load_waypoints()
 {
-	mapname = getDvar( "mapname" );
-
-	level.waypointCount = 0;
-	level.waypoints = [];
-
-	wps = readWpsFromFile( mapname );
-
-	if ( wps.size )
-	{
-		level.waypoints = wps;
-		PrintConsole( "Loaded " + wps.size + " waypoints from file.\n" );
-	}
-	else
-	{
-		if ( level.waypoints.size )
-			PrintConsole( "Loaded " + level.waypoints.size + " waypoints from script.\n" );
-	}
-
+	level.waypoints = GetAllNodes();
 	level.waypointCount = level.waypoints.size;
 
-	for ( i = 0; i < level.waypointCount; i++ )
-	{
-		if ( !isDefined( level.waypoints[i].children ) || !isDefined( level.waypoints[i].children.size ) )
-			level.waypoints[i].children = [];
-
-		if ( !isDefined( level.waypoints[i].origin ) )
-			level.waypoints[i].origin = ( 0, 0, 0 );
-
-		if ( !isDefined( level.waypoints[i].type ) )
-			level.waypoints[i].type = "crouch";
-
-		level.waypoints[i].childCount = undefined;
-	}
-}
-
-/*
-	Is bot near any of the given waypoints
-*/
-nearAnyOfWaypoints( dist, waypoints )
-{
-	dist *= dist;
-
-	for ( i = 0; i < waypoints.size; i++ )
-	{
-		waypoint = level.waypoints[waypoints[i]];
-
-		if ( DistanceSquared( waypoint.origin, self.origin ) > dist )
-			continue;
-
-		return true;
-	}
-
-	return false;
-}
-
-/*
-	Returns the waypoints that are near
-*/
-waypointsNear( waypoints, dist )
-{
-	dist *= dist;
-
-	answer = [];
-
-	for ( i = 0; i < waypoints.size; i++ )
-	{
-		wp = level.waypoints[waypoints[i]];
-
-		if ( DistanceSquared( wp.origin, self.origin ) > dist )
-			continue;
-
-		answer[answer.size] = waypoints[i];
-	}
-
-	return answer;
-}
-
-/*
-	Returns nearest waypoint of waypoints
-*/
-getNearestWaypointOfWaypoints( waypoints )
-{
-	answer = undefined;
-	closestDist = 2147483647;
-
-	for ( i = 0; i < waypoints.size; i++ )
-	{
-		waypoint = level.waypoints[waypoints[i]];
-		thisDist = DistanceSquared( self.origin, waypoint.origin );
-
-		if ( isDefined( answer ) && thisDist > closestDist )
-			continue;
-
-		answer = waypoints[i];
-		closestDist = thisDist;
-	}
-
-	return answer;
-}
-
-/*
-	Returns all waypoints of type
-*/
-getWaypointsOfType( type )
-{
-	answer = [];
-
-	for ( i = 0; i < level.waypointCount; i++ )
-	{
-		wp = level.waypoints[i];
-
-		if ( type == "camp" )
-		{
-			if ( wp.type != "crouch" )
-				continue;
-
-			if ( wp.children.size != 1 )
-				continue;
-		}
-		else if ( type != wp.type )
-			continue;
-
-		answer[answer.size] = i;
-	}
-
-	return answer;
-}
-
-/*
-	Returns the waypoint for index
-*/
-getWaypointForIndex( i )
-{
-	if ( !isDefined( i ) )
-		return undefined;
-
-	return level.waypoints[i];
+	level.waypointsInPlayableArea = get_nodes_in_playable_area();
 }
 
 /*
@@ -1076,197 +867,6 @@ HeapRemove()
 }
 
 /*
-	A heap invarient comparitor, used for the astar's nodes, wanting the node with the lowest f to be first in the heap.
-*/
-ReverseHeapAStar( item, item2 )
-{
-	return item.f < item2.f;
-}
-
-/*
-	Will linearly search for the nearest waypoint to pos that has a direct line of sight.
-*/
-GetNearestWaypointWithSight( pos )
-{
-	candidate = undefined;
-	dist = 2147483647;
-
-	for ( i = 0; i < level.waypointCount; i++ )
-	{
-		if ( !bulletTracePassed( pos + ( 0, 0, 15 ), level.waypoints[i].origin + ( 0, 0, 15 ), false, undefined ) )
-			continue;
-
-		curdis = DistanceSquared( level.waypoints[i].origin, pos );
-
-		if ( curdis > dist )
-			continue;
-
-		dist = curdis;
-		candidate = i;
-	}
-
-	return candidate;
-}
-
-/*
-	Will linearly search for the nearest waypoint
-*/
-GetNearestWaypoint( pos )
-{
-	candidate = undefined;
-	dist = 2147483647;
-
-	for ( i = 0; i < level.waypointCount; i++ )
-	{
-		curdis = DistanceSquared( level.waypoints[i].origin, pos );
-
-		if ( curdis > dist )
-			continue;
-
-		dist = curdis;
-		candidate = i;
-	}
-
-	return candidate;
-}
-
-/*
-	Modified Pezbot astar search.
-	This makes use of sets for quick look up and a heap for a priority queue instead of simple lists which require to linearly search for elements everytime.
-	It is also modified to make paths with bots already on more expensive and will try a less congested path first. Thus spliting up the bots onto more paths instead of just one (the smallest).
-*/
-AStarSearch( start, goal, team, greedy_path )
-{
-	open = NewHeap( ::ReverseHeapAStar ); //heap
-	openset = [];//set for quick lookup
-	closed = [];//set for quick lookup
-
-
-	startWp = getNearestWaypoint( start );
-
-	if ( !isDefined( startWp ) )
-		return [];
-
-	_startwp = undefined;
-
-	if ( !bulletTracePassed( start + ( 0, 0, 15 ), level.waypoints[startWp].origin + ( 0, 0, 15 ), false, undefined ) )
-		_startwp = GetNearestWaypointWithSight( start );
-
-	if ( isDefined( _startwp ) )
-		startWp = _startwp;
-
-
-	goalWp = getNearestWaypoint( goal );
-
-	if ( !isDefined( goalWp ) )
-		return [];
-
-	_goalWp = undefined;
-
-	if ( !bulletTracePassed( goal + ( 0, 0, 15 ), level.waypoints[goalWp].origin + ( 0, 0, 15 ), false, undefined ) )
-		_goalwp = GetNearestWaypointWithSight( goal );
-
-	if ( isDefined( _goalwp ) )
-		goalWp = _goalwp;
-
-
-	node = spawnStruct();
-	node.g = 0; //path dist so far
-	node.h = DistanceSquared( level.waypoints[startWp].origin, level.waypoints[goalWp].origin ); //herustic, distance to goal for path finding
-	node.f = node.h + node.g; // combine path dist and heru, use reverse heap to sort the priority queue by this attru
-	node.index = startWp;
-	node.parent = undefined; //we are start, so we have no parent
-
-	//push node onto queue
-	openset[node.index + ""] = node;
-	open HeapInsert( node );
-
-	//while the queue is not empty
-	while ( open.data.size )
-	{
-		//pop bestnode from queue
-		bestNode = open.data[0];
-		open HeapRemove();
-		openset[bestNode.index + ""] = undefined;
-		wp = level.waypoints[bestNode.index];
-
-		//check if we made it to the goal
-		if ( bestNode.index == goalWp )
-		{
-			path = [];
-
-			while ( isDefined( bestNode ) )
-			{
-				//construct path
-				path[path.size] = bestNode.index;
-
-				bestNode = bestNode.parent;
-			}
-
-			return path;
-		}
-
-		//for each child of bestnode
-		for ( i = wp.children.size - 1; i >= 0; i-- )
-		{
-			child = wp.children[i];
-			childWp = level.waypoints[child];
-
-			penalty = 1;
-
-			// have certain types of nodes more expensive
-			if ( childWp.type == "climb" || childWp.type == "prone" )
-				penalty += 4;
-
-			//calc the total path we have took
-			newg = bestNode.g + DistanceSquared( wp.origin, childWp.origin ) * penalty; //bots on same team's path are more expensive
-
-			//check if this child is in open or close with a g value less than newg
-			inopen = isDefined( openset[child + ""] );
-
-			if ( inopen && openset[child + ""].g <= newg )
-				continue;
-
-			inclosed = isDefined( closed[child + ""] );
-
-			if ( inclosed && closed[child + ""].g <= newg )
-				continue;
-
-			node = undefined;
-
-			if ( inopen )
-				node = openset[child + ""];
-			else if ( inclosed )
-				node = closed[child + ""];
-			else
-				node = spawnStruct();
-
-			node.parent = bestNode;
-			node.g = newg;
-			node.h = DistanceSquared( childWp.origin, level.waypoints[goalWp].origin );
-			node.f = node.g + node.h;
-			node.index = child;
-
-			//check if in closed, remove it
-			if ( inclosed )
-				closed[child + ""] = undefined;
-
-			//check if not in open, add it
-			if ( !inopen )
-			{
-				open HeapInsert( node );
-				openset[child + ""] = node;
-			}
-		}
-
-		//done with children, push onto closed
-		closed[bestNode.index + ""] = bestNode;
-	}
-
-	return [];
-}
-
-/*
 	Returns the natural log of x using harmonic series.
 */
 Log( x )
@@ -1382,5 +982,13 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 */
 inLastStand()
 {
-	return ( isDefined( self.lastStand ) && self.lastStand );
+	return self maps\_laststand::player_is_in_laststand();
+}
+
+/*
+	getRandomGoal
+*/
+getRandomGoal()
+{
+	return PickRandom( level.waypointsInPlayableArea ).origin;
 }

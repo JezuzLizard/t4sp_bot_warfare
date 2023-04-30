@@ -1,13 +1,13 @@
 #include common_scripts\utility;
 #include maps\_utility;
-#include scripts\sp\bots\_bot_utility;
+#include maps\bots\_bot_utility;
 
 /*
 	Initiates the whole bot scripts.
 */
 init()
 {
-	level.bw_VERSION = "2.1.0";
+	level.bw_VERSION = "z0.1";
 
 	if ( getDvar( "bots_main" ) == "" )
 		setDvar( "bots_main", true );
@@ -15,7 +15,7 @@ init()
 	if ( !getDvarInt( "bots_main" ) )
 		return;
 
-	//thread load_waypoints(); //Don't call for now
+	thread load_waypoints();
 	thread hook_callbacks();
 
 	if ( getDvar( "bots_main_GUIDs" ) == "" )
@@ -144,8 +144,8 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 {
 	if ( self is_bot() )
 	{
-		//self scripts\sp\bots\_bot_internal::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
-		self scripts\sp\bots\_bot_script::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
+		self maps\bots\_bot_internal::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
+		self maps\bots\_bot_script::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
 	}
 
 	self [[level.prevCallbackPlayerDamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, timeOffset );
@@ -222,8 +222,8 @@ connected()
 		self thread added();
 	}
 
-	self thread scripts\sp\bots\_bot_internal::connected();
-	self thread scripts\sp\bots\_bot_script::connected();
+	self thread maps\bots\_bot_internal::connected();
+	self thread maps\bots\_bot_script::connected();
 
 	level.bots[level.bots.size] = self;
 	self thread onDisconnect();
@@ -258,8 +258,8 @@ added()
 {
 	self endon( "disconnect" );
 
-	self thread scripts\sp\bots\_bot_internal::added();
-	//self thread scripts\sp\bots\_bot_script::added();
+	self thread maps\bots\_bot_internal::added();
+	self thread maps\bots\_bot_script::added();
 }
 
 /*
