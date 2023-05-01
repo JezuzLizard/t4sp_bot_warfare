@@ -268,6 +268,15 @@ ClearScriptGoal()
 }
 
 /*
+	Returns whether the bot is at it's goal
+*/
+
+AtScriptGoal()
+{
+	return distanceSquared( self.bot.script_goal, self.origin ) <= self.bot.script_goal_dist * self.bot.script_goal_dist;
+}
+
+/*
 	Sets the aim position of the bot
 */
 SetScriptAimPos( pos )
@@ -1009,11 +1018,22 @@ targetIsGibbed()
 	return isDefined( self.gibbed ) && self.gibbed;
 }
 
-quickSort(array, compare_func) 
+swap_array_index( array, index1, index2 )
 {
-	return quickSortMid(array, 0, array.size - 1, compare_func);     
+	temp = array[ index1 ];
+	array[ index1 ] = array[ index2 ];
+	array[ index2 ] = temp;
+	return array;
 }
 
+quickSort(array, compare_func, compare_func_arg1) 
+{
+	return quickSortMid( array, 0, array.size - 1, compare_func, compare_func_arg1 );     
+}
+
+/*
+	Quicksort algorithm copied from T7 modified for T4
+*/
 quickSortMid( array, start, end, compare_func, compare_func_arg1 )
 {
 	i = start;
@@ -1033,9 +1053,9 @@ quickSortMid( array, start, end, compare_func, compare_func_arg1 )
 			while ( ![[ compare_func ]](array[k], pivot, compare_func_arg1) && k >= start && k >= i)
 				k--;
 			if (k > i)
-				array = swap(array, i, k);
+				array = swap_array_index(array, i, k);
 		}
-		array = swap(array, start, k);
+		array = swap_array_index(array, start, k);
 		array = quickSortMid(array, start, k - 1, compare_func);
 		array = quickSortMid(array, k + 1, end, compare_func);
 	}
@@ -1098,9 +1118,11 @@ assign_priority_to_powerup( powerup )
 	{
 		LOW_AMMO_THRESHOLD = 0.3;
 		
-		for ( i = 0; i < level.players.size; i++ )
+		players = getPlayers();
+
+		for ( i = 0; i < players.size; i++ )
 		{
-			weapons = level.players[ i ] getWeaponsListPrimaries();
+			weapons = players[ i ] getWeaponsListPrimaries();
 			for ( j = 0; j < weapons.size; j++ )
 			{
 				if ( self getWeaponAmmoStock( weapons[ j ] ) <= int( weaponmaxammo( weapons[ j ] ) *  LOW_AMMO_THRESHOLD ) )

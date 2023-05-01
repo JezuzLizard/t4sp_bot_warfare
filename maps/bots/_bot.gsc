@@ -112,33 +112,30 @@ init()
 	level thread onPlayerConnect();
 	level thread handleBots();
 
-	maps\_bot_script::register_bot_action( "objective", "powerup", maps\_bot_script::bot_grab_powerup, 
-												 				   maps\_bot_script::bot_powerup_process_order, 
-																   maps\_bot_script::bot_should_grab_powerup, 
-																   maps\_bot_script::bot_check_complete_grab_powerup, 
-												 				   maps\_bot_script::bot_set_complete_grab_powerup, 
-												 				   maps\_bot_script::bot_powerup_on_completion, 
-																   maps\_bot_script::bot_powerup_should_cancel, 
-												 				   maps\_bot_script::bot_powerup_on_cancel, 
-												 				   maps\_bot_script::bot_powerup_should_postpone,
-																   maps\_bot_script::bot_powerup_on_postpone, 
-												 				   maps\_bot_script::bot_powerup_priority );
+	maps\bots\_bot_script::register_bot_action( "objective", "powerup", maps\bots\_bot_script::bot_grab_powerup, 
+												 						maps\bots\_bot_script::bot_powerup_process_order, 
+																		maps\bots\_bot_script::bot_powerup_init, 
+																		maps\bots\_bot_script::bot_powerup_post_think, 
+																		maps\bots\_bot_script::bot_should_grab_powerup, 
+																		maps\bots\_bot_script::bot_check_complete_grab_powerup, 
+																		maps\bots\_bot_script::bot_powerup_should_cancel, 
+												 						maps\bots\_bot_script::bot_powerup_should_postpone,
+												 						maps\bots\_bot_script::bot_powerup_priority );
 
-	maps\_bot_script::register_bot_action( "objective", "revive",  maps\_bot_script::bot_revive_player, 
-																   maps\_bot_script::bot_revive_process_order, 
-																   maps\_bot_script::bot_should_revive_player, 
-																   maps\_bot_script::bot_check_complete_revive_player, 
-																   maps\_bot_script::bot_set_complete_revive_player, 
-																   maps\_bot_script::bot_revive_player_on_completion, 
-																   maps\_bot_script::bot_revive_player_should_cancel, 
-																   maps\_bot_script::bot_revive_player_on_cancel, 
-																   maps\_bot_script::bot_revive_player_should_postpone, 
-																   maps\_bot_script::bot_revive_player_on_postpone, 
-																   maps\_bot_script::bot_revive_player_priority );
-	maps\_bot_script::register_bot_objective( "powerup" );
+	maps\bots\_bot_script::register_bot_action( "objective", "revive",  maps\bots\_bot_script::bot_revive_player, 
+																 		maps\bots\_bot_script::bot_revive_process_order, 
+																		maps\bots\_bot_script::bot_revive_player_init, 
+																		maps\bots\_bot_script::bot_revive_player_post_think, 
+																		maps\bots\_bot_script::bot_should_revive_player, 
+																		maps\bots\_bot_script::bot_check_complete_revive_player, 
+																		maps\bots\_bot_script::bot_revive_player_should_cancel, 
+																		maps\bots\_bot_script::bot_revive_player_should_postpone, 
+																		maps\bots\_bot_script::bot_revive_player_priority );
+	maps\bots\_bot_script::register_bot_objective( "powerup" );
+	maps\bots\_bot_script::register_bot_objective( "revive" );
 
-	level thread maps\_bot_script::store_powerups_dropped();
-	level thread maps\_bot_script::watch_for_downed_players();
+	level thread maps\bots\_bot_script::store_powerups_dropped();
+	level thread maps\bots\_bot_script::watch_for_downed_players();
 }
 
 /*
@@ -179,6 +176,22 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 	self [[level.prevCallbackPlayerDamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
 }
 
+on_actor_spawned()
+{
+	if ( isDefined( level.prevCallbackActorSpawned ) )
+	{
+		self [[ level.prevCallbackActorSpawned ]]();
+	}
+}
+
+on_actor_killed( eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, iTimeOffset )
+{
+	if ( isDefined( level.prevCallbackActorKilled ) )
+	{
+		self [[ level.prevCallbackActorKilled ]]( eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, iTimeOffset );
+	}
+}
+
 /*
 	Starts the callbacks.
 */
@@ -187,6 +200,10 @@ hook_callbacks()
 	wait 0.05;
 	level.prevCallbackPlayerDamage = level.callbackPlayerDamage;
 	level.callbackPlayerDamage = ::onPlayerDamage;
+	level.prevCallbackActorSpawned = level.callbackActorSpawned;
+	level.callbackActorSpawned = ::on_actor_spawned;
+	level.prevCallbackActorKilled = level.callbackActorKilled;
+	level.callbackActorKilled = ::on_actor_killed;
 }
 
 /*
