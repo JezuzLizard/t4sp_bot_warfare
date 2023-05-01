@@ -1008,3 +1008,182 @@ targetIsGibbed()
 {
 	return isDefined( self.gibbed ) && self.gibbed;
 }
+
+quickSort(array, compare_func) 
+{
+	return quickSortMid(array, 0, array.size - 1, compare_func);     
+}
+
+quickSortMid( array, start, end, compare_func, compare_func_arg1 )
+{
+	i = start;
+	k = end;
+
+	if(!IsDefined(compare_func))
+		compare_func = ::quicksort_compare;
+
+	if (end - start >= 1)
+	{
+		pivot = array[start];
+
+		while (k > i)
+		{
+			while ( [[ compare_func ]](array[i], pivot, compare_func_arg1) && i <= end && k > i)
+				i++;
+			while ( ![[ compare_func ]](array[k], pivot, compare_func_arg1) && k >= start && k >= i)
+				k--;
+			if (k > i)
+				array = swap(array, i, k);
+		}
+		array = swap(array, start, k);
+		array = quickSortMid(array, start, k - 1, compare_func);
+		array = quickSortMid(array, k + 1, end, compare_func);
+	}
+	else
+		return array;
+	
+	return array;
+}
+
+quicksort_compare(left, right, compare_func_arg1)
+{
+	return left <= right;
+}
+
+quicksort_compare_priority_field(left, right, compare_func_arg1)
+{
+	return left.priority <= right.priority;
+}
+
+quicksort_compare_pers_value_highest_to_lowest( left, right, compare_func_arg1 )
+{
+	return left.pers[ compare_func_arg1 ] <= right.pers[ compare_func_arg1 ];
+}
+
+quicksort_compare_pers_value_lowest_to_highest( left, right, compare_func_arg1 )
+{
+	return left.pers[ compare_func_arg1 ] >= right.pers[ compare_func_arg1 ];
+}
+
+assign_priority_to_powerup( powerup )
+{
+	if ( !isDefined( powerup ) )
+	{
+		return;
+	}
+	priority = 0;
+	powerup_is_max_ammo = false;
+	switch ( powerup.powerup_name )
+	{
+		case "zombie_blood":
+		case "insta_kill":
+		case "nuke":
+			priority += 2;
+			break;
+		case "full_ammo":
+			powerup_is_max_ammo = true;
+			priority += 1;
+			break;
+		case "double_points":
+		case "fire_sale":
+		case "carpenter":
+		case "free_perk":
+			priority += 1;
+			break;
+		default:
+			priority += 0;
+			break;
+	}
+	if ( powerup_is_max_ammo )
+	{
+		LOW_AMMO_THRESHOLD = 0.3;
+		
+		for ( i = 0; i < level.players.size; i++ )
+		{
+			weapons = level.players[ i ] getWeaponsListPrimaries();
+			for ( j = 0; j < weapons.size; j++ )
+			{
+				if ( self getWeaponAmmoStock( weapons[ j ] ) <= int( weaponmaxammo( weapons[ j ] ) *  LOW_AMMO_THRESHOLD ) )
+				{
+					priority += 1;
+					break;
+				}
+			}
+			if ( priority > 3 )
+			{
+				break;
+			}
+		}
+	}
+
+	if ( maps\_laststand::player_any_player_in_laststand() )
+	{
+		switch ( powerup.powerup_name )
+		{
+			case "zombie_blood":
+			case "insta_kill":
+			case "nuke":
+				priority += 1;
+				break;
+			case "full_ammo":
+				priority += 0;
+				break;
+			case "double_points":
+			case "fire_sale":
+			case "carpenter":
+			case "free_perk":
+				priority -= 1;
+				break;
+			default:
+				priority += 0;
+				break;
+		}
+	}
+
+	if ( powerup.time_left_until_timeout < 10.0 )
+	{
+		priority += 1;
+	}
+	if ( priority < 0 )
+	{
+		priority = 0;
+	}
+	powerup.priority = priority;
+}
+
+sort_array_by_priority_field( array, item )
+{
+	if ( isDefined( item ) )
+	{
+		array[ array.size ] = item;
+	}
+
+	array = quickSort( array, ::quicksort_compare_priority_field, undefined );
+	return array;
+}
+
+get_players_sorted_by_highest_pers_value( pers_name )
+{
+	players = getPlayers();
+
+	if ( !isDefined( players[ 0 ].pers[ pers_name ] ) )
+	{
+		assertMsg( "Uninitialized pers value: " + pers_name );
+		return undefined;
+	}
+
+	return quickSort( players, ::quicksort_compare_pers_value_highest_to_lowest, pers_name );
+}
+
+get_players_sorted_by_lowest_pers_value( pers_name )
+{
+	players = getPlayers();
+
+	if ( !isDefined( players[ 0 ].pers[ pers_name ] ) )
+	{
+		assertMsg( "Uninitialized pers value: " + pers_name );
+		return undefined;
+	}
+
+	return quickSort( players, ::quicksort_compare_pers_value_lowest_to_highest, pers_name );
+}
