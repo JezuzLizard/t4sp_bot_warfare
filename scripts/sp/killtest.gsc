@@ -20,6 +20,8 @@ init()
 	if ( getDvar( "killtest_bot_debug" ) == "" )
 		setDvar( "killtest_bot_debug", 1 );
 
+	setDvar( "bots_skill", 7 );
+
 	level thread addBot();
 
 	level thread setupcallbacks();

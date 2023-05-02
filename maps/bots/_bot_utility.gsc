@@ -131,6 +131,15 @@ BotPressSmoke( time )
 }
 
 /*
+	Bot jumps
+*/
+
+BotJump()
+{
+	self maps\bots\_bot_internal::jump();
+}
+
+/*
 	Returns the bot's random assigned number.
 */
 BotGetRandom()
@@ -273,7 +282,11 @@ ClearScriptGoal()
 
 AtScriptGoal()
 {
-	return distanceSquared( self.bot.script_goal, self.origin ) <= self.bot.script_goal_dist * self.bot.script_goal_dist;
+	if ( !isDefined( self.bot.script_goal ) )
+	{
+		return false;
+	}
+	return distanceSquared( self.origin, self.bot.script_goal ) <= ( self.bot.script_goal_dist * self.bot.script_goal_dist );
 }
 
 /*
@@ -1125,7 +1138,7 @@ assign_priority_to_powerup( powerup )
 			weapons = players[ i ] getWeaponsListPrimaries();
 			for ( j = 0; j < weapons.size; j++ )
 			{
-				if ( self getWeaponAmmoStock( weapons[ j ] ) <= int( weaponmaxammo( weapons[ j ] ) *  LOW_AMMO_THRESHOLD ) )
+				if ( players[ i ] getWeaponAmmoStock( weapons[ j ] ) <= int( weaponmaxammo( weapons[ j ] ) *  LOW_AMMO_THRESHOLD ) )
 				{
 					priority += 1;
 					break;

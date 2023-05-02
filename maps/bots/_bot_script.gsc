@@ -23,9 +23,12 @@ connected()
 	self thread onBotSpawned();
 	self thread onSpawned();
 	self thread initialize_bot_actions_queue();
+	self thread bot_valid_pump();
+	//self thread bot_objective_inaccessible_pump();
 
 	self.on_powerup_grab_func = ::bot_on_powerup_grab;
 	self.on_revive_success_func = ::bot_on_revive_success;
+	self.path_inaccessible = false;
 }
 
 /*
@@ -409,6 +412,7 @@ add_possible_bot_objective( objective_group, target_ent, is_global_shared )
 	objective_struct.target_ent = target_ent;
 	objective_struct.owner = undefined;
 	objective_struct.is_objective = true;
+	objective_struct.bad = false;
 
 	level.zbot_objective_glob[ objective_group ].active_objectives[ "obj_id_" + id ] = objective_struct;
 }
@@ -437,7 +441,17 @@ get_all_objectives_for_group( objective_group )
 	return level.zbot_objective_glob[ objective_group ].active_objectives;
 }
 
-set_objective_for_bot( objective_group, ent )
+bot_get_objective()
+{
+	return self.zbot_current_objective;
+}
+
+bot_has_objective()
+{
+	return isDefined( self.zbot_current_objective );
+}
+
+bot_set_objective( objective_group, ent )
 {
 	if ( !isDefined( ent ) )
 	{
@@ -534,6 +548,36 @@ set_bot_objective_blocked_by_objective( primary_objective_group, primary_ent, bl
 	}
 }
 
+bot_is_objective_owner( objective_group, ent )
+{
+	if ( !isDefined( ent ) )
+	{
+		assertMsg( "Ent is undefined" );
+		return false;
+	}
+
+	id = ent getEntityNumber();
+	
+	active_objectives = level.zbot_objective_glob[ objective_group ].active_objectives;
+
+	objective = active_objectives[ "obj_id_" + id ];
+
+	objective_exists = isDefined( objective );
+	assert( objective_exists, "Objective with " + id + " id number does not point to a objective in group " + objective_group );
+	if ( !objective_exists )
+	{
+		return false;
+	}
+
+	assert( objective.is_global_shared, "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group );
+	if ( !objective.is_global_shared )
+	{
+		return false;
+	}
+
+	return isDefined( objective.owner ) && objective.owner == self;
+}
+
 set_bot_global_shared_objective_owner_by_ent( objective_group, ent, new_owner )
 {
 	if ( !isDefined( ent ) )
@@ -581,6 +625,30 @@ set_bot_global_shared_objective_owner_by_reference( objective_group, objective, 
 	objective.owner = new_owner;
 }
 
+mark_objective_bad( objective_group, ent )
+{
+	if ( !isDefined( ent ) )
+	{
+		assertMsg( "Ent is undefined" );
+		return;
+	}
+
+	id = ent getEntityNumber();
+
+	active_objectives = level.zbot_objective_glob[ objective_group ].active_objectives;
+
+	objective = active_objectives[ "obj_id_" + id ];
+
+	objective_exists = isDefined( objective );
+	assert( objective_exists, "Objective with " + id + " id number does not point to a objective in group " + objective_group );
+	if ( !objective_exists )
+	{
+		return;
+	}
+
+	objective.bad = true;
+}
+
 free_bot_objective( objective_group, ent )
 {
 	if ( !isDefined( ent ) )
@@ -605,9 +673,9 @@ free_bot_objective( objective_group, ent )
 	players = getPlayers();
 	for ( i = 0; i < players.size; i++ )
 	{
-		if ( players[ i ].pers[ "isBot" ] )
+		if ( isDefined( players[ i ].pers[ "isBot" ] ) && players[ i ].pers[ "isBot" ] )
 		{
-			if ( players[ i ].zbot_current_objective == objective )
+			if ( isDefined( players[ i ].zbot_current_objective ) && players[ i ].zbot_current_objective == objective )
 			{
 				players[ i ].zbot_current_objective = undefined;
 			}
@@ -678,20 +746,22 @@ register_bot_objective_action_for_queue( group_name, action_name )
 
 process_next_queued_action( group_name )
 {
-	if ( self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].queued )
+	if ( self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].is_current )
 	{
 		return;
 	}
 
 	self.action_queue[ group_name ] = self sort_array_by_priority_field( self.action_queue[ group_name ] );
 
-	self [[ self.action_queue[ group_name ][ 0 ].init_func ]]();
+	action_name = self.action_queue[ group_name ][ 0 ].action_name;
 
-	self thread [[ self.action_queue[ group_name ][ 0 ].action ]]();
+	self [[ level.zbots_actions[ group_name ][ action_name ].init_func ]]();
 
-	self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].is_current = true;
+	self thread [[ level.zbots_actions[ group_name ][ action_name ].action ]]();
 
-	self thread wait_for_action_completion( group_name, self.action_queue[ group_name ][ 0 ].action_name );
+	self.zbot_actions_in_queue[ group_name ][ action_name ].is_current = true;
+
+	self thread wait_for_action_completion( group_name, action_name );
 }
 
 wait_for_action_completion( group_name, action_name )
@@ -733,7 +803,7 @@ wait_for_action_completion( group_name, action_name )
 
 	self notify( action_name + "_end_think" );
 
-	self [[ self.action_queue[ group_name ][ 0 ].post_think_func ]]( end_state );
+	self [[ level.zbots_actions[ group_name ][ action_name ].post_think_func ]]( end_state );
 
 	if ( save_action )
 	{
@@ -760,6 +830,13 @@ pick_actions_to_add_to_queue( group_name )
 
 	}
 	*/
+
+	//Reboot the action queue because the last member was deleted which deletes the array
+	if ( !isDefined( self.action_queue ) || !isDefined( self.action_queue[ group_name ] ) )
+	{
+		self.action_queue = [];
+		self.action_queue[ group_name ] = [];
+	}
 
 	if ( !isDefined( self.action_id ) )
 	{
@@ -794,43 +871,45 @@ bot_clear_actions_queue()
 	}	
 }
 
-check_if_action_is_completed_in_group( group_name )
+check_if_action_is_completed_in_group( group_name, action_name )
 {
-	if ( [[ level.zbots_actions[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].check_if_complete_func ]]() )
+	assert( isDefined( level.zbots_actions[ group_name ][ action_name ].check_if_complete_func ) );
+
+	if ( self [[ level.zbots_actions[ group_name ][ action_name ].check_if_complete_func ]]() )
 	{
-		self notify( self.action_queue[ group_name ][ 0 ].action_name + "_complete" );
+		self notify( action_name + "_complete" );
 	}
 }
 
-check_if_action_should_be_postponed_in_group( group_name )
+check_if_action_should_be_postponed_in_group( group_name, action_name )
 {
-	if ( [[ level.zbots_actions[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].should_postpone_func ]]() )
+	if ( self [[ level.zbots_actions[ group_name ][ action_name ].should_postpone_func ]]() )
 	{
-		self notify( self.action_queue[ group_name ][ 0 ].action_name + "_postpone" );
+		self notify( action_name + "_postpone" );
 	}
 }
 
-check_if_action_should_be_canceled_in_group( group_name )
+check_if_action_should_be_canceled_in_group( group_name, action_name )
 {
-	if ( [[ level.zbots_actions[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].should_cancel_func ]]() )
+	if ( self [[ level.zbots_actions[ group_name ][ action_name ].should_cancel_func ]]() )
 	{
-		self notify( self.action_queue[ group_name ][ 0 ].action_name + "_cancel" );
+		self notify( action_name + "_cancel" );
 	}
 }
 
-check_if_action_should_be_postponed_globally( group_name )
+check_if_action_should_be_postponed_globally( group_name, action_name )
 {
-	if ( action_should_be_postponed_global( group_name, self.action_queue[ group_name ][ 0 ].action_name ) )
+	if ( action_should_be_postponed_global( group_name, action_name ) )
 	{
-		self notify( self.action_queue[ group_name ][ 0 ].action_name + "_postpone" );
+		self notify( action_name + "_postpone" );
 	}
 }
 
-check_if_action_should_be_canceled_globally( group_name )
+check_if_action_should_be_canceled_globally( group_name, action_name )
 {
-	if ( action_should_be_canceled_global( group_name, self.action_queue[ group_name ][ 0 ].action_name ) )
+	if ( action_should_be_canceled_global( group_name, action_name ) )
 	{
-		self notify( self.action_queue[ group_name ][ 0 ].action_name + "_cancel" );
+		self notify( action_name + "_cancel" );
 	}
 }
 
@@ -861,7 +940,9 @@ bot_action_think()
 
 	while ( true )
 	{
-		wait 1;
+		wait 0.05;
+		//Wait until the end of the frame so any variables set by _bot_internal in the current frame will have up to date values
+		waittillframeend; 
 
 		group_name = "objective";
 
@@ -869,19 +950,21 @@ bot_action_think()
 
 		//self check_for_forced_action( group_name );
 
-		if ( self.action_queue[ group_name ].size <= 0 )
+		if ( !isDefined( self.action_queue[ group_name ][ 0 ] ) )
 		{
 			continue;
 		}
 
 		self process_next_queued_action( group_name );
 
-		self check_if_action_is_completed_in_group( group_name );
-		self check_if_action_should_be_postponed_in_group( group_name );
-		self check_if_action_should_be_canceled_in_group( group_name );
+		action_name = self.action_queue[ group_name ][ 0 ].action_name;
 
-		self check_if_action_should_be_postponed_globally( group_name );
-		self check_if_action_should_be_canceled_globally( group_name );
+		self check_if_action_is_completed_in_group( group_name, action_name );
+		self check_if_action_should_be_postponed_in_group( group_name, action_name );
+		self check_if_action_should_be_canceled_in_group( group_name, action_name );
+
+		self check_if_action_should_be_postponed_globally( group_name, action_name );
+		self check_if_action_should_be_canceled_globally( group_name, action_name );
 	}
 }
 
@@ -892,6 +975,11 @@ action_should_be_postponed_global( primary_group_name, action_name )
 
 action_should_be_canceled_global( primary_group_name, action_name )
 {
+	obj = self bot_get_objective();
+	if ( self.path_inaccessible || obj.bad )
+	{
+		return true;
+	}
 	return false;
 }
 
@@ -904,15 +992,62 @@ action_should_be_paused_global( primary_group_name, action_name )
 
 bot_grab_powerup()
 {
+	self endon( "disconnect" );
 	self endon( "powerup_end_think" );
+	self endon( "bot_in_invalid_state" );
+	level endon( "end_game" );
 
 	if ( !isDefined( self.available_powerups ) || self.available_powerups.size <= 0 )
 	{
 		return;
 	}
-	set_bot_global_shared_objective_owner_by_ent( "powerup", self.available_powerups[ 0 ].target_ent, self );
 
-	self SetScriptGoal( self.available_powerups[ 0 ].target_ent.origin );
+	powerup_obj = self.available_powerups[ 0 ];
+	powerup_obj_ent = powerup_obj.target_ent;
+
+	set_bot_global_shared_objective_owner_by_ent( "powerup", powerup_obj_ent, self );
+	self bot_set_objective( "powerup", powerup_obj_ent );
+	while ( isDefined( powerup_obj_ent ) && isDefined( powerup_obj ) && self bot_is_objective_owner( "powerup", powerup_obj_ent ) )
+	{
+		wait 1;
+		self ClearScriptAimPos();
+		self SetScriptGoal( powerup_obj_ent.origin );
+
+		result = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+		if ( result != "goal" )
+		{
+			continue;
+		}
+		//Wait to see if the bot was able to grab the powerup
+		wait 0.5;
+		//Check if powerup still exists
+		if ( isDefined( powerup_obj_ent ) )
+		{
+			height_difference = self.origin[ 2 ] - powerup_obj_ent.origin[ 2 ];
+			if ( height_difference < 49 )
+			{
+				self BotJump();
+				wait 0.5;
+				waittillframeend;
+				//Check if bot was able to grab the powerup by jumping
+				if ( self bot_has_objective() || isDefined( powerup_obj_ent ) )
+				{
+					//Mark objective as bad so bots will ignore it from now on
+					powerup_obj.bad = true;
+				}
+			}
+			else 
+			{
+				powerup_obj.bad = true;
+			}
+
+			if ( powerup_obj.bad )
+			{
+				break;
+			}
+		}
+	}
 }
 
 bot_powerup_process_order()
@@ -930,6 +1065,7 @@ bot_powerup_post_think( state )
 	self.successfully_grabbed_powerup = false;
 	self ClearScriptGoal();
 	self ClearScriptAimPos();
+	self clear_objective_for_bot();
 }
 
 bot_should_grab_powerup()
@@ -952,6 +1088,10 @@ bot_should_grab_powerup()
 		{
 			continue;
 		}
+		if ( obj.bad )
+		{
+			continue;
+		}
 		if ( isDefined( obj.owner ) )
 		{
 			continue;
@@ -966,7 +1106,7 @@ bot_should_grab_powerup()
 		{
 			continue;
 		}
-		if ( !isDefined( generatePath( self.origin, powerup.origin, self.team, false ) ) )
+		if ( !isDefined( generatePath( self.origin, powerup.origin, self.team, level.bot_allowed_negotiation_links ) ) )
 		{
 			continue;
 		}
@@ -1010,7 +1150,7 @@ bot_revive_player()
 
 	self endon( "disconnect" );
 	self endon( "revive_end_think" );
-	self endon( "player_downed" );
+	self endon( "bot_in_invalid_state" );
 	level endon( "end_game" );
 
 	player_to_revive_obj = self.available_revives[ 0 ];
@@ -1021,32 +1161,37 @@ bot_revive_player()
 
 	//If player is no longer valid to revive stop trying to revive
 	//If bot doesn't have an objective anymore or the objective has changed stop trying to revive
-	while ( isDefined( player_to_revive ) && isDefined( player_to_revive_obj ) )
+	while ( isDefined( player_to_revive ) && isDefined( player_to_revive_obj ) && self bot_is_objective_owner( "powerup", powerup_obj_ent ) )
 	{
-		wait 0.05;
+		wait 1;
 		//Constantly update the goal just in case the player is moving(T5 or higher only)
 		self ClearScriptAimPos();
-		self SetScriptGoal( player_to_revive.origin, 16 );
+		self SetScriptGoal( player_to_revive.origin, 32 );
 
-		if ( !self AtScriptGoal() )
+		result = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+		//printConsole( result );
+		if ( result != "goal" )
 		{
+			//printConsole( "Bot is not at goal" );
 			continue;
 			//TODO: Add check to see if another player is reviving target player
 			//TODO: Add code to revive player, possibly add the ability to circle revive?
 		}
 		if ( !isDefined( player_to_revive.revivetrigger ) )
 		{
+			self.should_cancel_revive_obj = true;
 			return;
 		}
 		//Check if the bot is reviving the player already and also that the player isn't being revived already
-		if ( player_to_revive.revivetrigger.beingrevived && !self maps\_laststand::is_reviving( player_to_revive ) )
+		if ( player_to_revive.revivetrigger.beingrevived )
 		{
 			continue;
 		}
 
 		SetScriptAimPos( player_to_revive.origin );
 
-		time = 3;
+		time = 3.2;
 		if ( self hasPerk( "specialty_quickrevive" ) )
 		{
 			time /= 2;
@@ -1069,14 +1214,17 @@ bot_revive_process_order()
 
 bot_revive_player_init()
 {
+	self.should_cancel_revive_obj = false;
 	self.successfully_revived_player = false;
 }
 
 bot_revive_player_post_think( state )
 {
+	self.should_cancel_revive_obj = false;
 	self.successfully_revived_player = false;
 	self ClearScriptGoal();
 	self ClearScriptAimPos();
+	self clear_objective_for_bot();
 }
 
 bot_should_revive_player()
@@ -1096,7 +1244,10 @@ bot_should_revive_player()
 		{
 			continue;
 		}
-
+		if ( obj.bad )
+		{
+			continue;
+		}
 		self.available_revives[ self.available_revives.size ] = downed_players_objs[ obj_keys[ i ] ];
 	}
 	return self.available_revives.size > 0;
@@ -1109,7 +1260,14 @@ bot_check_complete_revive_player()
 
 bot_revive_player_should_cancel()
 {
-	return !isDefined( self.available_revives[ 0 ] ) || !isDefined( self.available_revives[ 0 ].target_ent ) || !isDefined( self.available_revives[ 0 ].target_ent.revivetrigger );
+	if ( !isDefined( self.available_revives[ 0 ] )
+		 || !isDefined( self.available_revives[ 0 ].target_ent )
+		 || !isDefined( self.available_revives[ 0 ].target_ent.revivetrigger )
+		 || self.should_cancel_revive_obj )
+	{
+		return true;
+	}
+	return false;
 }
 
 bot_revive_player_should_postpone()
@@ -1132,6 +1290,7 @@ store_powerups_dropped()
 	while ( true )
 	{
 		level waittill( "powerup_dropped", powerup );
+		waittillframeend;
 		if ( !isDefined( powerup ) )
 		{
 			continue;
@@ -1180,6 +1339,77 @@ free_revive_objective_when_needed()
 	}
 
 	free_bot_objective( "revive", self );
+}
+
+bot_valid_pump()
+{
+	level endon( "end_game" );
+
+	obj_sav = undefined;
+
+	while ( true )
+	{
+		obj_sav = self.zbot_current_objective;
+		wait 0.5;
+		if ( !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
+		{
+			if ( isDefined( self ) )
+			{
+				self notify( "bot_in_invalid_state" );
+				self clear_objective_for_bot();
+			}
+			else if ( isDefined( obj_sav ) )
+			{
+				set_bot_global_shared_objective_owner_by_ent( obj_sav.group, obj_sav.target_ent, undefined );
+			}
+
+			while ( isDefined( self ) && !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
+			{
+				wait 0.5;
+			}
+			if ( !isDefined( self ) )
+			{
+				return;
+			}
+		}
+	}
+}
+
+bot_objective_inaccessible_pump()
+{
+	self endon( "disconnect" );
+	level endon( "end_game" );
+
+	while ( true )
+	{
+		invalid_obj = false;
+		wait 0.5;
+		while ( !self bot_has_objective() )
+		{
+			wait 0.5;
+		}
+		
+		while ( self bot_has_objective() )
+		{
+			wait 1;
+			obj = self bot_get_objective();
+			
+			if ( !isDefined( obj ) || !isDefined( obj.target_ent ) )
+			{
+				invalid_obj = true;
+			}
+			else if ( !isDefined( generatePath( self.origin, obj.target_ent.origin, self.team, level.bot_allowed_negotiation_links ) ) )
+			{
+				invalid_obj = true;
+			}
+			if ( invalid_obj )
+			{
+				self notify( "bot_objective_inaccessible" );
+				self.path_inaccessible = true;
+				break;
+			}
+		}
+	}
 }
 
 bot_on_powerup_grab( powerup )

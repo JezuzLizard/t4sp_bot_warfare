@@ -1538,9 +1538,11 @@ doWalk( goal, dist, isScriptGoal )
 	path_was_truncated = ( current + 1 ) >= 32;
 
 	//Couldn't generate path to goal
+	self.path_inaccessible = false;
 	if ( current <= -1 )
 	{
 		self notify( "bad_path_internal" );
+		self.path_inaccessible = true;
 		return;
 	}
 
@@ -1757,7 +1759,7 @@ getRandomLargestStafe( dist )
 */
 initAStar( goal )
 {
-	nodes = generatePath( self.origin, goal, self.team, false );
+	nodes = generatePath( self.origin, goal, self.team, level.bot_allowed_negotiation_links );
 
 	if ( !isDefined( nodes ) )
 	{
