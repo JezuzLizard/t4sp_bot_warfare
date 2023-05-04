@@ -120,30 +120,7 @@ init()
 	level thread onPlayerConnect();
 	level thread handleBots();
 
-	maps\bots\_bot_script::register_bot_action( "objective", "powerup", maps\bots\_bot_script::bot_grab_powerup, 
-												 						maps\bots\_bot_script::bot_powerup_process_order, 
-																		maps\bots\_bot_script::bot_powerup_init, 
-																		maps\bots\_bot_script::bot_powerup_post_think, 
-																		maps\bots\_bot_script::bot_should_grab_powerup, 
-																		maps\bots\_bot_script::bot_check_complete_grab_powerup, 
-																		maps\bots\_bot_script::bot_powerup_should_cancel, 
-												 						maps\bots\_bot_script::bot_powerup_should_postpone,
-												 						maps\bots\_bot_script::bot_powerup_priority );
-
-	maps\bots\_bot_script::register_bot_action( "objective", "revive",  maps\bots\_bot_script::bot_revive_player, 
-																 		maps\bots\_bot_script::bot_revive_process_order, 
-																		maps\bots\_bot_script::bot_revive_player_init, 
-																		maps\bots\_bot_script::bot_revive_player_post_think, 
-																		maps\bots\_bot_script::bot_should_revive_player, 
-																		maps\bots\_bot_script::bot_check_complete_revive_player, 
-																		maps\bots\_bot_script::bot_revive_player_should_cancel, 
-																		maps\bots\_bot_script::bot_revive_player_should_postpone, 
-																		maps\bots\_bot_script::bot_revive_player_priority );
-	maps\bots\_bot_script::register_bot_objective( "powerup" );
-	maps\bots\_bot_script::register_bot_objective( "revive" );
-
-	level thread maps\bots\_bot_script::store_powerups_dropped();
-	level thread maps\bots\_bot_script::watch_for_downed_players();
+	maps\bots\_bot_script::bot_script_init();
 }
 
 /*

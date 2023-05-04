@@ -96,6 +96,9 @@ resetBotVars()
 	self.bot.cur_weap_dist_multi = 1;
 	self.bot.is_cur_sniper = false;
 
+	self.bot.prio_objective = false;
+	self.bot.path_inaccessible = false;
+
 	self.bot.rand = randomInt( 100 );
 
 	self botStop();
@@ -418,6 +421,8 @@ stance_loop()
 
 	if ( toStance != "stand" && toStance != "crouch" && toStance != "prone" )
 		toStance = "crouch";
+
+	toStance = "stand"; //Hack to make the bots never crouch
 
 	if ( toStance == "stand" )
 		self stand();
@@ -1187,7 +1192,7 @@ aim_loop()
 		aimspeed *= 1 + adsAimSpeedFact * adsAmount;
 	}
 
-	if ( isDefined( self.bot.target ) && isDefined( self.bot.target.entity ) )
+	if ( isDefined( self.bot.target ) && isDefined( self.bot.target.entity ) && !self.bot.prio_objective )
 	{
 		no_trace_time = self.bot.target.no_trace_time;
 		no_trace_look_time = self.pers["bots"]["skill"]["no_trace_look_time"];
@@ -1466,9 +1471,9 @@ walk()
 */
 walk_loop()
 {
-	hasTarget = isDefined( self.bot.target ) && isDefined( self.bot.target.entity );
+	shouldTarget = isDefined( self.bot.target ) && isDefined( self.bot.target.entity ) && !self.bot.prio_objective;
 
-	if ( hasTarget )
+	if ( shouldTarget )
 	{
 		curweap = self getCurrentWeapon();
 
@@ -1495,7 +1500,7 @@ walk_loop()
 
 	isScriptGoal = false;
 
-	if ( isDefined( self.bot.script_goal ) && !hasTarget )
+	if ( isDefined( self.bot.script_goal ) && !shouldTarget )
 	{
 		goal = self.bot.script_goal;
 		dist = self.bot.script_goal_dist;
@@ -1504,7 +1509,7 @@ walk_loop()
 	}
 	else
 	{
-		if ( hasTarget )
+		if ( shouldTarget )
 			goal = self.bot.target.last_seen_pos;
 
 		self notify( "new_goal_internal" );
@@ -1538,11 +1543,11 @@ doWalk( goal, dist, isScriptGoal )
 	path_was_truncated = ( current + 1 ) >= 32;
 
 	//Couldn't generate path to goal
-	self.path_inaccessible = false;
+	self.bot.path_inaccessible = false;
 	if ( current <= -1 )
 	{
+		self.bot.path_inaccessible = true;
 		self notify( "bad_path_internal" );
-		self.path_inaccessible = true;
 		return;
 	}
 
