@@ -23,7 +23,7 @@ add_possible_bot_objective( objective_group, target_ent, is_global_shared )
 
 	if ( !isDefined( target_ent ) )
 	{
-		assertMsg( "target_ent is undefined" );
+		objective_ent_assert( objective_group, "add_possible_bot_objective", "[ent was undefined]" );
 		return;
 	}
 
@@ -44,8 +44,8 @@ get_bot_objective_by_entity_ref( objective_group, ent )
 {
 	if ( !isDefined( ent ) )
 	{
-		assertMsg( "Ent is undefined" );
-		return;
+		objective_ent_assert( objective_group, "get_bot_objective_by_entity_ref", "[ent was undefined]" );
+		return undefined;
 	}
 
 	id = ent getEntityNumber();
@@ -54,7 +54,7 @@ get_bot_objective_by_entity_ref( objective_group, ent )
 
 	objective = active_objectives[ "obj_id_" + id ];
 
-	assert( isDefined( objective ), "Objective with " + id + " id does not point to a objective in group " + objective_group );
+	objective_defined_assert( objective_group, id, "get_bot_objective_by_entity_ref", "[obj was undefined]" );
 
 	return objective;
 }
@@ -78,7 +78,7 @@ bot_set_objective( objective_group, ent )
 {
 	if ( !isDefined( ent ) )
 	{
-		assertMsg( "Ent is undefined" );
+		objective_ent_assert( objective_group, "bot_set_objective", "[ent was undefined]" );
 		return;
 	}
 
@@ -90,9 +90,9 @@ bot_set_objective( objective_group, ent )
 
 	objective_exists = isDefined( objective );
 
-	assert( objective_exists, "Objective with " + id + " id does not point to a objective in group " + objective_group );
 	if ( !objective_exists )
 	{
+		objective_defined_assert( objective_group, id, "bot_set_objective", "[obj was undefined]" );
 		return;
 	}
 
@@ -175,7 +175,7 @@ bot_is_objective_owner( objective_group, ent )
 {
 	if ( !isDefined( ent ) )
 	{
-		assertMsg( "Ent is undefined" );
+		objective_ent_assert( objective_group, "bot_is_objective_owner", "[ent was undefined]" );
 		return false;
 	}
 
@@ -186,9 +186,9 @@ bot_is_objective_owner( objective_group, ent )
 	objective = active_objectives[ "obj_id_" + id ];
 
 	objective_exists = isDefined( objective );
-	assert( objective_exists, "Objective with " + id + " id number does not point to a objective in group " + objective_group );
 	if ( !objective_exists )
 	{
+		objective_defined_assert( objective_group, id, "bot_is_objective_owner", "[obj was undefined]" );
 		return false;
 	}
 
@@ -205,7 +205,7 @@ set_bot_global_shared_objective_owner_by_ent( objective_group, ent, new_owner )
 {
 	if ( !isDefined( ent ) )
 	{
-		assertMsg( "Ent is undefined" );
+		objective_ent_assert( objective_group, "set_bot_global_shared_objective_owner_by_ent", "[ent was undefined]" );
 		return;
 	}
 
@@ -216,9 +216,9 @@ set_bot_global_shared_objective_owner_by_ent( objective_group, ent, new_owner )
 	objective = active_objectives[ "obj_id_" + id ];
 
 	objective_exists = isDefined( objective );
-	assert( objective_exists, "Objective with " + id + " id number does not point to a objective in group " + objective_group );
 	if ( !objective_exists )
 	{
+		objective_defined_assert( objective_group, id, "set_bot_global_shared_objective_owner_by_ent", "[obj was undefined]" );
 		return;
 	}
 
@@ -252,7 +252,7 @@ mark_objective_bad( objective_group, ent )
 {
 	if ( !isDefined( ent ) )
 	{
-		assertMsg( "Ent is undefined" );
+		objective_ent_assert( objective_group, "mark_objective_bad", "[ent was undefined]" );
 		return;
 	}
 
@@ -263,9 +263,9 @@ mark_objective_bad( objective_group, ent )
 	objective = active_objectives[ "obj_id_" + id ];
 
 	objective_exists = isDefined( objective );
-	assert( objective_exists, "Objective with " + id + " id number does not point to a objective in group " + objective_group );
 	if ( !objective_exists )
 	{
+		objective_defined_assert( objective_group, id, "mark_objective_bad", "[obj was undefined]" );
 		return;
 	}
 
@@ -276,7 +276,7 @@ free_bot_objective( objective_group, ent )
 {
 	if ( !isDefined( ent ) )
 	{
-		assertMsg( "Ent is undefined" );
+		objective_ent_assert( objective_group, "free_bot_objective", "[ent was undefined]" );
 		return;
 	}
 
@@ -287,9 +287,9 @@ free_bot_objective( objective_group, ent )
 	objective = active_objectives[ "obj_id_" + id ];
 
 	objective_exists = isDefined( objective );
-	assert( objective_exists, "Objective with " + id + " id number does not point to a objective in group " + objective_group );
 	if ( !objective_exists )
 	{
+		objective_defined_assert( objective_group, id, "free_bot_objective", "[obj was undefined]" );
 		return;
 	}
 
@@ -312,7 +312,7 @@ bot_objective_print( objective_group, ent, message )
 {
 	if ( !isDefined( ent ) )
 	{
-		assertMsg( "Ent is undefined" );
+		objective_ent_assert( objective_group, "bot_objective_print", "[ent was undefined] " + message );
 		return;
 	}
 
@@ -323,15 +323,38 @@ bot_objective_print( objective_group, ent, message )
 	objective = active_objectives[ "obj_id_" + id ];
 
 	objective_exists = isDefined( objective );
-	assert( objective_exists, "Objective with " + id + " id number does not point to a objective in group " + objective_group );
 	if ( !objective_exists )
 	{
+		objective_defined_assert( objective_group, id, "bot_objective_print", "[obj was undefined] " + message );
 		return;
 	}
 
-	if ( getDvarInt( "bot_obj_debug_" + objective_group ) != 0 )
+	objective_info_print( objective_group, id, "bot_objective_print", message );
+}
+
+objective_ent_assert( objective_group, function_name, message )
+{
+	assertMsg( "Ent is undefined" );
+	if ( getDvarInt( "bot_obj_debug_all" ) != 0 || getDvarInt( "bot_obj_debug_" + objective_group ) != 0 )
 	{
-		printConsole( "Obj <" + objective_group + "> ent <" + id + "> " + message + "\n" );
+		logprint( "ERROR: " + function_name + "() Obj <" + objective_group + "> " + message + "\n" );
+	}	
+}
+
+objective_defined_assert( objective_group, id, function_name, message )
+{
+	assertMsg( "Objective with " + id + " id number does not point to a objective in group " + objective_group );
+	if ( getDvarInt( "bot_obj_debug_all" ) != 0 || getDvarInt( "bot_obj_debug_" + objective_group ) != 0 )
+	{
+		logprint( "ERROR: " + function_name + "() Obj <" + objective_group + "> ent <" + id + "> [obj was undefined] " + message + "\n" );
+	}
+}
+
+objective_info_print( objective_group, id, function_name, message )
+{
+	if ( getDvarInt( "bot_obj_debug_all" ) != 0 || getDvarInt( "bot_obj_debug_" + objective_group ) != 0 )
+	{
+		logprint( "INFO: " + function_name + "() Obj <" + objective_group + "> ent <" + id + "> " + message + "\n" );
 	}
 }
 
