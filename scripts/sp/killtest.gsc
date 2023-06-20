@@ -18,9 +18,7 @@ init()
 	level thread spitOutTime();
 
 	if ( getDvar( "killtest_bot_debug" ) == "" )
-		setDvar( "killtest_bot_debug", 1 );
-
-	setDvar( "bots_skill", 7 );
+		setDvar( "killtest_bot_debug", 0 );
 
 	level thread addBot();
 
@@ -90,15 +88,23 @@ spitOutTime()
 	}
 }
 
-/*  botMoveTo( to )
-    {
+botMoveTo( to )
+{
 	self.moveTo = to;
-    }
+}
 
-    walk_to_player()
-    {
+walk_to_player()
+{
 	self endon( "disconnect" );
 	self endon( "zombified" );
+
+	bot_allowed_negotiation_links = [];
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_72";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_96";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_120";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_127";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_184";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_190";
 
 	for ( ;; )
 	{
@@ -121,28 +127,23 @@ spitOutTime()
 			non_bot_player = player;
 		}
 
-		if ( !isdefined( non_bot_player ) )
-			continue;
+		goal = ( 0, 0, 50 );
+
+		if ( isdefined( non_bot_player ) )
+		{
+			goal = non_bot_player.origin;
+		}
 
 		// generate a path to the player
-		goal = non_bot_player.origin;
-		path = generatePath( self.origin, goal, "free", false );
+		path = generatePath( self.origin, goal, self.team, bot_allowed_negotiation_links );
 
-		if ( !isdefined( path ) )
+		if ( !isdefined( path ) || !path.size )
 			continue;
 
 		// traverse each node in the path
-		for ( i = path.size - 1; i >= 0; i-- )
+		for ( i = 0; i < path.size; i++ )
 		{
-			path_num = path[i];
-
-			if ( path_num <= -1 )
-				continue;
-
-			path_node = getNodeByNumber( path_num );
-
-			if ( !isDefined( path_node ) )
-				continue;
+			path_node = path[i];
 
 			while ( distance2d( self.origin, path_node.origin ) >= 7 )
 			{
@@ -162,10 +163,10 @@ spitOutTime()
 
 		// done
 	}
-    }
+}
 
-    do_move()
-    {
+do_move()
+{
 	self endon( "disconnect" );
 	self endon( "zombified" );
 
@@ -200,7 +201,7 @@ spitOutTime()
 
 		self botMovement( int( dir[0] ), int( dir[1] ) );
 	}
-    }*/
+}
 
 addBot()
 {
@@ -224,15 +225,14 @@ addBot()
 	if ( !isDefined( guy ) )
 		return;
 
-	// guy.killingAll = true;
+	guy.killingAll = true;
 	weapon = "ray_gun";
 	guy giveWeapon( weapon ); // ptrs41_zombie zombie_doublebarrel
 	guy switchToWeapon( weapon ); // colt_dirty_harry
 
-	//guy thread walk_to_player();
-	//guy thread do_move();
+	guy thread walk_to_player();
+	guy thread do_move();
 
-	/*
 	while ( isDefined( guy ) )
 	{
 		if ( isDefined( level.isPlayerDead ) && [[level.isPlayerDead]]( guy ) )
@@ -246,7 +246,6 @@ addBot()
 
 		wait 0.05;
 	}
-	*/
 }
 
 onPlayerConnect()
@@ -355,17 +354,18 @@ do_magic_bullets()
 
 		if ( isDefined( zombie ) )
 		{
-			/*
-			    if ( zombie.maxhealth != 2147483647 )
-			    {
-				zombie.maxhealth = 2147483647;
-				zombie.health = zombie.maxhealth;
-			    }
-			    else
-			    {
-				zombie DoDamage( zombie.health + 666, zombie.origin, self, 0, "headshot" );
-			    }
-			*/
+			if ( getDvarInt( "killtest_overflow_health_test" ) )
+			{
+				if ( zombie.maxhealth != 2147483647 )
+				{
+					zombie.maxhealth = 2147483647;
+					zombie.health = zombie.maxhealth;
+				}
+				else
+				{
+					zombie DoDamage( zombie.health + 666, zombie.origin, self, 0, "headshot" );
+				}
+			}
 
 			hit_loc = undefined;
 
