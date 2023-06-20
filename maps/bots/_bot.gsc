@@ -120,7 +120,7 @@ init()
 	level thread onPlayerConnect();
 	level thread handleBots();
 
-	maps\bots\_bot_script::bot_script_init();
+	level thread maps\bots\_bot_script::bot_script_init();
 }
 
 /*
@@ -161,22 +161,6 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 	self [[level.prevCallbackPlayerDamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
 }
 
-on_actor_spawned()
-{
-	if ( isDefined( level.prevCallbackActorSpawned ) )
-	{
-		self [[ level.prevCallbackActorSpawned ]]();
-	}
-}
-
-on_actor_killed( eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, iTimeOffset )
-{
-	if ( isDefined( level.prevCallbackActorKilled ) )
-	{
-		self [[ level.prevCallbackActorKilled ]]( eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, iTimeOffset );
-	}
-}
-
 /*
 	Starts the callbacks.
 */
@@ -185,10 +169,6 @@ hook_callbacks()
 	wait 0.05;
 	level.prevCallbackPlayerDamage = level.callbackPlayerDamage;
 	level.callbackPlayerDamage = ::onPlayerDamage;
-	level.prevCallbackActorSpawned = level.callbackActorSpawned;
-	level.callbackActorSpawned = ::on_actor_spawned;
-	level.prevCallbackActorKilled = level.callbackActorKilled;
-	level.callbackActorKilled = ::on_actor_killed;
 }
 
 /*
