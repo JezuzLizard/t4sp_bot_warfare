@@ -75,6 +75,9 @@ init()
 	if ( getDvar( "bots_play_aim" ) == "" )
 		setDvar( "bots_play_aim", true );
 
+	if ( getDvar( "bots_t8_mode" ) == "" )
+		setDvar( "bots_t8_mode", false );
+
 	if ( !isDefined( game["botWarfare"] ) )
 		game["botWarfare"] = true;
 
@@ -273,7 +276,7 @@ watchBotDebugEvent()
 
 		if ( msg == "debug" && GetDvarInt( "bots_main_debug" ) )
 		{
-			PrintConsole( "Bot Warfare debug: " + self.name + ": " + str + "\n" );
+			PrintConsole( "Bot Warfare debug: " + self.playername + ": " + str + "\n" );
 		}
 	}
 }
