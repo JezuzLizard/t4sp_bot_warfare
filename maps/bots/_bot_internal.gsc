@@ -1768,6 +1768,7 @@ initAStar( goal )
 
 	if ( !isDefined( nodes ) )
 	{
+		self.bot.astar = [];
 		return -1;
 	}
 
