@@ -28,8 +28,24 @@ init()
 	    ::bot_revive_player_should_cancel,
 	    ::bot_revive_player_should_postpone,
 	    ::bot_revive_player_priority );
+
+	register_bot_action( "objective", "magicbox",  ::bot_magicbox_purchase,
+	    ::bot_magicbox_purchase_process_order,
+	    ::bot_magicbox_purchase_init,
+	    ::bot_magicbox_purchase_post_think,
+	    ::bot_should_purchase_magicbox,
+	    ::bot_check_complete_purchase_magicbox,
+	    ::bot_magicbox_purchase_should_cancel,
+	    ::bot_magicbox_purchase_should_postpone,
+	    ::bot_magicbox_purchase_priority );
 	register_bot_objective( "powerup" );
 	register_bot_objective( "revive" );
+	register_bot_objective( "magicbox" );
+
+	if ( isDefined( level.chests ) && level.chests.size > 0 )
+	{
+		level thread watch_magicbox_objectives();
+	}
 
 	//maps\bots\script_objectives\_obj_trackers;
 	level thread store_powerups_dropped();
@@ -49,6 +65,11 @@ connected()
 
 	self.obj_postponed_reason = "";
 	self.obj_cancel_reason = "";
+
+	self.obj_history = [];
+	self.bot_obj_history_max_entries = 20;
+	self.bot_obj_history_index = 0;
+	self.bot_obj_history_prev_index = 0;
 }
 
 spawned()

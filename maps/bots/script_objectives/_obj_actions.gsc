@@ -3,6 +3,30 @@
 #include maps\bots\_bot_utility;
 #include maps\bots\script_objectives\_obj_common;
 
+bot_post_think_common( state, obj_ent )
+{
+	obj = bot_objective_history_get_current();
+
+	switch ( state )
+	{
+		case "completed":
+			bot_objective_print( "powerup", obj.id, "Bot <" + self.playername + "> objective was completed", "bot_post_think_common" );
+			break;
+		case "postponed":
+			bot_objective_print( "powerup", obj.id, "Bot <" + self.playername + "> objective was postponed Reason: " + self.obj_postponed_reason, "bot_post_think_common" );
+			break;
+		case "canceled":
+			bot_objective_print( "powerup", obj.id, "Bot <" + self.playername + "> objective was canceled Reason: " + self.obj_cancel_reason, "bot_post_think_common" );
+			break;
+	}
+	self.obj_postponed_reason = "";
+	self.obj_cancel_reason = "";
+	self ClearScriptGoal();
+	self ClearScriptAimPos();
+	self ClearPriorityObjective();
+	self bot_clear_objective();	
+}
+
 bot_grab_powerup()
 {
 	self endon( "disconnect" );
@@ -17,12 +41,11 @@ bot_grab_powerup()
 
 	powerup_obj = self.available_powerups[ 0 ];
 	powerup_obj_ent = powerup_obj.target_ent;
-
-	set_bot_global_shared_objective_owner_by_ent( "powerup", powerup_obj_ent, self );
 	self bot_set_objective( "powerup", powerup_obj_ent );
+	self bot_set_objective_owner( "powerup", powerup_obj_ent );
 
-	bot_objective_print( "powerup", powerup_obj_ent, "Bot <" + self.playername + "> starts objective" );
-	while ( isDefined( powerup_obj_ent ) && isDefined( powerup_obj ) && self bot_is_objective_owner( "powerup", powerup_obj_ent ) )
+	bot_objective_print( "powerup", powerup_obj.id, "Bot <" + self.playername + "> starts objective", "bot_grab_powerup" );
+	while ( true )
 	{
 		wait 1;
 		self SetPriorityObjective();
@@ -32,7 +55,7 @@ bot_grab_powerup()
 
 		if ( result != "goal" )
 		{
-			bot_objective_print( "powerup", powerup_obj_ent, "Bot <" + self.playername + "> bad path" );
+			bot_objective_print( "powerup", powerup_obj.id, "Bot <" + self.playername + "> bad path", "bot_grab_powerup" );
 			continue;
 		}
 		//Wait to see if the bot was able to grab the powerup
@@ -40,8 +63,8 @@ bot_grab_powerup()
 		//Check if powerup still exists
 		if ( isDefined( powerup_obj_ent ) )
 		{
-			height_difference = self.origin[ 2 ] - powerup_obj_ent.origin[ 2 ];
-			if ( height_difference < 49 )
+			height_difference = powerup_obj_ent.origin[ 2 ] - self.origin[ 2 ];
+			if ( height_difference > 0 && height_difference < 49 )
 			{
 				self BotJump();
 				wait 0.5;
@@ -60,7 +83,7 @@ bot_grab_powerup()
 
 			if ( powerup_obj.bad )
 			{
-				bot_objective_print( "powerup", powerup_obj_ent, "Bot <" + self.playername + "> objective was marked as bad" );
+				bot_objective_print( "powerup", powerup_obj.id, "Bot <" + self.playername + "> objective was marked as bad", "bot_grab_powerup" );
 				break;
 			}
 		}
@@ -81,24 +104,8 @@ bot_powerup_post_think( state )
 {
 	obj = self bot_get_objective();
 	powerup_obj_ent = obj.target_ent;
-	switch ( state )
-	{
-		case "completed":
-			bot_objective_print( "powerup", powerup_obj_ent, "Bot <" + self.playername + "> objective was completed" );
-			break;
-		case "postponed":
-			bot_objective_print( "powerup", powerup_obj_ent, "Bot <" + self.playername + "> objective was postponed Reason: " + self.obj_postponed_reason );
-			break;
-		case "canceled":
-			bot_objective_print( "powerup", powerup_obj_ent, "Bot <" + self.playername + "> objective was canceled Reason: " + self.obj_cancel_reason );
-			break;
-	}
+	self bot_post_think_common( state, powerup_obj_ent );
 	self.successfully_grabbed_powerup = false;
-	self.obj_cancel_reason = "";
-	self ClearScriptGoal();
-	self ClearScriptAimPos();
-	self ClearPriorityObjective();
-	self clear_objective_for_bot();
 }
 
 bot_should_grab_powerup()
@@ -157,17 +164,19 @@ bot_check_complete_grab_powerup()
 
 bot_powerup_should_cancel()
 {
-	if ( !isDefined( self.available_powerups ) || self.available_powerups.size <= 0 )
+	obj = self bot_get_objective();
+
+	canceled_goal = false;
+	if ( !self bot_is_objective_owner( "powerup", obj.target_ent ) )
 	{
-		self.obj_cancel_reason = "No available powerups";
-		return true;
+		self.obj_cancel_reason = "No longer the obj owner";
+		canceled_goal = true;
 	}
-	if ( !isDefined( self.available_powerups[ 0 ].target_ent ) )
+	if ( canceled_goal )
 	{
-		self.obj_cancel_reason = "Powerup doesn't exist";
-		return true;
+		self notify( "goal" );
 	}
-	return false ;
+	return canceled_goal;
 }
 
 bot_powerup_should_postpone()
@@ -202,11 +211,11 @@ bot_revive_player()
 	
 	player_to_revive = player_to_revive_obj.target_ent;
 	self bot_set_objective( "revive", player_to_revive );
-	set_bot_global_shared_objective_owner_by_ent( "revive", player_to_revive, self );
-	bot_objective_print( "revive", player_to_revive, "Bot <" + self.playername + "> objective started" );
+	self bot_set_objective_owner( "revive", player_to_revive );
+	bot_objective_print( "revive", player_to_revive_obj.id, "Bot <" + self.playername + "> objective started", "bot_revive_player" );
 	//If player is no longer valid to revive stop trying to revive
 	//If bot doesn't have an objective anymore or the objective has changed stop trying to revive
-	while ( isDefined( player_to_revive ) && isDefined( player_to_revive_obj ) && self bot_is_objective_owner( "revive", player_to_revive ) )
+	while ( true )
 	{
 		wait 1;
 		//Constantly update the goal just in case the player is moving(T5 or higher only)
@@ -216,15 +225,14 @@ bot_revive_player()
 
 		result = self waittill_any_return( "goal", "bad_path", "new_goal" );
 
-		//printConsole( result );
 		if ( result != "goal" )
 		{
-			bot_objective_print( "revive", player_to_revive, "Bot <" + self.playername + "> bad path" );
+			bot_objective_print( "revive", player_to_revive_obj.id, "Bot <" + self.playername + "> bad path", "bot_revive_player" );
 			continue;
 		}
 		if ( !isDefined( player_to_revive.revivetrigger ) )
 		{
-			return;
+			continue;
 		}
 		//Check if the bot is reviving the player already and also that the player isn't being revived already
 		if ( player_to_revive.revivetrigger.beingrevived )
@@ -265,25 +273,9 @@ bot_revive_player_post_think( state )
 {
 	obj = self bot_get_objective();
 	revive_obj_ent = obj.target_ent;
-	switch ( state )
-	{
-		case "completed":
-			bot_objective_print( "revive", revive_obj_ent, "Bot <" + self.playername + "> objective was completed" );
-			break;
-		case "postponed":
-			bot_objective_print( "revive", revive_obj_ent, "Bot <" + self.playername + "> objective was postponed Reason: " + self.obj_postponed_reason );
-			break;
-		case "canceled":
-			bot_objective_print( "revive", revive_obj_ent, "Bot <" + self.playername + "> objective was canceled Reason: " + self.obj_cancel_reason );
-			break;
-	}
+	self bot_post_think_common( state, revive_obj_ent );
 	self.should_cancel_revive_obj = false;
 	self.successfully_revived_player = false;
-	self.obj_cancel_reason = "";
-	self ClearScriptGoal();
-	self ClearScriptAimPos();
-	self ClearPriorityObjective();
-	self clear_objective_for_bot();
 }
 
 bot_should_revive_player()
@@ -320,22 +312,24 @@ bot_check_complete_revive_player()
 
 bot_revive_player_should_cancel()
 {
-	if ( !isDefined( self.available_revives[ 0 ] ) )
-	{
-		self.obj_cancel_reason = "Obj didn't exist";
-		return true;
-	}
-	if ( !isDefined( self.available_revives[ 0 ].target_ent ) )
-	{
-		self.obj_cancel_reason = "Entity didn't exist";
-		return true;
-	}
-	if ( !isDefined( self.available_revives[ 0 ].target_ent.revivetrigger ) )
+	obj = self bot_get_objective();
+
+	goal_canceled = false;
+	if ( !isDefined( obj.target_ent.revivetrigger ) )
 	{
 		self.obj_cancel_reason = "Revive trigger didn't exist";
-		return true;
+		goal_canceled = true;
 	}
-	return false;
+	else if ( !self bot_is_objective_owner( "revive", obj.target_ent ) )
+	{
+		self.obj_cancel_reason = "No longer the obj owner";
+		goal_canceled = true;
+	}
+	if ( goal_canceled )
+	{
+		self notify( "goal" );
+	}
+	return goal_canceled;
 }
 
 bot_revive_player_should_postpone()
@@ -346,4 +340,102 @@ bot_revive_player_should_postpone()
 bot_revive_player_priority()
 {
 	return 0;
+}
+
+bot_magicbox_purchase()
+{
+	self.target_pos = self.available_chests[ 0 ].origin;
+}
+
+bot_magicbox_purchase_process_order()
+{
+
+}
+
+bot_magicbox_purchase_init()
+{
+
+}
+
+bot_magicbox_purchase_post_think( state )
+{
+	obj = self bot_get_objective();
+	magicbox_obj_ent = obj.target_ent;
+	self bot_post_think_common( state, magicbox_obj_ent );	
+}
+
+bot_should_purchase_magicbox()
+{
+	magicbox_objs = get_all_objectives_for_group( "magicbox" );
+	if ( magicbox_objs.size <= 0 )
+	{
+		return false;
+	}
+	if ( !level.enable_magic )
+	{
+		return false;
+	}
+	if ( level.chests.size <= 0 )
+	{
+		return false;
+	}
+	self.available_chests = [];
+	for ( i = 0; i < magicbox_objs.size; i++ )
+	{
+		if ( level.chests[ i ].hidden )
+		{
+			continue;
+		}
+		if ( self.score < level.chests[ i ].zombie_cost )
+		{
+			continue;
+		}
+		self.available_chests[ self.available_chests.size ] = level.chests[ i ];
+	}
+	if ( self.available_chests.size > 0 )
+	{
+		for ( i = 0; i < self.available_chests.size; i++ )
+		{
+			if ( isDefined( self.available_chests[ i ].chest_user ) )
+			{
+				maps\_utility::array_remove_index( self.available_chests, i );
+				i--;
+			}
+		}
+	}
+	return self.available_chests.size > 0;
+}
+
+bot_check_complete_purchase_magicbox() 
+{
+	return false;
+}
+
+bot_magicbox_purchase_should_cancel()
+{
+	return false;
+}
+
+bot_magicbox_purchase_should_postpone()
+{
+	return false;
+}
+
+bot_magicbox_purchase_priority()
+{
+	priority = 0;
+	LOW_AMMO_THRESHOLD = 0.3;
+	weapons = self getWeaponsListPrimaries();
+	if ( weapons.size < 2 )
+	{
+		priority += 1;
+	}
+	for ( j = 0; j < weapons.size; j++ )
+	{
+		if ( self getWeaponAmmoStock( weapons[ j ] ) <= int( weaponmaxammo( weapons[ j ] ) *  LOW_AMMO_THRESHOLD ) )
+		{
+			priority += 1;
+		}
+	}
+	return priority;
 }

@@ -61,7 +61,7 @@ free_revive_objective_when_needed()
 		wait 0.05;
 	}
 
-	free_bot_objective( "revive", self );
+	free_bot_objective( "revive", self, id );
 }
 
 bot_valid_pump()
@@ -79,11 +79,11 @@ bot_valid_pump()
 			if ( isDefined( self ) )
 			{
 				self notify( "bot_in_invalid_state" );
-				self clear_objective_for_bot();
+				self bot_clear_objective();
 			}
 			else if ( isDefined( obj_sav ) )
 			{
-				set_bot_global_shared_objective_owner_by_ent( obj_sav.group, obj_sav.target_ent, undefined );
+				//set_bot_global_shared_objective_owner_by_ent( obj_sav.group, obj_sav.target_ent, undefined );
 			}
 
 			while ( isDefined( self ) && !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
@@ -135,14 +135,34 @@ bot_objective_inaccessible_pump()
 	}
 }
 
+watch_magicbox_objectives()
+{
+	level endon( "end_game" );
+
+	level waittill( "connected", player );
+
+	prev_magicbox = maps\so\zm_common\_zm_magicbox::get_active_magicbox();
+	while ( true )
+	{
+		cur_magicbox = maps\so\zm_common\_zm_magicbox::get_active_magicbox();
+		if ( prev_magicbox != cur_magicbox )
+		{
+			add_possible_bot_objective( "magicbox", cur_magicbox, false );
+			free_bot_objective( "magicbox", prev_magicbox );
+			prev_magicbox = cur_magicbox;
+		}
+		wait 1;
+	}
+}
+
 bot_on_powerup_grab( powerup )
 {
-	bot_objective_print( "powerup", powerup, "Bot <" + self.playername + "> bot grabbed powerup" );
+	bot_objective_print( "powerup", powerup getEntityNumber(), "Bot <" + self.playername + "> grabbed powerup" );
 	self.successfully_grabbed_powerup = true;
 }
 
 bot_on_revive_success( revivee )
 {
-	bot_objective_print( "revive", revivee, "Bot <" + self.playername + "> bot revived <" + revivee.playername + ">" );
+	bot_objective_print( "revive", revivee getEntityNumber(), "Bot <" + self.playername + "> revived <" + revivee.playername + ">" );
 	self.successfully_revived_player = true;
 }
