@@ -47,6 +47,8 @@ add_possible_bot_objective( objective_group, target_ent, is_global_shared )
 	objective_struct.id = id;
 
 	level.zbot_objective_glob[ objective_group ].active_objectives[ "obj_id_" + id ] = objective_struct;
+
+	return level.zbot_objective_glob[ objective_group ].active_objectives[ "obj_id_" + id ];
 }
 
 get_objective( objective_group, ent, id )
@@ -69,7 +71,7 @@ bot_has_objective()
 	return isDefined( self.zbot_current_objective );
 }
 
-bot_set_objective( objective_group, ent )
+bot_set_objective( objective_group, ent, id )
 {
 	objective = get_objective_safe( objective_group, ent, id, "bot_set_objective" );
 	if ( !isDefined( objective ) )
@@ -100,82 +102,16 @@ bot_set_objective( objective_group, ent )
 
 bot_clear_objective()
 {
+	objective = self.zbot_current_objective;
+	if ( !isDefined( objective ) )
+	{
+		return;
+	}
+	self bot_clear_objective_owner( objective.group, objective.target_ent );
 	self.zbot_current_objective = undefined;
 }
 
-objective_set_blocked( primary_objective_group, primary_ent, blocked_by_objective_group, blocked_by_ent )
-{
-	if ( !isDefined( primary_ent ) )
-	{
-		assertMsg( "Primary_ent is undefined" );
-		return;
-	}
-
-	if ( !isDefined( blocked_by_ent ) )
-	{
-		assertMsg( "Blocked_by_ent is undefined" );
-		return;
-	}
-
-	primary_id = primary_ent getEntityNumber();
-
-	blocked_by_id = blocked_by_ent getEntityNumber();
-
-	primary_active_objectives = level.zbot_objective_glob[ primary_objective_group ].active_objectives;
-
-	primary_objective = primary_active_objectives[ "obj_id_" + primary_id ];
-
-	primary_objective_exists = isDefined( primary_objective );
-
-	assert( primary_objective_exists, "Objective with " + primary_id + " id does not point to a objective in group " + primary_objective_group );
-	if ( !primary_objective_exists )
-	{
-		return;
-	}
-	if ( primary_objective_group == blocked_by_objective_group )
-	{
-		assert( primary_id != blocked_by_id, "Objective with " + primary_id + " id should not be the same as the blocked_by_id if the objectives are in the same group of " + primary_objective_group );
-		if ( primary_id == blocked_by_id )
-		{
-			return;
-		}
-
-		blocking_objective = primary_active_objectives[ "obj_id_" + blocked_by_id ];
-
-		blocking_objective_exists = isDefined( blocking_objective );
-
-		assert( blocking_objective_exists, "Objective with " + blocked_by_id + " id does not point to a objective in group " + blocked_by_objective_group );
-		if ( !blocking_objective_exists )
-		{
-			return;
-		}
-
-		primary_objective.blocking_objective = blocking_objective;
-	}
-	else 
-	{
-		secondary_active_objectives = level.zbot_objective_glob[ blocked_by_objective_group ].active_objectives;
-
-		blocking_objective = secondary_active_objectives[ "obj_id_" + blocked_by_id ];
-
-		blocking_objective_exists = isDefined( blocking_objective );
-
-		assert( blocking_objective_exists, "Objective with " + blocked_by_id + " id does not point to a objective in group " + blocked_by_objective_group );
-		if ( !blocking_objective_exists )
-		{
-			return;
-		}
-
-		primary_objective.blocking_objective = blocking_objective;
-	}
-}
-
-objective_remove_blocked()
-{
-	
-}
-
-objective_has_owner( objective_group, ent )
+objective_has_owner( objective_group, ent, id )
 {
 	objective = get_objective_safe( objective_group, ent, id, "objective_has_owner" );
 	if ( !isDefined( objective ) )
@@ -183,18 +119,21 @@ objective_has_owner( objective_group, ent )
 		return false;
 	}
 
-	id = ent getEntityNumber();
+	if ( !isDefined( id ) )
+	{
+		id = ent getEntityNumber();
+	}
 
 	if ( !objective.is_global_shared )
 	{
-		objective_assert( objective_group, id, "objective_has_owner", "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group )
+		objective_assert( objective_group, id, "objective_has_owner", "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group );
 		return false;
 	}
 
 	return isDefined( objective.owner );
 }
 
-bot_is_objective_owner( objective_group, ent )
+bot_is_objective_owner( objective_group, ent, id )
 {
 	objective = get_objective_safe( objective_group, ent, id, "bot_is_objective_owner" );
 	if ( !isDefined( objective ) )
@@ -202,18 +141,21 @@ bot_is_objective_owner( objective_group, ent )
 		return false;
 	}
 
-	id = ent getEntityNumber();
+	if ( !isDefined( id ) )
+	{
+		id = ent getEntityNumber();
+	}
 
 	if ( !objective.is_global_shared )
 	{
-		objective_assert( objective_group, id, "bot_is_objective_owner", "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group )
+		objective_assert( objective_group, id, "bot_is_objective_owner", "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group );
 		return false;
 	}
 
 	return isDefined( objective.owner ) && objective.owner == self;
 }
 
-bot_set_objective_owner( objective_group, ent )
+bot_set_objective_owner( objective_group, ent, id )
 {
 	objective = get_objective_safe( objective_group, ent, id, "bot_set_objective_owner" );
 	if ( !isDefined( objective ) )
@@ -221,18 +163,42 @@ bot_set_objective_owner( objective_group, ent )
 		return;
 	}
 
-	id = ent getEntityNumber();
-
+	if ( !isDefined( id ) )
+	{
+		id = ent getEntityNumber();
+	}
+	
 	if ( !objective.is_global_shared )
 	{
-		objective_assert( objective_group, id, "bot_set_objective_owner", "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group )
+		objective_assert( objective_group, id, "bot_set_objective_owner", "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group );
 		return;
 	}
 
 	objective.owner = self;
 }
 
-mark_objective_bad( objective_group, ent )
+bot_clear_objective_owner( objective_group, ent, id )
+{
+	objective = get_objective_safe( objective_group, ent, id, "clear_objective_owner" );
+	if ( !isDefined( objective ) )
+	{
+		return;
+	}
+
+	if ( !isDefined( objective.owner ) )
+	{
+		return;
+	}
+
+	if ( objective.owner != self )
+	{
+		return;
+	}
+
+	objective.owner = undefined;
+}
+
+mark_objective_bad( objective_group, ent, id )
 {
 	objective = get_objective_safe( objective_group, ent, id, "mark_objective_bad" );
 	if ( !isDefined( objective ) )
@@ -248,6 +214,10 @@ free_bot_objective( objective_group, ent, id )
 	if ( !isDefined( objective ) )
 	{
 		return;
+	}
+	if ( isDefined( ent ) )
+	{
+		id = ent getEntityNumber();
 	}
 	players = getPlayers();
 	for ( i = 0; i < players.size; i++ )
@@ -300,7 +270,7 @@ bot_objective_print( objective_group, id, message, function_name )
 {
 	if ( getDvarInt( "bot_obj_debug_all" ) != 0 || getDvarInt( "bot_obj_debug_" + objective_group ) != 0 )
 	{
-		objective_info_print( objective_group, id, function_name, message );
+		self objective_info_print( objective_group, id, function_name, message );
 	}
 }
 
@@ -311,11 +281,11 @@ objective_assert( objective_group, id, function_name, message )
 	{
 		if ( !isDefined( id ) )
 		{
-			error_message = "ERROR: " + function_name + "() Obj <" + objective_group + "> " + message;
+			error_message = "BOT_OBJ_ERROR: Time <" + getTime() + "> " + function_name + "() Obj <" + objective_group + "> " + message;
 		}
 		else
 		{
-			error_message = "ERROR: " + function_name + "() Obj <" + objective_group + "> ent <" + id + "> " + message;
+			error_message = "BOT_OBJ_ERROR: Time <" + getTime() + "> " + function_name + "() Obj <" + objective_group + "> Ent <" + id + "> " + message;
 		}
 		logprint( error_message + "\n" );
 		printConsole( error_message );
@@ -324,8 +294,7 @@ objective_assert( objective_group, id, function_name, message )
 
 objective_info_print( objective_group, id, function_name, message )
 {
-	obj = bot_objective_history_get_current();
-	message = "INFO: " + function_name + "() Obj <" + objective_group + "> ent <" + id + "> pos <" + obj.ent_end_pos + "> " + message;
+	message = "BOT_OBJ_INFO: Time <" + getTime() + "> " + function_name + "() Obj <" + objective_group + "> ent <" + id + "> " + message;
 	logprint( message + "\n" );
 	printConsole( message );
 }
@@ -346,12 +315,12 @@ bot_objective_history_get_oldest()
 
 bot_objective_history_get_current()
 {
-	return self.obj_history[ level.bot_obj_history_index ];
+	return self.obj_history[ self.bot_obj_history_index ];
 }
 
 bot_objective_history_get_previous()
 {
-	return self.obj_history[ level.bot_obj_history_prev_index ];
+	return self.obj_history[ self.bot_obj_history_prev_index ];
 }
 
 /**********Action Section**********/
@@ -489,7 +458,7 @@ wait_for_action_completion( group_name, action_name )
 	}
 
 	self.obj_history[ self.bot_obj_history_index ].end_time = getTime();
-	end_time = self.obj_history[ self.bot_obj_history_index ].end_time
+	end_time = self.obj_history[ self.bot_obj_history_index ].end_time;
 	start_time = self.obj_history[ self.bot_obj_history_index ].start_time;
 	self.obj_history[ self.bot_obj_history_index ].time_spent = end_time - start_time;
 	self.obj_history[ self.bot_obj_history_index ].bot_end_pos = self.origin;
@@ -553,42 +522,58 @@ check_if_action_is_completed_in_group( group_name, action_name )
 {
 	assert( isDefined( level.zbots_actions[ group_name ][ action_name ].check_if_complete_func ) );
 
-	if ( self [[ level.zbots_actions[ group_name ][ action_name ].check_if_complete_func ]]() )
+	is_complete = self [[ level.zbots_actions[ group_name ][ action_name ].check_if_complete_func ]]();
+
+	if ( is_complete )
 	{
 		self notify( action_name + "_complete" );
 	}
+	return is_complete;
 }
 
 check_if_action_should_be_postponed_in_group( group_name, action_name )
 {
-	if ( self [[ level.zbots_actions[ group_name ][ action_name ].should_postpone_func ]]() )
+	should_postpone = self [[ level.zbots_actions[ group_name ][ action_name ].should_postpone_func ]]();
+	if ( should_postpone )
 	{
 		self notify( action_name + "_postpone" );
+		self notify( "goal" );
 	}
+	return should_postpone;
 }
 
 check_if_action_should_be_canceled_in_group( group_name, action_name )
 {
-	if ( self [[ level.zbots_actions[ group_name ][ action_name ].should_cancel_func ]]() )
+	should_cancel = self [[ level.zbots_actions[ group_name ][ action_name ].should_cancel_func ]]();
+	if ( should_cancel )
 	{
 		self notify( action_name + "_cancel" );
+		self notify( "goal" );
 	}
+
+	return should_cancel;
 }
 
 check_if_action_should_be_postponed_globally( group_name, action_name )
 {
-	if ( action_should_be_postponed_global( group_name, action_name ) )
+	should_postpone = self action_should_be_postponed_global( group_name, action_name );
+	if ( should_postpone )
 	{
 		self notify( action_name + "_postpone" );
+		self notify( "goal" );
 	}
+	return should_postpone;
 }
 
 check_if_action_should_be_canceled_globally( group_name, action_name )
 {
-	if ( action_should_be_canceled_global( group_name, action_name ) )
+	should_cancel = self action_should_be_canceled_global( group_name, action_name );
+	if ( should_cancel )
 	{
 		self notify( action_name + "_cancel" );
+		self notify( "goal" );
 	}
+	return should_cancel;
 }
 
 //TODO: Figure out way of overriding the current action for flee movement action
@@ -618,7 +603,14 @@ bot_action_think()
 
 	while ( true )
 	{
-		wait 0.05;
+		if ( getDvarInt( "bot_obj_debug_all" ) != 0 )
+		{
+			wait 1;
+		}
+		else 
+		{
+			wait 0.05;
+		}
 		//Wait until the end of the frame so any variables set by _bot_internal in the current frame will have up to date values
 		waittillframeend;
 
@@ -642,12 +634,31 @@ bot_action_think()
 
 		action_name = self.action_queue[ group_name ][ 0 ].action_name;
 
-		self check_if_action_is_completed_in_group( group_name, action_name );
-		self check_if_action_should_be_postponed_in_group( group_name, action_name );
-		self check_if_action_should_be_canceled_in_group( group_name, action_name );
-
-		self check_if_action_should_be_postponed_globally( group_name, action_name );
-		self check_if_action_should_be_canceled_globally( group_name, action_name );
+		if ( self check_if_action_is_completed_in_group( group_name, action_name ) )
+		{
+			wait 0.1;
+			continue;
+		}
+		if ( self check_if_action_should_be_postponed_globally( group_name, action_name ) )
+		{
+			wait 0.1;
+			continue;
+		}
+		if ( self check_if_action_should_be_canceled_globally( group_name, action_name ) )
+		{
+			wait 0.1;
+			continue;
+		}
+		if ( self check_if_action_should_be_postponed_in_group( group_name, action_name ) )
+		{
+			wait 0.1;
+			continue;
+		}
+		if ( self check_if_action_should_be_canceled_in_group( group_name, action_name ) )
+		{
+			wait 0.1;
+			continue;
+		}
 	}
 }
 
@@ -671,9 +682,14 @@ action_should_be_canceled_global( primary_group_name, action_name )
 		self.obj_cancel_reason = "Obj entity doesn't exist";
 		canceled_goal = true;
 	}
-	else if ( self GetPathIsInaccessible( obj.target_ent.origin ) )
+	else if ( !isDefined( obj.target_ent.bot_use_node ) && self GetPathIsInaccessible( obj.target_ent.origin ) )
 	{
-		self.obj_cancel_reason = "Path was inaccessible";
+		self.obj_cancel_reason = "Path to ent was inaccessible";
+		goal_canceled = true;
+	}
+	else if ( isDefined( obj.target_ent.bot_use_node ) && self GetPathIsInaccessible( obj.target_ent.bot_use_node ) )
+	{
+		self.obj_cancel_reason = "Path to use node was inaccessible";
 		goal_canceled = true;
 	}
 	else if ( obj.bad )
@@ -683,12 +699,24 @@ action_should_be_canceled_global( primary_group_name, action_name )
 	}
 	else if ( !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
 	{
-		self.obj_cancel_reason = "In laststand";
+		self.obj_cancel_reason = "In invalid state";
 		goal_canceled = true;
 	}
-	if ( goal_canceled )
-	{
-		self notify( "goal" );
-	}
 	return goal_canceled;
+}
+
+get_angle_offset_node( ent, angle_offset, forward_size, offset )
+{
+	angles = ent.angles;
+	angles += angle_offset;
+	angles = ( 0, AngleClamp180( angles[ 1 ] ), 0 );
+	node = ent.origin + ( AnglesToForward( angles ) * forward_size );
+	node = clamp_to_ground( node ) + offset;
+	return node;
+}
+
+clamp_to_ground( org )
+{
+	trace = playerPhysicsTrace( org + ( 0, 0, 20 ), org - ( 0, 0, 2000 ) );
+	return trace;
 }

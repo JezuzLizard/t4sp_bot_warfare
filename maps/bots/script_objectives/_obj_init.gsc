@@ -38,18 +38,22 @@ init()
 	    ::bot_magicbox_purchase_should_cancel,
 	    ::bot_magicbox_purchase_should_postpone,
 	    ::bot_magicbox_purchase_priority );
-	register_bot_objective( "powerup" );
-	register_bot_objective( "revive" );
+	
 	register_bot_objective( "magicbox" );
+	register_bot_objective( "wallbuy" );
+	register_bot_objective( "wallbuyammo" );
+	register_bot_objective( "perk" );
+	register_bot_objective( "door" );
+	register_bot_objective( "debris" );
+	register_bot_objective( "trap" );
+	register_bot_objective( "packapunch" );
+	register_bot_objective( "revive" );
+	//register_bot_objective( "grabbuildable" );
+	//register_bot_objective( "buildbuildable" );
+	//register_bot_objective( "part" );
+	register_bot_objective( "powerup" );
 
-	if ( isDefined( level.chests ) && level.chests.size > 0 )
-	{
-		level thread watch_magicbox_objectives();
-	}
-
-	//maps\bots\script_objectives\_obj_trackers;
-	level thread store_powerups_dropped();
-	level thread watch_for_downed_players();
+	create_static_objectives();
 }
 
 connected()
@@ -57,11 +61,10 @@ connected()
 	self endon( "disconnect" );
 
 	self thread initialize_bot_actions_queue();
-	self thread bot_valid_pump();
-	//self thread bot_objective_inaccessible_pump();
 
 	self.on_powerup_grab_func = ::bot_on_powerup_grab;
 	self.on_revive_success_func = ::bot_on_revive_success;
+	self.on_magicbox_weapon_grab_func = ::bot_on_magicbox_weapon_grab;
 
 	self.obj_postponed_reason = "";
 	self.obj_cancel_reason = "";
@@ -79,6 +82,7 @@ spawned()
 	self endon( "zombified" );
 
 	self thread bot_action_think();
+	//self thread cleanup_on_disconnect();
 }
 
 start_bot_threads()
