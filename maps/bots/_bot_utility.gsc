@@ -822,6 +822,11 @@ ReverseHeap( item, item2 )
 	return item < item2;
 }
 
+HeapPriority( item, item2 )
+{
+	return item.priority > item2.priority;
+}
+
 /*
 	A heap invarient comparitor, used for traces. Wanting the trace with the largest length first in the heap.
 */

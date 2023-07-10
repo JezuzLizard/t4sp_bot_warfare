@@ -325,137 +325,67 @@ bot_objective_history_get_previous()
 
 /**********Action Section**********/
 
-register_bot_action( group_name, action_name, action_func, action_process_order_func, init_func, post_think_func, should_do_func, check_if_complete_func, should_cancel_func, should_postpone_func, priority_func )
+register_bot_action( action_name, action_func, init_func, post_think_func, should_do_func, check_if_complete_func, should_cancel_func, priority_func )
 {
 	if ( !isDefined( level.zbots_actions ) )
 	{
 		level.zbots_actions = [];
 	}
-	if ( !isDefined( level.zbots_actions[ group_name ] ) )
+	if ( !isDefined( level.zbots_actions[ action_name ] ) )
 	{
-		level.zbots_actions[ group_name ] = [];
+		level.zbots_actions[ action_name ] = spawnStruct();
 	}
-	if ( !isDefined( level.zbots_actions[ group_name ][ action_name ] ) )
-	{
-		level.zbots_actions[ group_name ][ action_name ] = spawnStruct();
-	}
-	level.zbots_actions[ group_name ][ action_name ].action = action_func;
-	level.zbots_actions[ group_name ][ action_name ].init_func = init_func;
-	level.zbots_actions[ group_name ][ action_name ].post_think_func = post_think_func;
-	level.zbots_actions[ group_name ][ action_name ].should_do_func = should_do_func;
-	level.zbots_actions[ group_name ][ action_name ].action_process_order_func = action_process_order_func;
-	level.zbots_actions[ group_name ][ action_name ].check_if_complete_func = check_if_complete_func;
-	level.zbots_actions[ group_name ][ action_name ].should_cancel_func = should_cancel_func;
-	level.zbots_actions[ group_name ][ action_name ].should_postpone_func = should_postpone_func;
-	level.zbots_actions[ group_name ][ action_name ].priority_func = priority_func;
+	level.zbots_actions[ action_name ].action = action_func;
+	level.zbots_actions[ action_name ].init_func = init_func;
+	level.zbots_actions[ action_name ].post_think_func = post_think_func;
+	level.zbots_actions[ action_name ].should_do_func = should_do_func;
+	level.zbots_actions[ action_name ].check_if_complete_func = check_if_complete_func;
+	level.zbots_actions[ action_name ].should_cancel_func = should_cancel_func;
+	level.zbots_actions[ action_name ].priority_func = priority_func;
 }
 
-initialize_bot_actions_queue()
+bot_process_action()
 {
-	self.action_queue = [];
-	group_keys = getArrayKeys( level.zbots_actions );
-	for ( i = 0; i < group_keys.size; i++ )
-	{
-		self.action_queue[ group_keys[ i ] ] = [];
-		action_keys = getArrayKeys( level.zbots_actions[ group_keys[ i ] ] );
-		for ( j = 0; j < action_keys.size; j++ )
-		{
-			self register_bot_objective_action_for_queue( group_keys[ i ], action_keys[ j ] );
-		}
-	}
-}
-
-register_bot_objective_action_for_queue( group_name, action_name )
-{
-	if ( !isDefined( self.zbot_actions_in_queue ) )
-	{
-		self.zbot_actions_in_queue = [];
-	}
-	if ( !isDefined( self.zbot_actions_in_queue[ group_name ] ) )
-	{
-		self.zbot_actions_in_queue[ group_name ] = [];
-	}
-	if ( !isDefined( self.zbot_actions_in_queue[ group_name ][ action_name ] ) )
-	{
-		self.zbot_actions_in_queue[ group_name ][ action_name ] = spawnStruct();
-	}
-	self.zbot_actions_in_queue[ group_name ][ action_name ].postponed = false;
-	self.zbot_actions_in_queue[ group_name ][ action_name ].queued = false;
-	self.zbot_actions_in_queue[ group_name ][ action_name ].is_current = false;
-}
-
-process_next_queued_action( group_name )
-{
-	if ( self.zbot_actions_in_queue[ group_name ][ self.action_queue[ group_name ][ 0 ].action_name ].is_current )
-	{
-		return;
-	}
-
-	self.action_queue[ group_name ] = self sort_array_by_priority_field( self.action_queue[ group_name ] );
-
-	action_name = self.action_queue[ group_name ][ 0 ].action_name;
-
-	self [[ level.zbots_actions[ group_name ][ action_name ].init_func ]]();
-
-	self thread [[ level.zbots_actions[ group_name ][ action_name ].action ]]();
-
-	self.zbot_actions_in_queue[ group_name ][ action_name ].is_current = true;
-
-	self thread wait_for_action_completion( group_name, action_name );
-}
-
-wait_for_action_completion( group_name, action_name )
-{
-	self endon( "disconnect" );
 	self endon( "stop_action_think" );
-	level endon( "end_game" );
 
+	action_name = self.bot_action.action_name;
+
+	self [[ level.zbots_actions[ action_name ].init_func ]]();
+
+	self thread [[ level.zbots_actions[ action_name ].action ]]();
+
+	self.running_action = true;
+	self wait_for_action_completion( action_name );
+}
+
+wait_for_action_completion( action_name )
+{
 	action_complete_name = action_name + "_complete";
 	action_cancel_name = action_name + "_cancel";
 	action_postpone_name = action_name + "_postpone";
 
 	result = self waittill_any_return( action_complete_name, action_cancel_name, action_postpone_name );
 
-	save_action = false;
-
 	end_state = undefined;
 
 	if ( ( result == action_complete_name ) )
 	{
-		self.zbot_actions_in_queue[ group_name ][ action_name ].postponed = false;
-		self.zbot_actions_in_queue[ group_name ][ action_name ].queued = false;
 		end_state = "completed";
 	}
 	else if ( result == action_cancel_name )
 	{
-		self.zbot_actions_in_queue[ group_name ][ action_name ].postponed = false;
-		self.zbot_actions_in_queue[ group_name ][ action_name ].queued = false;
 		end_state = "canceled";
 	}
 	else if ( result == action_postpone_name )
 	{
-		self.zbot_actions_in_queue[ group_name ][ action_name ].postponed = true;
-		save_action = true;
 		end_state = "postponed";
 	}
 
-	self.zbot_actions_in_queue[ group_name ][ action_name ].is_current = false;
-
 	self notify( action_name + "_end_think" );
 
-	self [[ level.zbots_actions[ group_name ][ action_name ].post_think_func ]]( end_state );
+	self [[ level.zbots_actions[ action_name ].post_think_func ]]( end_state );
 
-	if ( save_action )
-	{
-		postponed_action = self.action_queue[ group_name ][ 0 ];
-		postponed_action.priority = self [[ level.zbots_actions[ group_name ][ action_name ].priority_func ]]();
-		self.action_queue[ group_name ] = array_insert( self.action_queue[ group_name ], postponed_action, 2 );
-		self.action_queue[ group_name ][ 0 ] = undefined;
-	}
-	else 
-	{
-		self.action_queue[ group_name ][ 0 ] = undefined;
-	}
+	self.bot_action = undefined;
 
 	self.obj_history[ self.bot_obj_history_index ].end_time = getTime();
 	end_time = self.obj_history[ self.bot_obj_history_index ].end_time;
@@ -463,88 +393,52 @@ wait_for_action_completion( group_name, action_name )
 	self.obj_history[ self.bot_obj_history_index ].time_spent = end_time - start_time;
 	self.obj_history[ self.bot_obj_history_index ].bot_end_pos = self.origin;
 	self.bot_obj_history_index++;
+	self.running_action = false;
 }
 
-pick_actions_to_add_to_queue( group_name )
+bot_pick_action()
 {
-	action_keys = getArrayKeys( level.zbots_actions[ group_name ] );
+	action_keys = getArrayKeys( level.zbots_actions );
 
-	//TODO: Use process order funcs to determine the order of actions being added to the queue
-	//For now just randomize the order of the keys
-	/*
-	for ( i = 0; i < action_keys; i++ )
-	{
-
-	}
-	*/
-
-	//Reboot the action queue because the last member was deleted which deletes the array
-	if ( !isDefined( self.action_queue ) || !isDefined( self.action_queue[ group_name ] ) )
-	{
-		self.action_queue = [];
-		self.action_queue[ group_name ] = [];
-	}
-
-	if ( !isDefined( self.action_id ) )
-	{
-		self.action_id = 0;
-	}
-
+	possible_actions = NewHeap( ::HeapPriority );
 	for ( i = 0; i < action_keys.size; i++ )
 	{
-		if ( !self.zbot_actions_in_queue[ group_name ][ action_keys[ i ] ].queued && [[ level.zbots_actions[ group_name ][ action_keys[ i ] ].should_do_func ]]() )
+		if ( self [[ level.zbots_actions[ action_keys[ i ] ].should_do_func ]]() )
 		{
-			self.action_queue[ group_name ][ self.action_queue[ group_name ].size ] = spawnStruct();
-			self.action_queue[ group_name ][ self.action_queue[ group_name ].size - 1 ].action_name = action_keys[ i ];
-			self.action_queue[ group_name ][ self.action_queue[ group_name ].size - 1 ].action_id = self.action_id;
-			self.action_queue[ group_name ][ self.action_queue[ group_name ].size - 1 ].priority = self [[ level.zbots_actions[ group_name ][ action_keys[ i ] ].priority_func ]]();
-			self.zbot_actions_in_queue[ group_name ][ action_keys[ i ] ].queued = true;
-			self.action_id++;
+			possible_action = spawnStruct();
+			possible_action.action_name = action_keys[ i ];
+			possible_action.priority = self [[ level.zbots_actions[ action_keys[ i ] ].priority_func ]]();
+			possible_actions HeapInsert( possible_action );
+			printConsole( "Adding action " + action_keys[ i ] + " to queue of size: " + possible_actions.data.size );
 		}
 	}
-}
 
-bot_clear_actions_queue()
-{
-	group_keys = getArrayKeys( level.zbots_actions );
-	for ( i = 0; i < group_keys.size; i++ )
+	if ( !isDefined( possible_actions.data ) || possible_actions.data.size <= 0 )
 	{
-		self.action_queue[ group_keys[ i ] ] = [];
-		action_keys = getArrayKeys( level.zbots_actions[ group_keys[ i ] ] );
-		for ( j = 0; j < action_keys.size; j++ )
-		{
-			self register_bot_objective_action_for_queue( group_keys[ i ], action_keys[ j ] );
-		}
-	}	
+		return false;
+	}
+	self.bot_action = possible_actions.data[ 0 ];
+	printConsole( "Picking action " + self.bot_action.action_name + " Priority " + self.bot_action.priority );
+	return true;
 }
 
-check_if_action_is_completed_in_group( group_name, action_name )
+bot_check_action_complete( action_name )
 {
-	assert( isDefined( level.zbots_actions[ group_name ][ action_name ].check_if_complete_func ) );
+	assert( isDefined( level.zbots_actions[ action_name ].check_if_complete_func ) );
 
-	is_complete = self [[ level.zbots_actions[ group_name ][ action_name ].check_if_complete_func ]]();
+	is_complete = self [[ level.zbots_actions[ action_name ].check_if_complete_func ]]();
 
 	if ( is_complete )
 	{
 		self notify( action_name + "_complete" );
+		self notify( "goal" );
 	}
 	return is_complete;
 }
 
-check_if_action_should_be_postponed_in_group( group_name, action_name )
+bot_check_if_action_should_be_canceled_in_group( action_name )
 {
-	should_postpone = self [[ level.zbots_actions[ group_name ][ action_name ].should_postpone_func ]]();
-	if ( should_postpone )
-	{
-		self notify( action_name + "_postpone" );
-		self notify( "goal" );
-	}
-	return should_postpone;
-}
-
-check_if_action_should_be_canceled_in_group( group_name, action_name )
-{
-	should_cancel = self [[ level.zbots_actions[ group_name ][ action_name ].should_cancel_func ]]();
+	should_cancel = self [[ level.zbots_actions[ action_name ].should_cancel_func ]]();
 	if ( should_cancel )
 	{
 		self notify( action_name + "_cancel" );
@@ -554,52 +448,24 @@ check_if_action_should_be_canceled_in_group( group_name, action_name )
 	return should_cancel;
 }
 
-check_if_action_should_be_postponed_globally( group_name, action_name )
+bot_check_if_action_should_be_canceled_globally( action_name )
 {
-	should_postpone = self action_should_be_postponed_global( group_name, action_name );
-	if ( should_postpone )
-	{
-		self notify( action_name + "_postpone" );
-		self notify( "goal" );
-	}
-	return should_postpone;
-}
-
-check_if_action_should_be_canceled_globally( group_name, action_name )
-{
-	should_cancel = self action_should_be_canceled_global( group_name, action_name );
+	should_cancel = self action_should_be_canceled_global( action_name );
 	if ( should_cancel )
 	{
 		self notify( action_name + "_cancel" );
 		self notify( "goal" );
 	}
 	return should_cancel;
-}
-
-//TODO: Figure out way of overriding the current action for flee movement action
-check_for_forced_action( group_name )
-{
-	action_keys = getArrayKeys( level.zbots_actions[ group_name ] );
-	action_priorities_array = [];
-	for ( i = 0; i < action_keys.size; i++ )
-	{
-		action_priorities_array[ action_priorities_array.size ] = spawnStruct();
-		action_priorities_array[ action_priorities_array.size - 1 ].priority = self [[ level.zbots_actions[ group_name ][ action_keys[ i ] ].priority_func ]]();
-		action_priorities_array[ action_priorities_array.size - 1 ].action_name = action_keys[ i ];
-	}
-
-	action_priorities_array = sort_array_by_priority_field( action_priorities_array );
-
-	if ( self.action_queue[ group_name ][ 0 ].priority < action_priorities_array[ 0 ].priority )
-	{
-		self notify( self.action_queue[ group_name ][ 0 ].action_name + "_cancel" );
-	}
 }
 
 bot_action_think()
 {
 	self endon( "disconnect" );
 	self endon( "zombified" );
+	level endon( "end_game" );
+
+	self thread bot_action_pump();
 
 	while ( true )
 	{
@@ -609,65 +475,65 @@ bot_action_think()
 		}
 		else 
 		{
-			wait 0.05;
+			wait 1;
 		}
 		//Wait until the end of the frame so any variables set by _bot_internal in the current frame will have up to date values
 		waittillframeend;
 
-		if ( !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
+		self.bot_action = undefined;
+		if ( !self bot_pick_action() )
 		{
+			if ( getDvarInt( "bot_obj_debug_all" ) != 0 )
+			{
+				printConsole( "BOT_ACTION_THINK: " + self.playername + " does not have an action selected" );
+			}
 			continue;
 		}
+		
+		self bot_process_action();
 
-		group_name = "objective";
-
-		self pick_actions_to_add_to_queue( group_name );
-
-		//self check_for_forced_action( group_name );
-
-		if ( !isDefined( self.action_queue[ group_name ][ 0 ] ) )
+		while ( !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
 		{
-			continue;
-		}
-
-		self process_next_queued_action( group_name );
-
-		action_name = self.action_queue[ group_name ][ 0 ].action_name;
-
-		if ( self check_if_action_is_completed_in_group( group_name, action_name ) )
-		{
-			wait 0.1;
-			continue;
-		}
-		if ( self check_if_action_should_be_postponed_globally( group_name, action_name ) )
-		{
-			wait 0.1;
-			continue;
-		}
-		if ( self check_if_action_should_be_canceled_globally( group_name, action_name ) )
-		{
-			wait 0.1;
-			continue;
-		}
-		if ( self check_if_action_should_be_postponed_in_group( group_name, action_name ) )
-		{
-			wait 0.1;
-			continue;
-		}
-		if ( self check_if_action_should_be_canceled_in_group( group_name, action_name ) )
-		{
-			wait 0.1;
-			continue;
+			if ( getDvarInt( "bot_obj_debug_all" ) != 0 )
+			{
+				printConsole( "BOT_ACTION_THINK: " + self.playername + " is not in a valid state" );
+			}
+			wait 1;
 		}
 	}
 }
 
-action_should_be_postponed_global( primary_group_name, action_name )
+bot_action_pump()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+	level endon( "end_game" );
+
+	while ( true )
+	{
+		wait 0.05;
+		if ( !isDefined( self.bot_action ) )
+		{
+			continue;
+		}
+		action_name = self.bot_action.action_name;
+		self bot_check_action_complete( action_name );
+		self bot_check_if_action_should_be_canceled_globally( action_name );
+		self bot_check_if_action_should_be_canceled_in_group( action_name );
+		
+		while ( !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
+		{
+			wait 1;
+		}
+	}
+}
+
+action_should_be_postponed_global( action_name )
 {
 	return false;
 }
 
-action_should_be_canceled_global( primary_group_name, action_name )
+action_should_be_canceled_global( action_name )
 {
 	obj = self bot_get_objective();
 

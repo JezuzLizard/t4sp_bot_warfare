@@ -9,35 +9,41 @@ init()
 {
 	//maps\bots\script_objectives\_obj_common;
 	//maps\bots\script_objectives\_obj_actions;
-	register_bot_action( "objective", "powerup", ::bot_grab_powerup,
-	    ::bot_powerup_process_order,
+	register_bot_action( "powerup", 
+	    ::bot_grab_powerup,
 	    ::bot_powerup_init,
 	    ::bot_powerup_post_think,
 	    ::bot_should_grab_powerup,
 	    ::bot_check_complete_grab_powerup,
 	    ::bot_powerup_should_cancel,
-	    ::bot_powerup_should_postpone,
 	    ::bot_powerup_priority );
 
-	register_bot_action( "objective", "revive",  ::bot_revive_player,
-	    ::bot_revive_process_order,
+	register_bot_action( "revive", 
+	    ::bot_revive_player,
 	    ::bot_revive_player_init,
 	    ::bot_revive_player_post_think,
 	    ::bot_should_revive_player,
 	    ::bot_check_complete_revive_player,
 	    ::bot_revive_player_should_cancel,
-	    ::bot_revive_player_should_postpone,
 	    ::bot_revive_player_priority );
 
-	register_bot_action( "objective", "magicbox",  ::bot_magicbox_purchase,
-	    ::bot_magicbox_purchase_process_order,
+	register_bot_action( "magicbox", 
+	    ::bot_magicbox_purchase,
 	    ::bot_magicbox_purchase_init,
 	    ::bot_magicbox_purchase_post_think,
 	    ::bot_should_purchase_magicbox,
 	    ::bot_check_complete_purchase_magicbox,
 	    ::bot_magicbox_purchase_should_cancel,
-	    ::bot_magicbox_purchase_should_postpone,
 	    ::bot_magicbox_purchase_priority );
+
+	register_bot_action( "perk", 
+	    ::bot_perk_purchase,
+	    ::bot_perk_purchase_init,
+	    ::bot_perk_purchase_post_think,
+	    ::bot_should_purchase_perk,
+	    ::bot_check_complete_perk_purchase,
+	    ::bot_perk_purchase_should_cancel,
+	    ::bot_perk_purchase_priority );
 	
 	register_bot_objective( "magicbox" );
 	register_bot_objective( "wallbuy" );
@@ -60,13 +66,11 @@ connected()
 {
 	self endon( "disconnect" );
 
-	self thread initialize_bot_actions_queue();
-
 	self.on_powerup_grab_func = ::bot_on_powerup_grab;
 	self.on_revive_success_func = ::bot_on_revive_success;
 	self.on_magicbox_weapon_grab_func = ::bot_on_magicbox_weapon_grab;
+	self.on_perk_purchase_func = ::bot_on_perk_purchase;
 
-	self.obj_postponed_reason = "";
 	self.obj_cancel_reason = "";
 
 	self.obj_history = [];

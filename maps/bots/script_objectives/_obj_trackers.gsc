@@ -5,6 +5,22 @@
 
 create_static_objectives()
 {
+	if ( getDvar( "magicbox_node_forward_size" ) == "" )
+	{
+		setDvar( "magicbox_node_forward_size", 55 );
+	}
+	if ( getDvar( "magicbox_node_vertical_offset" ) == "" )
+	{
+		setDvar( "magicbox_node_vertical_offset", 10 );
+	}
+	if ( getDvar( "perk_node_forward_size" ) == "" )
+	{
+		setDvar( "perk_node_forward_size", 55 );
+	}
+	if ( getDvar( "perk_node_vertical_offset" ) == "" )
+	{
+		setDvar( "perk_node_vertical_offset", 1 );
+	}
 	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" ); 
 
 	if ( isDefined( weapon_spawns ) && weapon_spawns.size > 0 )
@@ -23,6 +39,9 @@ create_static_objectives()
 		for ( i = 0; i < vending_triggers.size; i++ )
 		{
 			obj = add_possible_bot_objective( "perk", vending_triggers[ i ], false );
+			model = getEnt( vending_triggers[ i ].target, "targetname" );
+			vending_triggers[ i ].bot_use_node = get_angle_offset_node( model, ( 0, 0, 0 ), getDvar( "perk_node_forward_size" ), ( 0, 0, getDvar( "perk_node_vertical_offset" ) ) );
+			vending_triggers[ i ] thread perk_debug();
 		}
 	}
 
@@ -163,7 +182,7 @@ watch_magicbox_objectives()
 
 	cur_magicbox = maps\so\zm_common\_zm_magicbox::get_active_magicbox();
 	add_possible_bot_objective( "magicbox", cur_magicbox, true );
-	cur_magicbox.bot_use_node = get_angle_offset_node( cur_magicbox maps\so\zm_common\_zm_magicbox::get_chest_pieces()[ 1 ], ( 0, 90, 0 ), 40, ( 0, 0, 1 ) );
+	cur_magicbox.bot_use_node = get_angle_offset_node( cur_magicbox maps\so\zm_common\_zm_magicbox::get_chest_pieces()[ 1 ], ( 0, 90, 0 ), getDvarInt( "magicbox_node_forward_size" ), ( 0, 0, getDvarInt( "magicbox_node_vertical_offset" ) ) );
 
 	cur_magicbox thread magicbox_debug();
 
@@ -174,7 +193,7 @@ watch_magicbox_objectives()
 		free_bot_objective( "magicbox", old_magicbox );
 		level waittill( "new_magicbox", new_magicbox );
 		add_possible_bot_objective( "magicbox", new_magicbox, true );
-		new_magicbox.bot_use_node = get_angle_offset_node( new_magicbox maps\so\zm_common\_zm_magicbox::get_chest_pieces()[ 1 ], ( 0, 90, 0 ), 40, ( 0, 0, 1 ) );
+		new_magicbox.bot_use_node = get_angle_offset_node( new_magicbox maps\so\zm_common\_zm_magicbox::get_chest_pieces()[ 1 ], ( 0, 90, 0 ), getDvarInt( "magicbox_node_forward_size" ), ( 0, 0, getDvarInt( "magicbox_node_vertical_offset" ) ) );
 		new_magicbox thread magicbox_debug();
 	}
 }
@@ -184,13 +203,28 @@ magicbox_debug()
 	self notify( "magicbox_debug" );
 	self endon( "magicbox_debug");
 	level endon( "magicbox_teddy_bear" );
+	if ( getDvarInt( "bot_obj_debug_all" ) == 0 && getDvarInt( "bot_obj_debug_perk" ) == 0 )
+	{
+		return;
+	}
+	while ( true )
+	{
+		node = get_angle_offset_node( self maps\so\zm_common\_zm_magicbox::get_chest_pieces()[ 1 ], ( 0, 90, 0 ), getDvarInt( "magicbox_node_forward_size" ), ( 0, 0, getDvarInt( "magicbox_node_vertical_offset" ) ) );
+		self.bot_use_node = node;
+		line( self.origin, node, ( 1.0, 1.0, 1.0 ) );
+		wait 0.05;
+	}
+}
+
+perk_debug()
+{
 	if ( getDvarInt( "bot_obj_debug_all" ) == 0 && getDvarInt( "bot_obj_debug_magicbox" ) == 0 )
 	{
 		return;
 	}
 	while ( true )
 	{
-		node = get_angle_offset_node( self maps\so\zm_common\_zm_magicbox::get_chest_pieces()[ 1 ], ( 0, 90, 0 ), getDvarInt( "magicbox_node_forward_size" ), ( 0, 0, 1 ) );
+		node = get_angle_offset_node( self, ( 0, getDvarInt( "perk_node_angle" ), 0 ), getDvarInt( "perk_node_forward_size" ), ( 0, 0, getDvarInt( "perk_node_vertical_offset" ) ) );
 		self.bot_use_node = node;
 		line( self.origin, node, ( 1.0, 1.0, 1.0 ) );
 		wait 0.05;
@@ -213,4 +247,10 @@ bot_on_magicbox_weapon_grab( magicbox, weapon )
 {
 	self bot_objective_print( "magicbox", magicbox getEntityNumber(), "bot_on_magicbox_weapon_grab", "Bot <" + self.playername + "> grabbed <" + weapon + "> from the box"  );
 	self.successfully_grabbed_magicbox_weapon = true;
+}
+
+bot_on_perk_purchase( trigger, perk )
+{
+	self bot_objective_print( "perk", trigger getEntityNumber(), "bot_on_perk_purchase", "Bot <" + self.playername + "> purchased <" + perk + ">"  );
+	self.successfully_bought_perk = true;	
 }

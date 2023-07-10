@@ -38,31 +38,24 @@ setupcallbacks()
 
 killtestoverrideactordamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset )
 {
-	if ( isDefined( eAttacker ) && isPlayer( eAttacker ) )
-	{
-		if ( sWeapon == "zombie_doublebarrel" )
-			iDamage = 1;
-	}
-
 	setDvar( "aa_player_damage_dealt", 0 );
 
-	if ( sMeansOfDeath == "MOD_MELEE" )
-		iDamage = 100000000;
+	if ( isPlayer( eAttacker ) && eAttacker isBot() && getDvarInt( "bots_t8_mode" ) )
+	{
+		iDamage += int( self.maxhealth * randomFloatRange( 0.25, 1.25 ) );
+	}
 
 	self [[level.killtestoldoverrideactordamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset );
 }
 
 killtestoverrideplayerdamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )
 {
-	if ( self isBot() )
+	if ( self isBot() && getDvarInt( "bots_t8_mode" ) )
 	{
-		if ( isDefined( eAttacker ) && eAttacker == self )
-			return;
-
-		iDamage = 5;
+		iDamage = int( iDamage * 0.1 );
 	}
 
-	PrintConsole( self GetPlayerName() + " took " + iDamage );
+	//PrintConsole( self GetPlayerName() + " took " + iDamage );
 
 	self [[level.killtestoldoverrideplayerdamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
 }

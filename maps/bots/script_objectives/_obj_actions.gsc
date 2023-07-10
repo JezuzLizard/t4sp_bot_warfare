@@ -12,14 +12,10 @@ bot_post_think_common( state )
 		case "completed":
 			self bot_objective_print( obj.group, obj.id, "Bot <" + self.playername + "> objective was completed", "bot_post_think_common" );
 			break;
-		case "postponed":
-			self bot_objective_print( obj.group, obj.id, "Bot <" + self.playername + "> objective was postponed Reason: " + self.obj_postponed_reason, "bot_post_think_common" );
-			break;
 		case "canceled":
 			self bot_objective_print( obj.group, obj.id, "Bot <" + self.playername + "> objective was canceled Reason: " + self.obj_cancel_reason, "bot_post_think_common" );
 			break;
 	}
-	self.obj_postponed_reason = "";
 	self.obj_cancel_reason = "";
 	self thread ClearScriptGoal();
 	self ClearScriptAimPos();
@@ -43,55 +39,48 @@ bot_grab_powerup()
 	self bot_set_objective( "powerup", powerup_obj_ent );
 	self bot_set_objective_owner( "powerup", powerup_obj_ent );
 
-	self bot_objective_print( "powerup", powerup_obj.id, "Bot <" + self.playername + "> starts objective", "bot_grab_powerup" );
-	while ( true )
+	self bot_objective_print( "powerup", powerup_obj.id, "Bot <" + self.playername + "> Attempting to grab powerup", "bot_grab_powerup" );
+	self SetPriorityObjective();
+	self SetScriptGoal( powerup_obj_ent.origin );
+
+	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+	if ( result != "goal" )
 	{
-		wait 1;
-		self SetPriorityObjective();
-		self SetScriptGoal( powerup_obj_ent.origin );
-
-		result = self waittill_any_return( "goal", "bad_path", "new_goal" );
-
-		if ( result != "goal" )
+		self.obj_cancel_reason = "Bad path/new goal";
+		self notify( "powerup_cancel" );
+		return;
+	}
+	//Wait to see if the bot was able to grab the powerup
+	wait 0.5;
+	//Check if powerup still exists
+	if ( isDefined( powerup_obj_ent ) )
+	{
+		height_difference = powerup_obj_ent.origin[ 2 ] - self.origin[ 2 ];
+		if ( height_difference > 0 && height_difference < 39 )
 		{
-			self bot_objective_print( "powerup", powerup_obj.id, "Bot <" + self.playername + "> bad path", "bot_grab_powerup" );
-			continue;
-		}
-		//Wait to see if the bot was able to grab the powerup
-		wait 0.5;
-		//Check if powerup still exists
-		if ( isDefined( powerup_obj_ent ) )
-		{
-			height_difference = powerup_obj_ent.origin[ 2 ] - self.origin[ 2 ];
-			if ( height_difference > 0 && height_difference < 49 )
+			self BotJump();
+			wait 0.5;
+			waittillframeend;
+			//Check if bot was able to grab the powerup by jumping
+			if ( isDefined( powerup_obj_ent ) )
 			{
-				self BotJump();
-				wait 0.5;
-				waittillframeend;
-				//Check if bot was able to grab the powerup by jumping
-				if ( self bot_has_objective() || isDefined( powerup_obj_ent ) )
-				{
-					//Mark objective as bad so bots will ignore it from now on
-					powerup_obj.bad = true;
-				}
-			}
-			else 
-			{
+				//Mark objective as bad so bots will ignore it from now on
 				powerup_obj.bad = true;
 			}
+		}
+		else 
+		{
+			powerup_obj.bad = true;
+		}
 
-			if ( powerup_obj.bad )
-			{
-				self bot_objective_print( "powerup", powerup_obj.id, "Bot <" + self.playername + "> objective was marked as bad", "bot_grab_powerup" );
-				break;
-			}
+		if ( powerup_obj.bad )
+		{
+			self.obj_cancel_reason = "Obj was marked as bad";
+			self notify( "powerup_cancel" );
+			return;
 		}
 	}
-}
-
-bot_powerup_process_order()
-{
-	return 0;
 }
 
 bot_powerup_init()
@@ -143,7 +132,7 @@ bot_should_grab_powerup()
 		{
 			continue;
 		}
-		if ( !isDefined( generatePath( self.origin, powerup.origin, self.team, level.bot_allowed_negotiation_links ) ) )
+		if ( self GetPathIsInaccessible( powerup.origin ) )
 		{
 			continue;
 		}
@@ -172,19 +161,9 @@ bot_powerup_should_cancel()
 	return goal_canceled;
 }
 
-bot_powerup_should_postpone()
-{
-	return false;
-}
-
 bot_powerup_priority()
 {
-	if ( !isDefined( self.available_powerups ) )
-	{
-		return 0;
-	}
-	//return self.available_powerups[ 0 ].target_ent.priority;
-	return 0;
+	return 3;
 }
 
 //TODO: Possibly add the ability to circle revive?
@@ -204,55 +183,57 @@ bot_revive_player()
 	player_to_revive = player_to_revive_obj.target_ent;
 	self bot_set_objective( "revive", player_to_revive );
 	self bot_set_objective_owner( "revive", player_to_revive );
-	self bot_objective_print( "revive", player_to_revive_obj.id, "Bot <" + self.playername + "> objective started", "bot_revive_player" );
-	//If player is no longer valid to revive stop trying to revive
-	//If bot doesn't have an objective anymore or the objective has changed stop trying to revive
-	while ( true )
+	self bot_objective_print( "revive", player_to_revive_obj.id, "Bot <" + self.playername + "> Attempting to revive " + player_to_revive.playername, "bot_revive_player" );
+	//Constantly update the goal just in case the player is moving(T5 or higher only)
+	self ClearScriptAimPos();
+	self SetPriorityObjective();
+	self SetScriptGoal( player_to_revive.origin, 32 );
+
+	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+	if ( result != "goal" )
 	{
-		wait 1;
-		//Constantly update the goal just in case the player is moving(T5 or higher only)
-		self ClearScriptAimPos();
-		self SetPriorityObjective();
-		self SetScriptGoal( player_to_revive.origin, 32 );
-
-		result = self waittill_any_return( "goal", "bad_path", "new_goal" );
-
-		if ( result != "goal" )
-		{
-			self bot_objective_print( "revive", player_to_revive_obj.id, "Bot <" + self.playername + "> bad path", "bot_revive_player" );
-			continue;
-		}
-		if ( !isDefined( player_to_revive.revivetrigger ) )
-		{
-			continue;
-		}
-		//Check if the bot is reviving the player already and also that the player isn't being revived already
-		if ( player_to_revive.revivetrigger.beingrevived )
-		{
-			continue;
-		}
-
-		self SetScriptAimPos( player_to_revive.origin );
-
-		time = 3.2;
-		if ( self hasPerk( "specialty_quickrevive" ) )
-		{
-			time /= 2;
-		}
-		self thread BotPressUse( time );
-
-		while ( self maps\_laststand::is_reviving( player_to_revive ) )
-		{
-			wait 0.05;
-		}
-		//Wait to see if we cleared the objective by successfully reviving the player
-		waittillframeend;
+		self.obj_cancel_reason = "Bad path/new goal";
+		self notify( "revive_cancel" );
+		return;
 	}
+	if ( !isDefined( player_to_revive.revivetrigger ) )
+	{
+		self.obj_cancel_reason = "No revive trigger";
+		self notify( "revive_cancel" );
+		return;
+	}
+	//Check if the bot is reviving the player already and also that the player isn't being revived already
+	if ( player_to_revive.revivetrigger.beingrevived )
+	{
+		self.obj_cancel_reason = "Player is already being revived";
+		self notify( "revive_cancel" );
+		return;
+	}
+
+	self SetScriptAimPos( player_to_revive.origin );
+
+	time = 3.2;
+	if ( self hasPerk( "specialty_quickrevive" ) )
+	{
+		time /= 2;
+	}
+	self thread BotPressUse( time );
+
+	self thread knocked_off_revive_watcher();
 }
 
-bot_revive_process_order()
+knocked_off_revive_watcher( revivee )
 {
-	return 0;
+	while ( self maps\_laststand::is_reviving( revivee ) )
+	{
+		wait 0.05;
+	}
+	if ( isDefined( revivee.revivetrigger ) )
+	{
+		self.obj_cancel_reason = "Knocked off revive";
+		self notify( "revive_cancel" );
+	}
 }
 
 bot_revive_player_init()
@@ -280,6 +261,11 @@ bot_should_revive_player()
 	for ( i = 0; i < downed_players_objs.size; i++ )
 	{
 		obj = downed_players_objs[ obj_keys[ i ] ];
+		player = obj.target_ent;
+		if ( player == self )
+		{
+			continue;
+		}
 		if ( isDefined( obj.owner ) )
 		{
 			continue;
@@ -288,7 +274,7 @@ bot_should_revive_player()
 		{
 			continue;
 		}
-		if ( !isDefined( generatePath( self.origin, obj.target_ent.origin, self.team, level.bot_allowed_negotiation_links ) ) )
+		if ( self GetPathIsInaccessible( player.origin ) )
 		{
 			continue;
 		}
@@ -320,14 +306,9 @@ bot_revive_player_should_cancel()
 	return goal_canceled;
 }
 
-bot_revive_player_should_postpone()
-{
-	return false;
-}
-
 bot_revive_player_priority()
 {
-	return 0;
+	return 2;
 }
 
 bot_magicbox_purchase()
@@ -345,77 +326,75 @@ bot_magicbox_purchase()
 	
 	magicbox = magicbox_obj.target_ent;
 	self bot_set_objective( "magicbox", magicbox );
-	self bot_set_objective_owner( "magicbox", magicbox );
-	self bot_objective_print( "magicbox", magicbox_obj.id, "Bot <" + self.playername + "> objective started", "bot_magicbox_purchase" );
+	//self bot_set_objective_owner( "magicbox", magicbox );
+	self bot_objective_print( "magicbox", magicbox_obj.id, "Bot <" + self.playername + "> Attempting to purchase magicbox", "bot_magicbox_purchase" );
 	magicbox_obj.magicbox_weapon_spawn_time = undefined;
-	magicbox_obj.magicbox_weapon_string = undefined;
-	while ( true )
+
+	lookat_org = magicbox.origin + ( 0, 0, 35 );
+	goal_org = magicbox.bot_use_node;
+
+	self ClearScriptAimPos();
+	self SetScriptGoal( goal_org, 32 );
+
+	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+	if ( result != "goal" )
 	{
-		wait 1;
-		self ClearScriptAimPos();
-		self SetPriorityObjective();
-		self SetScriptGoal( magicbox.bot_use_node, 32 );
-
-		result = self waittill_any_return( "goal", "bad_path", "new_goal" );
-
-		if ( result != "goal" )
-		{
-			self bot_objective_print( "magicbox", magicbox_obj.id, "Bot <" + self.playername + "> bad path", "bot_magicbox_purchase" );
-			continue;
-		}
-
-		self SetScriptAimPos( magicbox.origin );
-
-		self thread BotPressUse( 0.1 );
-		wait 0.1;
-		waittillframeend;
-		if ( !magicbox._box_open )
-		{
-			self bot_objective_print( "magicbox", magicbox_obj.id, "Bot <" + self.playername + "> magicbox didn't open", "bot_magicbox_purchase" );
-			continue;
-		}
-		// self ClearScriptGoal();
-		// self ClearScriptAimPos();
-		// self ClearPriorityObjective();
-		break;
+		self.obj_cancel_reason = "Bad path/new goal";
+		self notify( "magicbox_cancel" );
+		return;
 	}
 
-	while ( !isDefined( magicbox.weapon_spawn_org ) )
+	self SetScriptAimPos( lookat_org );
+	wait randomFloatRange( 0.5, 1.5 );
+
+	self thread BotPressUse( 0.2 );
+	wait 0.75;
+	waittillframeend;
+	//self ClearScriptAimPos();
+	//self ClearScriptGoal();
+	if ( !magicbox._box_open )
 	{
-		wait 0.05;
+		self.obj_cancel_reason = "Failed to open";
+		self notify( "magicbox_cancel" );
+		return;
+	}
+
+	if ( !isDefined( magicbox.weapon_spawn_org ) )
+	{
+		self.obj_cancel_reason = "No weapon spawn org";
+		self notify( "magicbox_cancel" );
+		return;
 	}
 	magicbox.weapon_spawn_org waittill( "randomization_done" );
+	self bot_objective_print( "magicbox", magicbox_obj.id, "Bot <" + self.playername + "> randomization_done", "bot_magicbox_purchase" );
 
 	magicbox_obj.magicbox_weapon_spawn_time = getTime();
-	magicbox_obj.magicbox_weapon_string = magicbox.weapon_string;
 
-	//Pickup logic
-	while ( true )
+	if ( self bot_should_reject_magicbox_weapon( magicbox.weapon_string ) )
 	{
-		wait 1;
-		self ClearScriptAimPos();
-		self SetPriorityObjective();
-		self SetScriptGoal( magicbox.bot_use_node, 32 );
-
-		result = self waittill_any_return( "goal", "bad_path", "new_goal" );
-
-		if ( result != "goal" )
-		{
-			self bot_objective_print( "magicbox", magicbox_obj.id, "Bot <" + self.playername + "> bad path on pickup", "bot_magicbox_purchase" );
-			continue;
-		}
-
-		self SetScriptAimPos( magicbox.origin );
-
-		self thread BotPressUse( 0.1 );
-		wait 0.1;
-		waittillframeend;
+		self.obj_cancel_reason = "Rejected magicbox weapon: " + magicbox.weapon_string;
+		self notify( "magicbox_cancel" );
+		return;
 	}
-}
 
-bot_magicbox_purchase_process_order()
-{
-	return 0;
+	self ClearScriptAimPos();
+	self SetPriorityObjective();
+	self SetScriptGoal( goal_org, 32 );
+
+	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+	if ( result != "goal" )
+	{
+		self.obj_cancel_reason = "Bad path/new goal on pickup";
+		self notify( "magicbox_cancel" );
+		return;
+	}
+
+	self SetScriptAimPos( lookat_org );
+	wait randomFloatRange( 0.5, 1.5 );
+
+	self thread BotPressUse( 0.2 );
 }
 
 bot_magicbox_purchase_init()
@@ -456,12 +435,17 @@ bot_should_purchase_magicbox()
 			self bot_objective_print( "magicbox", obj.id, "Bot <" + self.playername + "> not purchasing this magicbox box because it has an owner", "bot_should_purchase_magicbox" );
 			continue;
 		}
+		if ( isDefined( magicbox.chest_user ) )
+		{
+			self bot_objective_print( "magicbox", obj.id, "Bot <" + self.playername + "> not purchasing this magicbox box because it has a user", "bot_should_purchase_magicbox" );
+			continue;
+		}
 		if ( self.score < magicbox.zombie_cost )
 		{
 			self bot_objective_print( "magicbox", obj.id, "Bot <" + self.playername + "> not purchasing this magicbox box because it is unaffordable", "bot_should_purchase_magicbox" );
 			continue;
 		}
-		if ( !isDefined( generatePath( self.origin, magicbox.bot_use_node, self.team, level.bot_allowed_negotiation_links ) ) )
+		if ( self GetPathIsInaccessible( magicbox.bot_use_node ) )
 		{
 			self bot_objective_print( "magicbox", obj.id, "Bot <" + self.playername + "> not purchasing this magicbox box because it cannot be pathed to", "bot_should_purchase_magicbox" );
 			continue;
@@ -486,27 +470,19 @@ bot_magicbox_purchase_should_cancel()
 	obj = self bot_get_objective();
 
 	goal_canceled = false;
+	/*
 	if ( !self bot_is_objective_owner( "magicbox", obj.target_ent ) )
 	{
 		self.obj_cancel_reason = "No longer the obj owner";
 		goal_canceled = true;
 	}
-	else if ( isDefined( obj.magicbox_weapon_string ) && self bot_should_reject_magicbox_weapon( obj ) )
-	{
-		self.obj_cancel_reason = "Rejected magicbox weapon: " + obj.magicbox_weapon_string;
-		goal_canceled = true;
-	}
-	else if ( isDefined( obj.magicbox_weapon_spawn_time ) && ( getTime() >= ( obj.magicbox_weapon_spawn_time + 12000 ) ) )
+	*/
+	if ( isDefined( obj.magicbox_weapon_spawn_time ) && ( getTime() >= ( obj.magicbox_weapon_spawn_time + 12000 ) ) )
 	{
 		self.obj_cancel_reason = "Weapon timed out";
 		goal_canceled = true;	
 	}
 	return goal_canceled;
-}
-
-bot_magicbox_purchase_should_postpone()
-{
-	return false;
 }
 
 bot_magicbox_purchase_priority()
@@ -529,4 +505,127 @@ bot_magicbox_purchase_priority()
 	return priority;
 	*/
 	return 0;
+}
+
+bot_perk_purchase()
+{
+	if ( !isDefined( self.available_perks ) || self.available_perks.size <= 0 )
+	{
+		return;
+	}
+
+	self endon( "disconnect" );
+	self endon( "perk_end_think" );
+	level endon( "end_game" );
+
+	perk_obj = self.available_perks[ 0 ];
+	
+	perk_ent = perk_obj.target_ent;
+	self bot_set_objective( "perk", perk_ent );
+	self bot_objective_print( "perk", perk_obj.id, "Bot <" + self.playername + "> Attempting to purchase " + perk_ent.script_noteworthy, "bot_perk_purchase" );
+
+	lookat_org = perk_ent.origin + ( 0, 0, 35 );
+	goal_org = perk_ent.bot_use_node;
+
+	self SetPriorityObjective();
+	self ClearScriptAimPos();
+	self SetScriptGoal( goal_org, 32 );
+
+	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+	if ( result != "goal" )
+	{
+		self.obj_cancel_reason = "Bad path/new goal";
+		self notify( "perk_cancel" );
+		return;
+	}
+
+	self SetScriptAimPos( lookat_org );
+	wait randomFloatRange( 0.5, 1.5 );
+
+	self thread BotPressUse( 0.2 );
+}
+
+bot_perk_purchase_init()
+{
+	self.successfully_bought_perk = false;
+}
+
+bot_perk_purchase_post_think( state )
+{
+	self bot_post_think_common( state );
+	self.successfully_bought_perk = false;
+}
+
+bot_should_purchase_perk()
+{
+	perk_objs = get_all_objectives_for_group( "perk" );
+	if ( perk_objs.size <= 0 )
+	{
+		return false;
+	}
+	if ( isDefined( level.enable_magic ) && !level.enable_magic )
+	{
+		return false;
+	}
+	self.available_perks = [];
+	perk_objs_keys = getArrayKeys( perk_objs );
+	perk_objs_keys = array_randomize( perk_objs_keys );
+	for ( i = 0; i < perk_objs.size; i++ )
+	{
+		obj = perk_objs[ perk_objs_keys[ i ] ];
+		perk_ent = obj.target_ent;
+		perk = perk_ent.script_noteworthy;
+		if ( !level._custom_perks[ perk ].powered_on )
+		{
+			self bot_objective_print( "perk", obj.id, "Bot <" + self.playername + "> not purchasing " + perk + " because its not powered on", "bot_should_purchase_perk" );
+			continue;
+		}
+		if ( self hasPerk( perk ) )
+		{
+			self bot_objective_print( "perk", obj.id, "Bot <" + self.playername + "> not purchasing " + perk + " because we already have it", "bot_should_purchase_perk" );
+			continue;
+		}
+		if ( ( isDefined( self.is_drinking ) && self.is_drinking > 0 ) && self getCurrentWeapon() == level._custom_perks[ perk ].perk_bottle )
+		{
+			self bot_objective_print( "perk", obj.id, "Bot <" + self.playername + "> not purchasing " + perk + " because we are already drinking the perk we want", "bot_should_purchase_perk" );
+			continue;
+		}
+		if ( self.score < level._custom_perks[ perk ].cost )
+		{
+			self bot_objective_print( "perk", obj.id, "Bot <" + self.playername + "> not purchasing " + perk + " because we can't afford it", "bot_should_purchase_perk" );
+			continue;
+		}
+		if ( self GetPathIsInaccessible( perk_ent.bot_use_node ) )
+		{
+			self bot_objective_print( "perk", obj.id, "Bot <" + self.playername + "> not purchasing " + perk + " because it cannot be pathed to", "bot_should_purchase_perk" );
+			continue;
+		}
+		self.available_perks[ self.available_perks.size ] = obj;
+	}
+	return self.available_perks.size > 0;
+}
+
+bot_check_complete_perk_purchase()
+{
+	return self.successfully_bought_perk;
+}
+
+bot_perk_purchase_should_cancel()
+{
+	obj = self bot_get_objective();
+
+	goal_canceled = false;
+	perk = obj.target_ent.script_noteworthy;
+	if ( self hasPerk( perk ) )
+	{
+		self bot_objective_print( "perk", obj.id, "Bot <" + self.playername + "> not purchasing " + perk + " because we already have it", "bot_should_purchase_perk" );
+		goal_canceled = true;
+	}
+	return goal_canceled;
+}
+
+bot_perk_purchase_priority()
+{
+	return 1;
 }
