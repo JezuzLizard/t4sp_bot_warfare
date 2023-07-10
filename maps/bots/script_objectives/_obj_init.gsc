@@ -44,7 +44,52 @@ init()
 	    ::bot_check_complete_perk_purchase,
 	    ::bot_perk_purchase_should_cancel,
 	    ::bot_perk_purchase_priority );
-	
+
+	register_bot_action( "door", 
+	    ::bot_door_purchase,
+	    ::bot_door_purchase_init,
+	    ::bot_door_purchase_post_think,
+	    ::bot_should_purchase_door,
+	    ::bot_check_complete_door_purchase,
+	    ::bot_door_purchase_should_cancel,
+	    ::bot_door_purchase_priority );
+
+	register_bot_action( "debris", 
+	    ::bot_debris_purchase,
+	    ::bot_debris_purchase_init,
+	    ::bot_debris_purchase_post_think,
+	    ::bot_should_purchase_debris,
+	    ::bot_check_complete_debris_purchase,
+	    ::bot_debris_purchase_should_cancel,
+	    ::bot_debris_purchase_priority );
+
+	register_bot_action( "wallbuy", 
+	    ::bot_wallbuy_purchase,
+	    ::bot_wallbuy_purchase_init,
+	    ::bot_wallbuy_purchase_post_think,
+	    ::bot_should_purchase_wallbuy,
+	    ::bot_check_complete_wallbuy_purchase,
+	    ::bot_wallbuy_purchase_should_cancel,
+	    ::bot_wallbuy_purchase_priority );
+
+	register_bot_action( "wallbuyammo", 
+	    ::bot_wallbuy_ammo_purchase,
+	    ::bot_wallbuy_ammo_purchase_init,
+	    ::bot_wallbuy_ammo_purchase_post_think,
+	    ::bot_should_purchase_wallbuy_ammo,
+	    ::bot_check_complete_wallbuy_ammo_purchase,
+	    ::bot_wallbuy_ammo_purchase_should_cancel,
+	    ::bot_wallbuy_ammo_purchase_priority );
+
+	register_bot_action( "packapunch", 
+	    ::bot_packapunch_purchase,
+	    ::bot_packapunch_purchase_init,
+	    ::bot_packapunch_purchase_post_think,
+	    ::bot_should_purchase_packapunch,
+	    ::bot_check_complete_packapunch_purchase,
+	    ::bot_packapunch_purchase_should_cancel,
+	    ::bot_packapunch_purchase_priority );
+
 	register_bot_objective( "magicbox" );
 	register_bot_objective( "wallbuy" );
 	register_bot_objective( "wallbuyammo" );
@@ -70,6 +115,8 @@ connected()
 	self.on_revive_success_func = ::bot_on_revive_success;
 	self.on_magicbox_weapon_grab_func = ::bot_on_magicbox_weapon_grab;
 	self.on_perk_purchase_func = ::bot_on_perk_purchase;
+	self.on_door_purchase_func = ::bot_on_door_purchase_func;
+	self.on_debris_purchase_func = ::bot_on_debris_purchase_func;
 
 	self.obj_cancel_reason = "";
 

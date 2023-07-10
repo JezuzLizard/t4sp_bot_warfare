@@ -362,9 +362,8 @@ wait_for_action_completion( action_name )
 {
 	action_complete_name = action_name + "_complete";
 	action_cancel_name = action_name + "_cancel";
-	action_postpone_name = action_name + "_postpone";
 
-	result = self waittill_any_return( action_complete_name, action_cancel_name, action_postpone_name );
+	result = self waittill_any_return( action_complete_name, action_cancel_name );
 
 	end_state = undefined;
 
@@ -375,10 +374,6 @@ wait_for_action_completion( action_name )
 	else if ( result == action_cancel_name )
 	{
 		end_state = "canceled";
-	}
-	else if ( result == action_postpone_name )
-	{
-		end_state = "postponed";
 	}
 
 	self notify( action_name + "_end_think" );
@@ -409,7 +404,7 @@ bot_pick_action()
 			possible_action.action_name = action_keys[ i ];
 			possible_action.priority = self [[ level.zbots_actions[ action_keys[ i ] ].priority_func ]]();
 			possible_actions HeapInsert( possible_action );
-			printConsole( "Adding action " + action_keys[ i ] + " to queue of size: " + possible_actions.data.size );
+			printConsole( self.playername + " Adding action " + action_keys[ i ] + " to queue of size: " + possible_actions.data.size );
 		}
 	}
 
@@ -418,7 +413,7 @@ bot_pick_action()
 		return false;
 	}
 	self.bot_action = possible_actions.data[ 0 ];
-	printConsole( "Picking action " + self.bot_action.action_name + " Priority " + self.bot_action.priority );
+	printConsole( self.playername + " Picking action " + self.bot_action.action_name + " Priority " + self.bot_action.priority );
 	return true;
 }
 
@@ -517,9 +512,15 @@ bot_action_pump()
 			continue;
 		}
 		action_name = self.bot_action.action_name;
-		self bot_check_action_complete( action_name );
-		self bot_check_if_action_should_be_canceled_globally( action_name );
-		self bot_check_if_action_should_be_canceled_in_group( action_name );
+		if ( self bot_check_action_complete( action_name ) )
+		{
+		}
+		else if ( self bot_check_if_action_should_be_canceled_globally( action_name ) )
+		{
+		}
+		else if ( self bot_check_if_action_should_be_canceled_in_group( action_name ) )
+		{
+		}
 		
 		while ( !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
 		{
@@ -547,6 +548,11 @@ action_should_be_canceled_global( action_name )
 	{
 		self.obj_cancel_reason = "Obj entity doesn't exist";
 		canceled_goal = true;
+	}
+	else if ( isDefined( obj.target_ent.player_visibility ) && !obj.target_ent.player_visibility[ self getEntityNumber() + "" ] )
+	{
+		self.obj_cancel_reason = "Trigger wasn't visible";
+		goal_canceled = true;
 	}
 	else if ( !isDefined( obj.target_ent.bot_use_node ) && self GetPathIsInaccessible( obj.target_ent.origin ) )
 	{

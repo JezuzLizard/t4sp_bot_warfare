@@ -29,6 +29,9 @@ create_static_objectives()
 		{
 			obj = add_possible_bot_objective( "wallbuy", weapon_spawns[ i ], false );
 			obj = add_possible_bot_objective( "wallbuyammo", weapon_spawns[ i ], false );
+			model = getEnt( weapon_spawns[ i ].target, "targetname" );
+			weapon_spawns[ i ].bot_use_node = get_angle_offset_node( model, ( 0, model.angles[ 1 ] - 90, 0 ), getDvarInt( "perk_node_forward_size" ), ( 0, 0, getDvarInt( "perk_node_vertical_offset" ) ) );
+			model thread wallbuy_debug();
 		}
 	}
 
@@ -40,8 +43,8 @@ create_static_objectives()
 		{
 			obj = add_possible_bot_objective( "perk", vending_triggers[ i ], false );
 			model = getEnt( vending_triggers[ i ].target, "targetname" );
-			vending_triggers[ i ].bot_use_node = get_angle_offset_node( model, ( 0, 0, 0 ), getDvar( "perk_node_forward_size" ), ( 0, 0, getDvar( "perk_node_vertical_offset" ) ) );
-			vending_triggers[ i ] thread perk_debug();
+			vending_triggers[ i ].bot_use_node = get_angle_offset_node( model, ( 0, model.angles[ 1 ] - 90, 0 ), getDvarInt( "perk_node_forward_size" ), ( 0, 0, getDvarInt( "perk_node_vertical_offset" ) ) );
+			model thread perk_debug();
 		}
 	}
 
@@ -52,6 +55,10 @@ create_static_objectives()
 	{
 		for ( i = 0; i < zombie_doors.size; i++ )
 		{
+			if ( isDefined( zombie_doors[ i ].script_noteworthy ) && zombie_doors[ i ].script_noteworthy == "electric_door" )
+			{
+				continue;
+			}
 			obj = add_possible_bot_objective( "door", zombie_doors[ i ], true );
 		}
 		level thread watch_door_objectives( zombie_doors );
@@ -231,6 +238,21 @@ perk_debug()
 	}
 }
 
+wallbuy_debug()
+{
+	if ( getDvarInt( "bot_obj_debug_all" ) == 0 && getDvarInt( "bot_obj_debug_magicbox" ) == 0 )
+	{
+		return;
+	}
+	while ( true )
+	{
+		node = get_angle_offset_node( self, ( 0, self.angles[ 1 ] - getDvarInt( "wallbuy_node_angle" ), 0 ), getDvarInt( "wallbuy_node_forward_size" ), ( 0, 0, getDvarInt( "wallbuy_node_vertical_offset" ) ) );
+		self.bot_use_node = node;
+		line( self.origin, node, ( 1.0, 1.0, 1.0 ) );
+		wait 0.05;
+	}
+}
+
 bot_on_powerup_grab( powerup )
 {
 	self bot_objective_print( "powerup", powerup getEntityNumber(), "bot_on_powerup_grab", "Bot <" + self.playername + "> grabbed powerup" );
@@ -252,5 +274,17 @@ bot_on_magicbox_weapon_grab( magicbox, weapon )
 bot_on_perk_purchase( trigger, perk )
 {
 	self bot_objective_print( "perk", trigger getEntityNumber(), "bot_on_perk_purchase", "Bot <" + self.playername + "> purchased <" + perk + ">"  );
-	self.successfully_bought_perk = true;	
+	self.successfully_bought_perk = true;
+}
+
+bot_on_door_purchase_func( door )
+{
+	self bot_objective_print( "door", door getEntityNumber(), "bot_on_door_purchase_func", "Bot <" + self.playername + "> purchased door"  );
+	self.successfully_bought_door = true;
+}
+
+bot_on_debris_purchase_func( debris, entnum )
+{
+	self bot_objective_print( "debris", debris getEntityNumber(), "bot_on_debris_purchase_func", "Bot <" + self.playername + "> purchased debris"  );
+	self.successfully_bought_debris = true;
 }
