@@ -7,8 +7,6 @@
 
 init()
 {
-	//maps\bots\script_objectives\_obj_common;
-	//maps\bots\script_objectives\_obj_actions;
 	register_bot_action( "powerup", 
 	    ::bot_grab_powerup,
 	    ::bot_powerup_init,
@@ -90,6 +88,15 @@ init()
 	    ::bot_packapunch_purchase_should_cancel,
 	    ::bot_packapunch_purchase_priority );
 
+	register_bot_action( "power", 
+	    ::bot_power_activate,
+	    ::bot_power_activate_init,
+	    ::bot_power_activate_post_think,
+	    ::bot_should_activate_power,
+	    ::bot_check_complete_power_activate,
+	    ::bot_power_activate_should_cancel,
+	    ::bot_power_activate_priority );
+
 	register_bot_objective( "magicbox" );
 	register_bot_objective( "wallbuy" );
 	register_bot_objective( "wallbuyammo" );
@@ -98,11 +105,17 @@ init()
 	register_bot_objective( "debris" );
 	register_bot_objective( "trap" );
 	register_bot_objective( "packapunch" );
+	register_bot_objective( "power" );
 	register_bot_objective( "revive" );
 	//register_bot_objective( "grabbuildable" );
 	//register_bot_objective( "buildbuildable" );
 	//register_bot_objective( "part" );
 	register_bot_objective( "powerup" );
+
+	if ( getDvar( "bots_obj_buy_blockers" ) == "" )
+	{
+		setDvar( "bots_obj_buy_blockers", true );
+	}
 
 	create_static_objectives();
 }
@@ -117,6 +130,8 @@ connected()
 	self.on_perk_purchase_func = ::bot_on_perk_purchase;
 	self.on_door_purchase_func = ::bot_on_door_purchase_func;
 	self.on_debris_purchase_func = ::bot_on_debris_purchase_func;
+	self.on_wallbuy_purchase_func = ::bot_on_wallbuy_purchase_func;
+	self.on_wallbuy_ammo_purchase_func = ::bot_on_wallbuy_ammo_purchase_func;
 
 	self.obj_cancel_reason = "";
 

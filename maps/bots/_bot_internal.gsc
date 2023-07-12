@@ -1768,8 +1768,13 @@ initAStar( goal )
 
 	if ( !isDefined( nodes ) )
 	{
-		self.bot.astar = [];
-		return -1;
+		//Try again to find a path to the origin using best effort algo
+		nodes = generatePath( self.origin, goal, self.team, level.bot_allowed_negotiation_links, 192.0 );
+		if ( !isDefined( nodes ) )
+		{
+			self.bot.astar = [];
+			return -1;
+		}
 	}
 
 	node_indexes = [];

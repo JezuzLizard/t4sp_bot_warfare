@@ -408,9 +408,30 @@ bot_pick_action()
 		}
 	}
 
-	if ( !isDefined( possible_actions.data ) || possible_actions.data.size <= 0 )
+	forced_action = getDvar( "bots_debug_forced_action" );
+
+	if ( ( !isDefined( possible_actions.data ) || possible_actions.data.size <= 0 ) && forced_action == "" )
 	{
 		return false;
+	}
+	if ( forced_action != "" )
+	{
+		entnum_and_forced_action = strTok( forced_action, " " );
+		if ( entnum_and_forced_action.size != 2 )
+		{
+			setDvar( "bots_debug_forced_action", "" );
+		}
+		else if ( int( entnum_and_forced_action[ 0 ] ) == self getEntityNumber() && isDefined( level.zbots_actions[ entnum_and_forced_action[ 1 ] ] ) )
+		{
+			possible_action = spawnStruct();
+			possible_action.action_name = entnum_and_forced_action[ 1 ];
+			possible_action.priority = 999;
+			self.bot_action = possible_action;
+			setDvar( "bots_debug_forced_action", "" );
+			printConsole( self.playername + " Picking forced action " + self.bot_action.action_name + " Priority " + self.bot_action.priority );
+			return true;
+		}
+
 	}
 	self.bot_action = possible_actions.data[ 0 ];
 	printConsole( self.playername + " Picking action " + self.bot_action.action_name + " Priority " + self.bot_action.priority );
@@ -577,13 +598,25 @@ action_should_be_canceled_global( action_name )
 	return goal_canceled;
 }
 
-get_angle_offset_node( ent, angle_offset, forward_size, offset )
+get_angle_offset_node( forward_size, angle_offset, offset )
 {
-	angles = ent.angles;
+	if ( !isDefined( forward_size ) )
+	{
+		forward_size = 40;
+	}
+	if ( !isDefined( angle_offset ) )
+	{
+		angle_offset = ( 0, 0, 0 );
+	}
+	if ( !isDefined( offset ) )
+	{
+		offset = ( 0, 0, 0 );
+	}
+
+	angles = ( 0, self.angles[ 1 ], 0 );
 	angles += angle_offset;
-	angles = ( 0, AngleClamp180( angles[ 1 ] ), 0 );
-	node = ent.origin + ( AnglesToForward( angles ) * forward_size );
-	node = clamp_to_ground( node ) + offset;
+	node = self.origin + ( AnglesToForward( angles ) * forward_size ) + offset;
+	node = clamp_to_ground( node );
 	return node;
 }
 

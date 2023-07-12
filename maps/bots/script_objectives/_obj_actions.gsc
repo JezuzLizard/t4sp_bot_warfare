@@ -25,6 +25,7 @@ bot_post_think_common( state )
 
 bot_obj_timeout( objective_group, time )
 {
+	self endon( objective_group + "_end_think" );
 	wait time;
 	self.obj_cancel_reason = "Obj timeout";
 	self notify( objective_group + "_cancel" );	
@@ -434,6 +435,11 @@ bot_should_purchase_magicbox()
 	{
 		obj = magicbox_objs[ magicbox_objs_keys[ i ] ];
 		magicbox = obj.target_ent;
+		if ( isDefined( self.last_magicbox_purchase_time ) && getTime() < ( self.last_magicbox_purchase_time + 60000 ) )
+		{
+			self bot_objective_print( "magicbox", obj.id, "Bot <" + self.playername + "> not purchasing this magicbox box because this action is on cooldown", "bot_should_purchase_magicbox" );
+			continue;
+		}
 		if ( magicbox.hidden )
 		{
 			self bot_objective_print( "magicbox", obj.id, "Bot <" + self.playername + "> not purchasing this magicbox box because it is hidden", "bot_should_purchase_magicbox" );
@@ -716,7 +722,7 @@ bot_should_purchase_door()
 			self bot_objective_print( "door", obj.id, "Bot <" + self.playername + "> not purchasing <" + door_ent.target + "> because we can't afford it", "bot_should_purchase_door" );
 			continue;
 		}
-		if ( self GetPathIsInaccessible( door_ent.origin ) )
+		if ( self GetPathIsInaccessible( door_ent.origin, 192.0 ) )
 		{
 			self bot_objective_print( "door", obj.id, "Bot <" + self.playername + "> not purchasing <" + door_ent.target + "> because it cannot be pathed to", "bot_should_purchase_door" );
 			continue;
@@ -809,7 +815,7 @@ bot_should_purchase_debris()
 			self bot_objective_print( "debris", obj.id, "Bot <" + self.playername + "> not purchasing <" + debris_ent.target + "> because we can't afford it", "bot_should_purchase_debris" );
 			continue;
 		}
-		if ( self GetPathIsInaccessible( debris_ent.origin ) )
+		if ( self GetPathIsInaccessible( debris_ent.origin, 192.0 ) )
 		{
 			self bot_objective_print( "debris", obj.id, "Bot <" + self.playername + "> not purchasing <" + debris_ent.target + "> because it cannot be pathed to", "bot_should_purchase_debris" );
 			continue;
@@ -899,6 +905,11 @@ bot_should_purchase_wallbuy()
 		obj = wallbuy_objs[ wallbuy_objs_keys[ i ] ];
 		wallbuy_ent = obj.target_ent;
 		weapon = wallbuy_ent.zombie_weapon_upgrade;
+		if ( isDefined( self.last_wallbuy_purchase_time ) && getTime() < ( self.last_wallbuy_purchase_time + 60000 ) )
+		{
+			self bot_objective_print( "wallbuy", obj.id, "Bot <" + self.playername + "> not purchasing <" + weapon + "> because this action is on cooldown", "bot_should_purchase_wallbuy" );
+			continue;
+		}
 		if ( self.score < maps\so\zm_common\_zm_weapons::get_weapon_cost( weapon ) )
 		{
 			self bot_objective_print( "wallbuy", obj.id, "Bot <" + self.playername + "> not purchasing <" + weapon + "> because we can't afford it", "bot_should_purchase_wallbuy" );
@@ -1002,6 +1013,11 @@ bot_should_purchase_wallbuy_ammo()
 		if ( self.score < maps\so\zm_common\_zm_weapons::get_ammo_cost( weapon ) )
 		{
 			self bot_objective_print( "wallbuyammo", obj.id, "Bot <" + self.playername + "> not purchasing ammo for <" + weapon + "> because we can't afford it", "bot_should_purchase_wallbuy_ammo" );
+			continue;
+		}
+		if ( ( self GetWeaponAmmoStock( weapon ) / WeaponMaxAmmo( weapon ) ) > 0.3 )
+		{
+			self bot_objective_print( "wallbuyammo", obj.id, "Bot <" + self.playername + "> not purchasing ammo for <" + weapon + "> because we don't need ammo", "bot_should_purchase_wallbuy_ammo" );
 			continue;
 		}
 		if ( self GetPathIsInaccessible( wallbuy_ent.bot_use_node ) )
@@ -1121,12 +1137,12 @@ bot_should_purchase_packapunch()
 		packapunch_ent = obj.target_ent;
 		if ( self.score < level._custom_packapunch.cost )
 		{
-			self bot_objective_print( "packapunch", obj.id, "Bot <" + self.playername + "> not purchasing packapunch because we can't afford it", "bot_should_purchase_wallbuy_ammo" );
+			self bot_objective_print( "packapunch", obj.id, "Bot <" + self.playername + "> not purchasing packapunch because we can't afford it", "bot_should_purchase_packapunch" );
 			continue;
 		}
-		if ( self GetPathIsInaccessible( wallbuy_ent.bot_use_node ) )
+		if ( self GetPathIsInaccessible( packapunch_ent.bot_use_node ) )
 		{
-			self bot_objective_print( "packapunch", obj.id, "Bot <" + self.playername + "> not purchasing packapunch because it cannot be pathed to", "bot_should_purchase_wallbuy_ammo" );
+			self bot_objective_print( "packapunch", obj.id, "Bot <" + self.playername + "> not purchasing packapunch because it cannot be pathed to", "bot_should_purchase_packapunch" );
 			continue;
 		}
 		self.available_packapunchs[ self.available_packapunchs.size ] = obj;
@@ -1144,7 +1160,6 @@ bot_packapunch_purchase_should_cancel()
 	obj = self bot_get_objective();
 
 	goal_canceled = false;
-	perk = obj.target_ent.script_noteworthy;
 	if ( isDefined( obj.target_ent.packapunch_weapon_spawn_time ) 
 		&& isDefined( obj.target_ent.packapunch_user ) 
 		&& obj.target_ent.packapunch_user == self 
@@ -1157,6 +1172,103 @@ bot_packapunch_purchase_should_cancel()
 }
 
 bot_packapunch_purchase_priority()
+{
+	return 0;
+}
+
+bot_power_activate()
+{
+	if ( !isDefined( self.available_powers ) || self.available_powers.size <= 0 )
+	{
+		return;
+	}
+
+	self endon( "disconnect" );
+	self endon( "power_end_think" );
+	level endon( "end_game" );
+
+	power_obj = self.available_powers[ 0 ];
+	
+	power_ent = power_obj.target_ent;
+	self bot_set_objective( "power", power_ent );
+	self bot_objective_print( "power", power_obj.id, "Bot <" + self.playername + "> Attempting to activate power" "bot_power_activate" );
+
+	lookat_org = power_ent.origin;
+	goal_org = power_ent.bot_use_node;
+
+	self ClearScriptAimPos();
+	self SetScriptGoal( goal_org, 24 );
+
+	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+	if ( result != "goal" )
+	{
+		self.obj_cancel_reason = "Bad path/new goal";
+		self notify( "power_cancel" );
+		return;
+	}
+
+	self SetScriptAimPos( lookat_org );
+	self thread bot_obj_timeout( "power", 2 );
+	wait randomFloatRange( 0.5, 1.5 );
+
+	self thread BotPressUse( 0.2 );
+}
+
+bot_power_activate_init()
+{
+	self.successfully_activated_power = false;
+}
+
+bot_power_activate_post_think()
+{
+	self bot_post_think_common( state );
+	self.successfully_activated_power = false;
+}
+
+bot_should_activate_power()
+{
+	power_objs = get_all_objectives_for_group( "power" );
+	if ( power_objs.size <= 0 )
+	{
+		return false;
+	}
+	self.available_powers = [];
+	power_objs_keys = getArrayKeys( power_objs );
+	power_objs_keys = array_randomize( power_objs_keys );
+	for ( i = 0; i < power_objs.size; i++ )
+	{
+		obj = power_objs[ power_objs_keys[ i ] ];
+		power_ent = obj.target_ent;
+		if ( self GetPathIsInaccessible( power_ent.bot_use_node ) )
+		{
+			self bot_objective_print( "power", obj.id, "Bot <" + self.playername + "> not activating power because it cannot be pathed to", "bot_power_activate" );
+			continue;
+		}
+		self.available_powers[ self.available_powers.size ] = obj;
+	}
+	return self.available_powers.size > 0;
+}
+
+bot_check_complete_power_activate()
+{
+	return self.successfully_activated_power;
+}
+
+bot_power_activate_should_cancel()
+{
+	obj = self bot_get_objective();
+
+	goal_canceled = false;
+	if ( isDefined( level.flag[ "power_on" ] ) && level.flag[ "power_on" ] )
+	{
+		self.obj_cancel_reason = "Power is already on";
+		goal_canceled = true;	
+	}
+	return goal_canceled;
+}
+
+bot_power_activate_priority()
 {
 	return 0;
 }
