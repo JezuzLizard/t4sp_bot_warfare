@@ -2,6 +2,7 @@
 #include maps\_utility;
 #include maps\bots\_bot_utility;
 #include maps\bots\script_objectives\_obj_common;
+#include maps\bots\script_objectives\_obj_utility;
 
 create_static_objectives()
 {
@@ -65,7 +66,7 @@ create_static_objectives()
 	{
 		setDvar( "power_node_angle", -90 );
 	}
-	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" ); 
+	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" );
 
 	if ( isDefined( weapon_spawns ) && weapon_spawns.size > 0 )
 	{
@@ -93,8 +94,8 @@ create_static_objectives()
 	}
 
 	//TODO: See if its possible to automatically detect if a door is blocking an objective
-	zombie_doors = GetEntArray( "zombie_door", "targetname" ); 
-	
+	zombie_doors = GetEntArray( "zombie_door", "targetname" );
+
 	if ( isDefined( zombie_doors ) && zombie_doors.size > 0 )
 	{
 		for ( i = 0; i < zombie_doors.size; i++ )
@@ -108,7 +109,7 @@ create_static_objectives()
 		level thread watch_door_objectives( zombie_doors );
 	}
 
-	zombie_debris = GetEntArray( "zombie_debris", "targetname" ); 
+	zombie_debris = GetEntArray( "zombie_debris", "targetname" );
 
 	if ( isDefined( zombie_debris ) && zombie_debris.size > 0 )
 	{
@@ -141,7 +142,7 @@ create_static_objectives()
 	{
 		obj = add_possible_bot_objective( "power", master_switch, false );
 		master_switch.bot_use_node = master_switch get_angle_offset_node( getDvarInt( "power_node_forward_size" ), ( 0, getDvarInt( "power_node_angle" ), 0 ), ( 0, 0, getDvarInt( "power_node_vertical_offset" ) ) );
-		model thread power_debug();
+		//model thread power_debug();
 	}
 
 	if ( isDefined( level.chests ) && level.chests.size > 0 )
@@ -346,7 +347,7 @@ packapunch_debug()
 		self.bot_use_node = node;
 		line( self.origin, node, ( 1.0, 1.0, 1.0 ) );
 		wait 0.05;
-	}	
+	}
 }
 
 bot_on_powerup_grab( powerup )

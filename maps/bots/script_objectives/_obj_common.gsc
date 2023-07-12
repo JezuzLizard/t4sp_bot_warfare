@@ -1,6 +1,7 @@
 #include common_scripts\utility;
 #include maps\_utility;
 #include maps\bots\_bot_utility;
+#include maps\bots\script_objectives\_obj_utility;
 
 register_bot_objective( objective_group )
 {
@@ -95,7 +96,7 @@ bot_set_objective( objective_group, ent, id )
 	{
 		self.bot_obj_history_index = 0;
 	}
-	
+
 	self.obj_history[ self.bot_obj_history_index ] = new_obj_history;
 	self.zbot_current_objective = objective;
 }
@@ -167,7 +168,7 @@ bot_set_objective_owner( objective_group, ent, id )
 	{
 		id = ent getEntityNumber();
 	}
-	
+
 	if ( !objective.is_global_shared )
 	{
 		objective_assert( objective_group, id, "bot_set_objective_owner", "Objective with " + id + " id number cannot be set to have an owner because is_global_shared field is false in group " + objective_group );
@@ -489,7 +490,7 @@ bot_action_think()
 		{
 			wait 1;
 		}
-		else 
+		else
 		{
 			wait 1;
 		}
@@ -505,7 +506,7 @@ bot_action_think()
 			}
 			continue;
 		}
-		
+
 		self bot_process_action();
 
 		while ( !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
@@ -542,7 +543,7 @@ bot_action_pump()
 		else if ( self bot_check_if_action_should_be_canceled_in_group( action_name ) )
 		{
 		}
-		
+
 		while ( !maps\so\zm_common\_zm_utility::is_player_valid( self ) )
 		{
 			wait 1;

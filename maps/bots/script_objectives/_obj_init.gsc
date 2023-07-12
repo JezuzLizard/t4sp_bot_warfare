@@ -1,13 +1,14 @@
 #include common_scripts\utility;
 #include maps\_utility;
 #include maps\bots\_bot_utility;
+#include maps\bots\script_objectives\_obj_utility;
 #include maps\bots\script_objectives\_obj_common;
 #include maps\bots\script_objectives\_obj_actions;
 #include maps\bots\script_objectives\_obj_trackers;
 
 init()
 {
-	register_bot_action( "powerup", 
+	register_bot_action( "powerup",
 	    ::bot_grab_powerup,
 	    ::bot_powerup_init,
 	    ::bot_powerup_post_think,
@@ -16,7 +17,7 @@ init()
 	    ::bot_powerup_should_cancel,
 	    ::bot_powerup_priority );
 
-	register_bot_action( "revive", 
+	register_bot_action( "revive",
 	    ::bot_revive_player,
 	    ::bot_revive_player_init,
 	    ::bot_revive_player_post_think,
@@ -25,7 +26,7 @@ init()
 	    ::bot_revive_player_should_cancel,
 	    ::bot_revive_player_priority );
 
-	register_bot_action( "magicbox", 
+	register_bot_action( "magicbox",
 	    ::bot_magicbox_purchase,
 	    ::bot_magicbox_purchase_init,
 	    ::bot_magicbox_purchase_post_think,
@@ -34,7 +35,7 @@ init()
 	    ::bot_magicbox_purchase_should_cancel,
 	    ::bot_magicbox_purchase_priority );
 
-	register_bot_action( "perk", 
+	register_bot_action( "perk",
 	    ::bot_perk_purchase,
 	    ::bot_perk_purchase_init,
 	    ::bot_perk_purchase_post_think,
@@ -43,7 +44,7 @@ init()
 	    ::bot_perk_purchase_should_cancel,
 	    ::bot_perk_purchase_priority );
 
-	register_bot_action( "door", 
+	register_bot_action( "door",
 	    ::bot_door_purchase,
 	    ::bot_door_purchase_init,
 	    ::bot_door_purchase_post_think,
@@ -52,7 +53,7 @@ init()
 	    ::bot_door_purchase_should_cancel,
 	    ::bot_door_purchase_priority );
 
-	register_bot_action( "debris", 
+	register_bot_action( "debris",
 	    ::bot_debris_purchase,
 	    ::bot_debris_purchase_init,
 	    ::bot_debris_purchase_post_think,
@@ -61,7 +62,7 @@ init()
 	    ::bot_debris_purchase_should_cancel,
 	    ::bot_debris_purchase_priority );
 
-	register_bot_action( "wallbuy", 
+	register_bot_action( "wallbuy",
 	    ::bot_wallbuy_purchase,
 	    ::bot_wallbuy_purchase_init,
 	    ::bot_wallbuy_purchase_post_think,
@@ -70,7 +71,7 @@ init()
 	    ::bot_wallbuy_purchase_should_cancel,
 	    ::bot_wallbuy_purchase_priority );
 
-	register_bot_action( "wallbuyammo", 
+	register_bot_action( "wallbuyammo",
 	    ::bot_wallbuy_ammo_purchase,
 	    ::bot_wallbuy_ammo_purchase_init,
 	    ::bot_wallbuy_ammo_purchase_post_think,
@@ -79,7 +80,7 @@ init()
 	    ::bot_wallbuy_ammo_purchase_should_cancel,
 	    ::bot_wallbuy_ammo_purchase_priority );
 
-	register_bot_action( "packapunch", 
+	register_bot_action( "packapunch",
 	    ::bot_packapunch_purchase,
 	    ::bot_packapunch_purchase_init,
 	    ::bot_packapunch_purchase_post_think,
@@ -88,7 +89,7 @@ init()
 	    ::bot_packapunch_purchase_should_cancel,
 	    ::bot_packapunch_purchase_priority );
 
-	register_bot_action( "power", 
+	register_bot_action( "power",
 	    ::bot_power_activate,
 	    ::bot_power_activate_init,
 	    ::bot_power_activate_post_think,

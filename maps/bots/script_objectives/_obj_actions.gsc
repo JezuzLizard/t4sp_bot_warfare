@@ -2,11 +2,12 @@
 #include maps\_utility;
 #include maps\bots\_bot_utility;
 #include maps\bots\script_objectives\_obj_common;
+#include maps\bots\script_objectives\_obj_utility;
 
 bot_post_think_common( state )
 {
 	obj = bot_objective_history_get_current();
-	
+
 	switch ( state )
 	{
 		case "completed":
@@ -20,7 +21,7 @@ bot_post_think_common( state )
 	self thread ClearScriptGoal();
 	self ClearScriptAimPos();
 	self ClearPriorityObjective();
-	self bot_clear_objective();	
+	self bot_clear_objective();
 }
 
 bot_obj_timeout( objective_group, time )
@@ -28,7 +29,7 @@ bot_obj_timeout( objective_group, time )
 	self endon( objective_group + "_end_think" );
 	wait time;
 	self.obj_cancel_reason = "Obj timeout";
-	self notify( objective_group + "_cancel" );	
+	self notify( objective_group + "_cancel" );
 }
 
 bot_grab_powerup()
@@ -77,7 +78,7 @@ bot_grab_powerup()
 				powerup_obj.bad = true;
 			}
 		}
-		else 
+		else
 		{
 			powerup_obj.bad = true;
 		}
@@ -187,7 +188,7 @@ bot_revive_player()
 	level endon( "end_game" );
 
 	player_to_revive_obj = self.available_revives[ 0 ];
-	
+
 	player_to_revive = player_to_revive_obj.target_ent;
 	self bot_set_objective( "revive", player_to_revive );
 	self bot_set_objective_owner( "revive", player_to_revive );
@@ -332,7 +333,7 @@ bot_magicbox_purchase()
 	level endon( "end_game" );
 
 	magicbox_obj = self.available_chests[ 0 ];
-	
+
 	magicbox = magicbox_obj.target_ent;
 	self bot_set_objective( "magicbox", magicbox );
 	//self bot_set_objective_owner( "magicbox", magicbox );
@@ -470,7 +471,7 @@ bot_should_purchase_magicbox()
 	return self.available_chests.size > 0;
 }
 
-bot_check_complete_purchase_magicbox() 
+bot_check_complete_purchase_magicbox()
 {
 	return self.successfully_grabbed_magicbox_weapon;
 }
@@ -492,13 +493,13 @@ bot_magicbox_purchase_should_cancel()
 		goal_canceled = true;
 	}
 	*/
-	if ( isDefined( obj.magicbox_weapon_spawn_time ) 
-		&& isDefined( obj.target_ent.chest_user ) 
+	if ( isDefined( obj.magicbox_weapon_spawn_time )
+		&& isDefined( obj.target_ent.chest_user )
 		&& obj.target_ent.chest_user == self
 		&& ( getTime() >= ( obj.magicbox_weapon_spawn_time + 12000 ) ) )
 	{
 		self.obj_cancel_reason = "Weapon timed out";
-		goal_canceled = true;	
+		goal_canceled = true;
 	}
 	return goal_canceled;
 }
@@ -537,7 +538,7 @@ bot_perk_purchase()
 	level endon( "end_game" );
 
 	perk_obj = self.available_perks[ 0 ];
-	
+
 	perk_ent = perk_obj.target_ent;
 	self bot_set_objective( "perk", perk_ent );
 	self bot_objective_print( "perk", perk_obj.id, "Bot <" + self.playername + "> Attempting to purchase " + perk_ent.script_noteworthy, "bot_perk_purchase" );
@@ -660,7 +661,7 @@ bot_door_purchase()
 	level endon( "end_game" );
 
 	door_obj = self.available_doors[ 0 ];
-	
+
 	door_ent = door_obj.target_ent;
 	self bot_set_objective( "door", door_ent );
 	self bot_objective_print( "door", door_obj.id, "Bot <" + self.playername + "> Attempting to purchase " + door_ent.target, "bot_door_purchase" );
@@ -759,7 +760,7 @@ bot_debris_purchase()
 	level endon( "end_game" );
 
 	debris_obj = self.available_debris[ 0 ];
-	
+
 	debris_ent = debris_obj.target_ent;
 	self bot_set_objective( "debris", debris_ent );
 	self bot_objective_print( "debris", debris_obj.id, "Bot <" + self.playername + "> Attempting to purchase " + debris_ent.target, "bot_debris_purchase" );
@@ -852,7 +853,7 @@ bot_wallbuy_purchase()
 	level endon( "end_game" );
 
 	wallbuy_obj = self.available_wallbuys[ 0 ];
-	
+
 	wallbuy_ent = wallbuy_obj.target_ent;
 	self bot_set_objective( "wallbuy", wallbuy_ent );
 	self bot_objective_print( "wallbuy", wallbuy_obj.id, "Bot <" + self.playername + "> Attempting to purchase " + wallbuy_ent.zombie_weapon_upgrade, "bot_wallbuy_purchase" );
@@ -952,7 +953,7 @@ bot_wallbuy_ammo_purchase()
 	level endon( "end_game" );
 
 	wallbuy_obj = self.available_wallbuyammos[ 0 ];
-	
+
 	wallbuy_ent = wallbuy_obj.target_ent;
 	self bot_set_objective( "wallbuyammo", wallbuy_ent );
 	self bot_objective_print( "wallbuyammo", wallbuy_obj.id, "Bot <" + self.playername + "> Attempting to purchase " + wallbuy_ent.zombie_weapon_upgrade, "bot_wallbuy_ammo_purchase" );
@@ -1057,7 +1058,7 @@ bot_packapunch_purchase()
 	level endon( "end_game" );
 
 	packapunch_obj = self.available_packapunchs[ 0 ];
-	
+
 	packapunch = packapunch_obj.target_ent;
 	self bot_set_objective( "packapunch", packapunch );
 	//self bot_set_objective_owner( "magicbox", magicbox );
@@ -1086,7 +1087,7 @@ bot_packapunch_purchase()
 	waittillframeend;
 	//self ClearScriptAimPos();
 	//self ClearScriptGoal();
-	
+
 	packapunch waittill( "pap_pickup_ready" );
 	self bot_objective_print( "packapunch", packapunch_obj.id, "Bot <" + self.playername + "> pap_pickup_ready", "bot_packapunch_purchase" );
 
@@ -1160,13 +1161,13 @@ bot_packapunch_purchase_should_cancel()
 	obj = self bot_get_objective();
 
 	goal_canceled = false;
-	if ( isDefined( obj.target_ent.packapunch_weapon_spawn_time ) 
-		&& isDefined( obj.target_ent.packapunch_user ) 
-		&& obj.target_ent.packapunch_user == self 
+	if ( isDefined( obj.target_ent.packapunch_weapon_spawn_time )
+		&& isDefined( obj.target_ent.packapunch_user )
+		&& obj.target_ent.packapunch_user == self
 		&& ( getTime() >= ( obj.target_ent_packapunch_weapon_spawn_time + ( level.packapunch_timeout * 1000 ) ) ) )
 	{
 		self.obj_cancel_reason = "Weapon timed out";
-		goal_canceled = true;	
+		goal_canceled = true;
 	}
 	return goal_canceled;
 }
@@ -1188,10 +1189,10 @@ bot_power_activate()
 	level endon( "end_game" );
 
 	power_obj = self.available_powers[ 0 ];
-	
+
 	power_ent = power_obj.target_ent;
 	self bot_set_objective( "power", power_ent );
-	self bot_objective_print( "power", power_obj.id, "Bot <" + self.playername + "> Attempting to activate power" "bot_power_activate" );
+	self bot_objective_print( "power", power_obj.id, "Bot <" + self.playername + "> Attempting to activate power", "bot_power_activate" );
 
 	lookat_org = power_ent.origin;
 	goal_org = power_ent.bot_use_node;
@@ -1220,7 +1221,7 @@ bot_power_activate_init()
 	self.successfully_activated_power = false;
 }
 
-bot_power_activate_post_think()
+bot_power_activate_post_think(state)
 {
 	self bot_post_think_common( state );
 	self.successfully_activated_power = false;
@@ -1263,7 +1264,7 @@ bot_power_activate_should_cancel()
 	if ( isDefined( level.flag[ "power_on" ] ) && level.flag[ "power_on" ] )
 	{
 		self.obj_cancel_reason = "Power is already on";
-		goal_canceled = true;	
+		goal_canceled = true;
 	}
 	return goal_canceled;
 }
