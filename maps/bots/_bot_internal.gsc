@@ -1311,12 +1311,9 @@ aim_loop()
 
 				if ( isActor && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && getDvarInt( "bots_play_knife" ) )
 				{
-					if ( self canFire( curweap ) || !self getAmmoCount( curweap ) )
-					{
-						self clear_bot_after_target();
-						self thread knife();
-						return;
-					}
+					self clear_bot_after_target();
+					self thread knife();
+					return;
 				}
 
 				if ( !self canFire( curweap ) || !self isInRange( dist, curweap ) )
