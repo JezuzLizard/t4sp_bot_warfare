@@ -1066,3 +1066,19 @@ targetIsGibbed()
 {
 	return isDefined( self.gibbed ) && self.gibbed;
 }
+
+/*
+	is weap primary?
+*/
+isWeaponPrimary( weap )
+{
+	weaps = self GetWeaponsListPrimaries();
+
+	for ( i = 0; i < weaps.size; i++ )
+	{
+		if ( weap == weaps[i] )
+			return true;
+	}
+
+	return false;
+}

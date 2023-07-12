@@ -39,6 +39,28 @@ connected()
 */
 onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )
 {
+	if ( !IsDefined( self ) || !isDefined( self.team ) )
+		return;
+
+	if ( !isAlive( self ) )
+		return;
+
+	if ( sMeansOfDeath == "MOD_FALLING" || sMeansOfDeath == "MOD_SUICIDE" )
+		return;
+
+	if ( iDamage <= 0 )
+		return;
+
+	if ( !IsDefined( eAttacker ) || !isDefined( eAttacker.team ) )
+		return;
+
+	if ( eAttacker == self )
+		return;
+
+	if ( !isAlive( eAttacker ) )
+		return;
+
+	self SetAttacker( eAttacker );
 }
 
 /*
@@ -383,5 +405,105 @@ start_bot_threads()
 	level endon( "intermission" );
 	self endon( "zombified" );
 
+	self thread doReloadCancel();
+
 	self thread maps\bots\script_objectives\_obj_init::start_bot_threads();
+}
+
+/*
+	Changes to the weap
+*/
+changeToWeapon( weap )
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+	level endon( "game_ended" );
+
+	if ( !self HasWeapon( weap ) )
+		return false;
+
+	self BotChangeToWeapon( weap );
+
+	if ( self GetCurrentWeapon() == weap )
+		return true;
+
+	self waittill_any_timeout( 5, "weapon_change" );
+
+	return ( self GetCurrentWeapon() == weap );
+}
+
+/*
+	Reload cancels
+*/
+doReloadCancel_loop()
+{
+	ret = self waittill_any_return( "reload", "weapon_change" );
+
+	if ( self BotIsFrozen() )
+		return;
+
+	if ( self useButtonPressed() )
+		return;
+
+	if ( self InLastStand() )
+		return;
+
+	curWeap = self GetCurrentWeapon();
+
+	if ( !self isWeaponPrimary( curWeap ) )
+		return;
+
+	if ( ret == "reload" )
+	{
+		// check single reloads
+		if ( self GetWeaponAmmoClip( curWeap ) < WeaponClipSize( curWeap ) )
+			return;
+	}
+
+	// check difficulty
+	if ( self.pers["bots"]["skill"]["base"] <= 3 )
+		return;
+
+	// check if got another weapon
+	weaponslist = self GetWeaponsListPrimaries();
+	weap = "";
+
+	while ( weaponslist.size )
+	{
+		weapon = weaponslist[randomInt( weaponslist.size )];
+		weaponslist = array_remove( weaponslist, weapon );
+
+		if ( !self isWeaponPrimary( weapon ) )
+			continue;
+
+		if ( curWeap == weapon || weapon == "none" || weapon == "" )
+			continue;
+
+		weap = weapon;
+		break;
+	}
+
+	if ( weap == "" )
+		return;
+
+	// do the cancel
+	wait 0.1;
+	self thread ChangeToWeapon( weap );
+	wait 0.25;
+	self thread ChangeToWeapon( curWeap );
+	wait 2;
+}
+
+/*
+	Reload cancels
+*/
+doReloadCancel()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		self doReloadCancel_loop();
+	}
 }

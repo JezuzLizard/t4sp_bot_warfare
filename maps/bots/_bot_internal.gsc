@@ -1309,7 +1309,7 @@ aim_loop()
 					self thread bot_lookat( aimpos, aimspeed );
 				}
 
-				if ( isActor && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && getDvarInt( "bots_play_knife" ) )
+				if ( isActor && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && !self.bot.isreloading && getDvarInt( "bots_play_knife" ) )
 				{
 					self clear_bot_after_target();
 					self thread knife();
