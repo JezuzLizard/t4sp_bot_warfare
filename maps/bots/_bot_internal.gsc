@@ -1309,11 +1309,14 @@ aim_loop()
 					self thread bot_lookat( aimpos, aimspeed );
 				}
 
-				if ( isActor && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && !self.bot.isreloading && getDvarInt( "bots_play_knife" ) )
+				if ( isActor && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && getDvarInt( "bots_play_knife" ) )
 				{
-					self clear_bot_after_target();
-					self thread knife();
-					return;
+					if ( self canFire( curweap ) || !self getAmmoCount( curweap ) )
+					{
+						self clear_bot_after_target();
+						self thread knife();
+						return;
+					}
 				}
 
 				if ( !self canFire( curweap ) || !self isInRange( dist, curweap ) )
@@ -1544,6 +1547,7 @@ doWalk( goal, dist, isScriptGoal )
 
 	//Couldn't generate path to goal
 	self.bot.path_inaccessible = false;
+
 	if ( current <= -1 )
 	{
 		self.bot.path_inaccessible = true;
@@ -1770,6 +1774,7 @@ initAStar( goal )
 	{
 		//Try again to find a path to the origin using best effort algo
 		nodes = generatePath( self.origin, goal, self.team, level.bot_allowed_negotiation_links, 192.0 );
+
 		if ( !isDefined( nodes ) )
 		{
 			self.bot.astar = [];
