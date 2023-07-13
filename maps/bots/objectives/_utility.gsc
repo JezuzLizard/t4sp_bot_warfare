@@ -2,14 +2,13 @@
 #include maps\_utility;
 #include maps\bots\_bot_utility;
 
-CreateObjectiveForManger( sName, fpFinder, fpExecuter, fpPriority, iProcessRate )
+CreateObjectiveForManger( sName, fpFinder, fpExecuter, iProcessRate )
 {
 	Answer = SpawnStruct();
 
 	Answer.sName = sName;
 	Answer.fpFinder = fpFinder;
 	Answer.fpExecuter = fpExecuter;
-	Answer.fpPriority = fpPriority;
 
 	Answer.aBotProcessTimes = [];
 	Answer.iProcessRate = iProcessRate;

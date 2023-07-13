@@ -30,7 +30,7 @@ Finder( eObj )
 			continue;
 		}
 
-		answer[answer.size] = self CreateFinderObjective( eObj, eObj.sName + "_" + ents[i] GetEntityNumber(), ents[i], self [[eObj.fpPriority]]( eObj, ents[i] ) );
+		answer[answer.size] = self CreateFinderObjective( eObj, eObj.sName + "_" + ents[i] GetEntityNumber(), ents[i], self Priority( eObj, ents[i] ) );
 	}
 
 	return answer;

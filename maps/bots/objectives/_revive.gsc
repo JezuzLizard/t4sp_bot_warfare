@@ -47,7 +47,7 @@ Finder( eObj )
 			continue;
 		}
 
-		Answer[Answer.size] = self CreateFinderObjective( eObj, eObj.sName + "_" + Player GetEntityNumber(), Player, self [[eObj.fpPriority]]( eObj, Player ) );
+		Answer[Answer.size] = self CreateFinderObjective( eObj, eObj.sName + "_" + Player GetEntityNumber(), Player, self Priority( eObj, Player ) );
 	}
 
 	return Answer;

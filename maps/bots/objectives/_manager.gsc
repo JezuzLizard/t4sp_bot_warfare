@@ -6,8 +6,8 @@
 init()
 {
 	level.bot_objectives = [];
-	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "revive", maps\bots\objectives\_revive::Finder, maps\bots\objectives\_revive::Executer, maps\bots\objectives\_revive::Priority, 1000 );
-	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "powerup", maps\bots\objectives\_powerup::Finder, maps\bots\objectives\_powerup::Executer, maps\bots\objectives\_powerup::Priority, 2500 );
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "revive", maps\bots\objectives\_revive::Finder, maps\bots\objectives\_revive::Executer, 1000 );
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "powerup", maps\bots\objectives\_powerup::Finder, maps\bots\objectives\_powerup::Executer, 2500 );
 }
 
 connected()
