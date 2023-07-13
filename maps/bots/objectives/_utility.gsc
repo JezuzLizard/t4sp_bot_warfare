@@ -84,7 +84,7 @@ ClampLerp( dist, min_dist, max_dist, max_bonus, min_bonus )
 	{
 		answer += max_bonus;
 	}
-	else if ( dist <= max_dist )
+	else if ( dist >= max_dist )
 	{
 		answer += min_bonus;
 	}
@@ -172,7 +172,21 @@ get_angle_offset_node( forward_size, angle_offset, offset )
 	angles += angle_offset;
 	node = self.origin + ( AnglesToForward( angles ) * forward_size ) + offset;
 	node = clamp_to_ground( node );
+
+	self thread debug_offset_line( node );
 	return node;
+}
+
+debug_offset_line( node )
+{
+	self notify( "debug_offset_line" );
+	self endon( "debug_offset_line" );
+
+	for ( ;; )
+	{
+		line( self.origin, node );
+		wait 0.05;
+	}
 }
 
 clamp_to_ground( org )

@@ -155,6 +155,11 @@ handleBots()
 */
 onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )
 {
+	if ( self isBot() && getDvarInt( "bots_t8_mode" ) )
+	{
+		iDamage = int( iDamage * 0.1 );
+	}
+
 	if ( self is_bot() )
 	{
 		self maps\bots\_bot_internal::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
@@ -162,6 +167,16 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 	}
 
 	self [[level.prevCallbackPlayerDamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
+}
+
+onActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset )
+{
+	if ( isDefined( eAttacker ) && isPlayer( eAttacker ) && eAttacker isBot() && getDvarInt( "bots_t8_mode" ) )
+	{
+		iDamage += int( self.maxhealth * randomFloatRange( 0.25, 1.25 ) );
+	}
+
+	self [[level.prevCallbackActorDamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset );
 }
 
 /*
@@ -172,6 +187,9 @@ hook_callbacks()
 	wait 0.05;
 	level.prevCallbackPlayerDamage = level.callbackPlayerDamage;
 	level.callbackPlayerDamage = ::onPlayerDamage;
+
+	level.prevCallbackActorDamage = level.callbackActorDamage;
+	level.callbackActorDamage = ::onActorDamage;
 }
 
 /*

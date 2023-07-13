@@ -10,7 +10,7 @@ Finder( eObj )
 
 	if ( self inLastStand() )
 	{
-		return Answer;
+		return answer;
 	}
 
 	for ( i = 0; i < ents.size; i++ )
@@ -40,7 +40,7 @@ Priority( eObj, eEnt )
 {
 	// TODO: check powerup type
 	base_priority = 0;
-	base_priority += ClampLerp( Distance( self.origin, eEnt.origin ), 300, 700, 2, -2 );
+	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 300, 700, 2, -2 );
 
 	if ( self HasBotObjective() )
 	{

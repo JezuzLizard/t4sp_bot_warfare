@@ -764,6 +764,7 @@ load_waypoints()
 	level.waypoints = GetAllNodes();
 	level.waypointCount = level.waypoints.size;
 
+	level.waypointsInPlayableArea = [];
 	level.waypointsInPlayableArea = get_nodes_in_playable_area();
 }
 
@@ -1040,7 +1041,16 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 */
 inLastStand()
 {
-	return self maps\_laststand::player_is_in_laststand();
+	func = GetFunction( "maps/_laststand", "player_is_in_laststand" );
+
+	return self [[func]]();
+}
+
+isReviving( revivee )
+{
+	func = GetFunction( "maps/_laststand", "is_reviving" );
+
+	return self [[func]]( revivee );
 }
 
 /*
@@ -1048,6 +1058,11 @@ inLastStand()
 */
 getRandomGoal()
 {
+	if ( !level.waypointsInPlayableArea.size )
+	{
+		return self.origin;
+	}
+
 	return PickRandom( level.waypointsInPlayableArea ).origin;
 }
 

@@ -56,7 +56,7 @@ Finder( eObj )
 Priority( eObj, eEnt )
 {
 	base_priority = 3;
-	base_priority += ClampLerp( Distance( self.origin, eEnt.origin ), 500, 1200, 2, -2 );
+	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 500, 1200, 2, -2 );
 
 	if ( self HasBotObjective() )
 	{
@@ -114,9 +114,9 @@ WatchForCancelRevive( revivee )
 			break;
 		}
 
-		if ( revivee.revivetrigger.beingrevived && !self maps\_laststand::is_reviving( revivee ) )
+		if ( revivee.revivetrigger.beingrevived && !self isReviving( revivee ) )
 		{
-			self CancelObjective( "revivee.revivetrigger.beingrevived && !self maps\_laststand::is_reviving( revivee )" );
+			self CancelObjective( "revivee.revivetrigger.beingrevived && !self isReviving( revivee )" );
 			break;
 		}
 	}

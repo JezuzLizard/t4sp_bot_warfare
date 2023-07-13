@@ -8,6 +8,7 @@ init()
 	level.bot_objectives = [];
 	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "revive", maps\bots\objectives\_revive::Finder, maps\bots\objectives\_revive::Executer, 1000 );
 	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "powerup", maps\bots\objectives\_powerup::Finder, maps\bots\objectives\_powerup::Executer, 2500 );
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "wallweapon", maps\bots\objectives\_wallweapon::Finder, maps\bots\objectives\_wallweapon::Executer, 7500 );
 }
 
 connected()
