@@ -1,5 +1,2 @@
-
-scripts/sp/callbacks.gsc
-scripts/sp/nazi_zombie_ccube_u/fix_ccube_u.gsc
-scripts/sp/sanatorium/fix_sanatorium.gsc
-scripts/sp/zm_spawn_fix.gsc
+*.log
+missingasset.csv
