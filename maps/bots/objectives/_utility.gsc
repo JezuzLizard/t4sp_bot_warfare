@@ -2,22 +2,17 @@
 #include maps\_utility;
 #include maps\bots\_bot_utility;
 
-CreateObjectiveForManger( sName, fpFinder, fpExecuter, fpPriority )
+CreateObjectiveForManger( sName, fpFinder, fpExecuter, fpPriority, iProcessRate )
 {
 	Answer = SpawnStruct();
 
 	Answer.sName = sName;
 	Answer.fpFinder = fpFinder;
 	Answer.fpExecuter = fpExecuter;
+	Answer.fpPriority = fpPriority;
 
-	if ( !IsDefined( fpPriority ) )
-	{
-		Answer.fpPriority = ::DefaultPriority;
-	}
-	else
-	{
-		Answer.fpPriority = fpPriority;
-	}
+	Answer.aBotProcessTimes = [];
+	Answer.iProcessRate = iProcessRate;
 
 	return Answer;
 }
@@ -36,11 +31,6 @@ CreateFinderObjective( eObj, sName, eEnt, fPriority )
 	Answer.sReason = "canceled";
 
 	return Answer;
-}
-
-DefaultPriority( eObj, eEnt )
-{
-	return 0;
 }
 
 /*
@@ -168,10 +158,12 @@ get_angle_offset_node( forward_size, angle_offset, offset )
 	{
 		forward_size = 40;
 	}
+
 	if ( !isDefined( angle_offset ) )
 	{
 		angle_offset = ( 0, 0, 0 );
 	}
+
 	if ( !isDefined( offset ) )
 	{
 		offset = ( 0, 0, 0 );

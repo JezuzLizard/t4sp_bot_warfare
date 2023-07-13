@@ -6,8 +6,8 @@
 init()
 {
 	level.bot_objectives = [];
-	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "revive", maps\bots\objectives\_revive::Finder, maps\bots\objectives\_revive::Executer, maps\bots\objectives\_revive::Priority );
-	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "powerup", maps\bots\objectives\_powerup::Finder, maps\bots\objectives\_powerup::Executer, maps\bots\objectives\_powerup::Priority );
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "revive", maps\bots\objectives\_revive::Finder, maps\bots\objectives\_revive::Executer, maps\bots\objectives\_revive::Priority, 1000 );
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "powerup", maps\bots\objectives\_powerup::Finder, maps\bots\objectives\_powerup::Executer, maps\bots\objectives\_powerup::Priority, 2500 );
 }
 
 connected()
@@ -59,6 +59,8 @@ clean_objective_on_completion()
 		if ( isDefined( self.bot_current_objective ) )
 		{
 			obj_name = self.bot_current_objective.sName;
+
+			self.bot_current_objective.eParentObj.aBotProcessTimes[self GetEntityNumber() + ""] = getTime();
 		}
 
 		PrintConsole( "clean_objective_on_completion: " + self.playername + ": " + obj_name + ": " + successful + ": " + reason );
@@ -89,12 +91,21 @@ bot_objective_think()
 
 		// find all avail objectives
 		objectives = [];
+		now = getTime();
+		our_key = self GetEntityNumber() + "";
 
 		for ( i = 0; i < level.bot_objectives.size; i++ )
 		{
 			objective = level.bot_objectives[i];
 
+			// check the process rate
+			if ( isDefined( objective.aBotProcessTimes[our_key] ) && now - objective.aBotProcessTimes[our_key] < objective.iProcessRate )
+			{
+				continue;
+			}
+
 			objectives = array_merge( objectives, self [[objective.fpFinder]]( objective ) );
+			objective.aBotProcessTimes[our_key] = now;
 		}
 
 		if ( objectives.size <= 0 )
@@ -135,6 +146,7 @@ bot_objective_think()
 			self waittill( "completed_bot_objective" );
 
 			// redo the loop, should do the obj next iteration
+			best_prio.eParentObj.aBotProcessTimes[our_key] = undefined;
 			continue;
 		}
 
