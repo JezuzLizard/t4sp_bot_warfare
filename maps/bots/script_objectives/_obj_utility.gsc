@@ -209,3 +209,26 @@ get_players_sorted_by_lowest_pers_value( pers_name )
 
 	return quickSort( players, ::quicksort_compare_pers_value_lowest_to_highest, pers_name );
 }
+
+get_path_dist( start, end )
+{
+	path = generatePath( start, end, self.team, level.bot_allowed_negotiation_links, 192.0 );
+	if ( !isDefined( path ) || path.size <= 0 )
+	{
+		return 9999999;
+	}
+	dist = 0;
+	prev_node = undefined;
+	for ( i = 0; i < path.size; i++ )
+	{
+		if ( i == 0 )
+		{
+			prev_node = path[ i ];
+			continue;
+		}
+		dist += distance( prev_node.origin, path[ i ].origin );
+		prev_node = path[ i ];
+	}
+
+	return dist;
+}

@@ -353,7 +353,7 @@ bot_process_action()
 
 	self [[ level.zbots_actions[ action_name ].init_func ]]();
 
-	self thread [[ level.zbots_actions[ action_name ].action ]]();
+	self thread [[ level.zbots_actions[ action_name ].action ]]( self.bot_action.obj );
 
 	self.running_action = true;
 	self wait_for_action_completion( action_name );
@@ -399,13 +399,20 @@ bot_pick_action()
 	possible_actions = NewHeap( ::HeapPriority );
 	for ( i = 0; i < action_keys.size; i++ )
 	{
-		if ( self [[ level.zbots_actions[ action_keys[ i ] ].should_do_func ]]() )
+		struct = spawnStruct();
+		struct.possible_objs = [];
+		if ( self [[ level.zbots_actions[ action_keys[ i ] ].should_do_func ]]( struct ) )
 		{
-			possible_action = spawnStruct();
-			possible_action.action_name = action_keys[ i ];
-			possible_action.priority = self [[ level.zbots_actions[ action_keys[ i ] ].priority_func ]]();
-			possible_actions HeapInsert( possible_action );
-			printConsole( self.playername + " Adding action " + action_keys[ i ] + " to queue of size: " + possible_actions.data.size );
+			available_objs = struct.possible_objs;
+			for ( j = 0; j < available_objs.size; j++ )
+			{
+				possible_action = spawnStruct();
+				possible_action.action_name = action_keys[ i ];
+				possible_action.priority = self [[ level.zbots_actions[ action_keys[ i ] ].priority_func ]]( available_objs[ j ] );
+				possible_action.obj = available_objs[ j ];
+				possible_actions HeapInsert( possible_action );
+				printConsole( self.playername + " Adding obj " + action_keys[ i ] + " id " + available_objs[ j ].id + " to queue of size: " + possible_actions.data.size );
+			}
 		}
 	}
 

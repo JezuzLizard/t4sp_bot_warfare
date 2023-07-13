@@ -32,18 +32,44 @@ bot_obj_timeout( objective_group, time )
 	self notify( objective_group + "_cancel" );
 }
 
-bot_grab_powerup()
+calculate_base_obj_priority( obj )
+{
+	dist = self get_path_dist( self.origin, obj.target_ent.origin );
+
+	priority = 0;
+	min_dist = 300;
+	max_dist = 600;
+	max_bonus = 2;
+	min_bonus = 1;
+	if ( dist <= min_dist )
+	{
+		priority += max_bonus;
+	}
+	else if ( dist <= max_dist )
+	{
+		priority += min_bonus;
+	}
+	else
+	{
+		dist_multi = 1 - ( ( dist - min_dist ) / ( max_dist - min_dist ) );
+		priority += min_bonus + ( ( max_bonus - min_bonus ) * dist_multi );
+	}
+
+	return priority;
+}
+
+bot_grab_powerup( obj )
 {
 	self endon( "disconnect" );
 	self endon( "powerup_end_think" );
 	level endon( "end_game" );
 
-	if ( !isDefined( self.available_powerups ) || self.available_powerups.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
 
-	powerup_obj = self.available_powerups[ 0 ];
+	powerup_obj = obj;
 	powerup_obj_ent = powerup_obj.target_ent;
 	self bot_set_objective( "powerup", powerup_obj_ent );
 	self bot_set_objective_owner( "powerup", powerup_obj_ent );
@@ -103,7 +129,7 @@ bot_powerup_post_think( state )
 	self.successfully_grabbed_powerup = false;
 }
 
-bot_should_grab_powerup()
+bot_should_grab_powerup( struct )
 {
 	if ( level.zbot_objective_glob[ "powerup" ].active_objectives.size <= 0 )
 	{
@@ -113,7 +139,7 @@ bot_should_grab_powerup()
 	BOT_SPEED_WHILE_SPRINTING_SQ = 285 * 285;
 	self.available_powerups = [];
 
-	powerup_objectives = level.zbot_objective_glob[ "powerup" ].active_objectives;
+	powerup_objectives = get_all_objectives_for_group( "powerup" );
 	obj_keys = getArrayKeys( powerup_objectives );
 	for ( i = 0; i < powerup_objectives.size; i++ )
 	{
@@ -148,7 +174,7 @@ bot_should_grab_powerup()
 		self.available_powerups[ self.available_powerups.size ] = obj;
 	}
 
-	//TODO: Sort powerups by priority here
+	struct.possible_objs = self.available_powerups;
 	return self.available_powerups.size > 0;
 }
 
@@ -170,15 +196,18 @@ bot_powerup_should_cancel()
 	return goal_canceled;
 }
 
-bot_powerup_priority()
+bot_powerup_priority( obj )
 {
-	return 3;
+	priority = 0;
+	base_priority = self calculate_base_obj_priority( obj );
+	priority += base_priority;
+	return priority;
 }
 
 //TODO: Possibly add the ability to circle revive?
-bot_revive_player()
+bot_revive_player( obj )
 {
-	if ( !isDefined( self.available_revives ) || self.available_revives.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
@@ -187,7 +216,7 @@ bot_revive_player()
 	self endon( "revive_end_think" );
 	level endon( "end_game" );
 
-	player_to_revive_obj = self.available_revives[ 0 ];
+	player_to_revive_obj = obj;
 
 	player_to_revive = player_to_revive_obj.target_ent;
 	self bot_set_objective( "revive", player_to_revive );
@@ -257,7 +286,7 @@ bot_revive_player_post_think( state )
 	self.successfully_revived_player = false;
 }
 
-bot_should_revive_player()
+bot_should_revive_player( struct )
 {
 	downed_players_objs = get_all_objectives_for_group( "revive" );
 	if ( downed_players_objs.size <= 0 )
@@ -290,6 +319,7 @@ bot_should_revive_player()
 		}
 		self.available_revives[ self.available_revives.size ] = obj;
 	}
+	struct.possible_objs = self.available_revives;
 	return self.available_revives.size > 0;
 }
 
@@ -316,14 +346,14 @@ bot_revive_player_should_cancel()
 	return goal_canceled;
 }
 
-bot_revive_player_priority()
+bot_revive_player_priority( obj )
 {
 	return 2;
 }
 
-bot_magicbox_purchase()
+bot_magicbox_purchase( obj )
 {
-	if ( !isDefined( self.available_chests ) || self.available_chests.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
@@ -332,7 +362,7 @@ bot_magicbox_purchase()
 	self endon( "magicbox_end_think" );
 	level endon( "end_game" );
 
-	magicbox_obj = self.available_chests[ 0 ];
+	magicbox_obj = obj;
 
 	magicbox = magicbox_obj.target_ent;
 	self bot_set_objective( "magicbox", magicbox );
@@ -419,7 +449,7 @@ bot_magicbox_purchase_post_think( state )
 	self.successfully_grabbed_magicbox_weapon = false;
 }
 
-bot_should_purchase_magicbox()
+bot_should_purchase_magicbox( struct )
 {
 	magicbox_objs = get_all_objectives_for_group( "magicbox" );
 	if ( magicbox_objs.size <= 0 )
@@ -468,6 +498,7 @@ bot_should_purchase_magicbox()
 		}
 		self.available_chests[ self.available_chests.size ] = obj;
 	}
+	struct.possible_objs = self.available_chests;
 	return self.available_chests.size > 0;
 }
 
@@ -504,7 +535,7 @@ bot_magicbox_purchase_should_cancel()
 	return goal_canceled;
 }
 
-bot_magicbox_purchase_priority()
+bot_magicbox_purchase_priority( obj )
 {
 	/*
 	priority = 0;
@@ -526,9 +557,9 @@ bot_magicbox_purchase_priority()
 	return 0;
 }
 
-bot_perk_purchase()
+bot_perk_purchase( obj )
 {
-	if ( !isDefined( self.available_perks ) || self.available_perks.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
@@ -537,7 +568,7 @@ bot_perk_purchase()
 	self endon( "perk_end_think" );
 	level endon( "end_game" );
 
-	perk_obj = self.available_perks[ 0 ];
+	perk_obj = obj;
 
 	perk_ent = perk_obj.target_ent;
 	self bot_set_objective( "perk", perk_ent );
@@ -576,7 +607,7 @@ bot_perk_purchase_post_think( state )
 	self.successfully_bought_perk = false;
 }
 
-bot_should_purchase_perk()
+bot_should_purchase_perk( struct )
 {
 	perk_objs = get_all_objectives_for_group( "perk" );
 	if ( perk_objs.size <= 0 )
@@ -622,6 +653,7 @@ bot_should_purchase_perk()
 		}
 		self.available_perks[ self.available_perks.size ] = obj;
 	}
+	struct.possible_objs = self.available_perks;
 	return self.available_perks.size > 0;
 }
 
@@ -644,14 +676,14 @@ bot_perk_purchase_should_cancel()
 	return goal_canceled;
 }
 
-bot_perk_purchase_priority()
+bot_perk_purchase_priority( obj )
 {
 	return 1;
 }
 
-bot_door_purchase()
+bot_door_purchase( obj )
 {
-	if ( !isDefined( self.available_doors ) || self.available_doors.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
@@ -660,13 +692,13 @@ bot_door_purchase()
 	self endon( "door_end_think" );
 	level endon( "end_game" );
 
-	door_obj = self.available_doors[ 0 ];
+	door_obj = obj;
 
 	door_ent = door_obj.target_ent;
 	self bot_set_objective( "door", door_ent );
 	self bot_objective_print( "door", door_obj.id, "Bot <" + self.playername + "> Attempting to purchase " + door_ent.target, "bot_door_purchase" );
 
-	lookat_org = door_ent.origin + ( 0, 0, 35 );
+	lookat_org = door_ent.origin;
 	goal_org = door_ent.origin;
 
 	self ClearScriptAimPos();
@@ -699,7 +731,7 @@ bot_door_purchase_post_think( state )
 	self.successfully_bought_door = false;
 }
 
-bot_should_purchase_door()
+bot_should_purchase_door( struct )
 {
 	door_objs = get_all_objectives_for_group( "door" );
 	if ( door_objs.size <= 0 )
@@ -730,6 +762,7 @@ bot_should_purchase_door()
 		}
 		self.available_doors[ self.available_doors.size ] = obj;
 	}
+	struct.possible_objs = self.available_doors;
 	return self.available_doors.size > 0;
 }
 
@@ -743,14 +776,14 @@ bot_door_purchase_should_cancel()
 	return false;
 }
 
-bot_door_purchase_priority()
+bot_door_purchase_priority( obj )
 {
 	return 0;
 }
 
-bot_debris_purchase()
+bot_debris_purchase( obj )
 {
-	if ( !isDefined( self.available_debris ) || self.available_debris.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
@@ -759,13 +792,13 @@ bot_debris_purchase()
 	self endon( "debris_end_think" );
 	level endon( "end_game" );
 
-	debris_obj = self.available_debris[ 0 ];
+	debris_obj = obj;
 
 	debris_ent = debris_obj.target_ent;
 	self bot_set_objective( "debris", debris_ent );
 	self bot_objective_print( "debris", debris_obj.id, "Bot <" + self.playername + "> Attempting to purchase " + debris_ent.target, "bot_debris_purchase" );
 
-	lookat_org = debris_ent.origin + ( 0, 0, 35 );
+	lookat_org = debris_ent.origin;
 	goal_org = debris_ent.origin;
 
 	self ClearScriptAimPos();
@@ -798,7 +831,7 @@ bot_debris_purchase_post_think( state )
 	self.successfully_bought_debris = false;
 }
 
-bot_should_purchase_debris()
+bot_should_purchase_debris( struct )
 {
 	debris_objs = get_all_objectives_for_group( "debris" );
 	if ( debris_objs.size <= 0 )
@@ -823,6 +856,7 @@ bot_should_purchase_debris()
 		}
 		self.available_doors[ self.available_doors.size ] = obj;
 	}
+	struct.possible_objs = self.available_doors;
 	return self.available_doors.size > 0;
 }
 
@@ -836,14 +870,14 @@ bot_debris_purchase_should_cancel()
 	return false;
 }
 
-bot_debris_purchase_priority()
+bot_debris_purchase_priority( obj )
 {
 	return 0;
 }
 
-bot_wallbuy_purchase()
+bot_wallbuy_purchase( obj )
 {
-	if ( !isDefined( self.available_wallbuys ) || self.available_wallbuys.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
@@ -852,7 +886,7 @@ bot_wallbuy_purchase()
 	self endon( "wallbuy_end_think" );
 	level endon( "end_game" );
 
-	wallbuy_obj = self.available_wallbuys[ 0 ];
+	wallbuy_obj = obj;
 
 	wallbuy_ent = wallbuy_obj.target_ent;
 	self bot_set_objective( "wallbuy", wallbuy_ent );
@@ -891,7 +925,7 @@ bot_wallbuy_purchase_post_think( state )
 	self.successfully_bought_wallbuy = false;
 }
 
-bot_should_purchase_wallbuy()
+bot_should_purchase_wallbuy( struct )
 {
 	wallbuy_objs = get_all_objectives_for_group( "wallbuy" );
 	if ( wallbuy_objs.size <= 0 )
@@ -911,6 +945,11 @@ bot_should_purchase_wallbuy()
 			self bot_objective_print( "wallbuy", obj.id, "Bot <" + self.playername + "> not purchasing <" + weapon + "> because this action is on cooldown", "bot_should_purchase_wallbuy" );
 			continue;
 		}
+		if ( self hasWeapon( weapon ) )
+		{
+			self bot_objective_print( "wallbuy", obj.id, "Bot <" + self.playername + "> not purchasing <" + weapon + "> because we already have it", "bot_should_purchase_wallbuy" );
+			continue;
+		}
 		if ( self.score < maps\so\zm_common\_zm_weapons::get_weapon_cost( weapon ) )
 		{
 			self bot_objective_print( "wallbuy", obj.id, "Bot <" + self.playername + "> not purchasing <" + weapon + "> because we can't afford it", "bot_should_purchase_wallbuy" );
@@ -923,6 +962,7 @@ bot_should_purchase_wallbuy()
 		}
 		self.available_wallbuys[ self.available_wallbuys.size ] = obj;
 	}
+	struct.possible_objs = self.available_wallbuys;
 	return self.available_wallbuys.size > 0;
 }
 
@@ -936,14 +976,14 @@ bot_wallbuy_purchase_should_cancel()
 	return false;
 }
 
-bot_wallbuy_purchase_priority()
+bot_wallbuy_purchase_priority( obj )
 {
 	return 0;
 }
 
-bot_wallbuy_ammo_purchase()
+bot_wallbuy_ammo_purchase( obj )
 {
-	if ( !isDefined( self.available_wallbuyammos ) || self.available_wallbuyammos.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
@@ -952,7 +992,7 @@ bot_wallbuy_ammo_purchase()
 	self endon( "wallbuyammo_end_think" );
 	level endon( "end_game" );
 
-	wallbuy_obj = self.available_wallbuyammos[ 0 ];
+	wallbuy_obj = obj;
 
 	wallbuy_ent = wallbuy_obj.target_ent;
 	self bot_set_objective( "wallbuyammo", wallbuy_ent );
@@ -991,7 +1031,7 @@ bot_wallbuy_ammo_purchase_post_think( state )
 	self.successfully_bought_wallbuy_ammo = false;
 }
 
-bot_should_purchase_wallbuy_ammo()
+bot_should_purchase_wallbuy_ammo( struct )
 {
 	wallbuy_objs = get_all_objectives_for_group( "wallbuyammo" );
 	if ( wallbuy_objs.size <= 0 )
@@ -1028,6 +1068,7 @@ bot_should_purchase_wallbuy_ammo()
 		}
 		self.available_wallbuyammos[ self.available_wallbuyammos.size ] = obj;
 	}
+	struct.possible_objs = self.available_wallbuyammos;
 	return self.available_wallbuyammos.size > 0;
 }
 
@@ -1046,9 +1087,9 @@ bot_wallbuy_ammo_purchase_priority()
 	return 0;
 }
 
-bot_packapunch_purchase()
+bot_packapunch_purchase( obj )
 {
-	if ( !isDefined( self.available_packapunchs ) || self.available_packapunchs.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
@@ -1057,7 +1098,7 @@ bot_packapunch_purchase()
 	self endon( "packapunch_end_think" );
 	level endon( "end_game" );
 
-	packapunch_obj = self.available_packapunchs[ 0 ];
+	packapunch_obj = obj;
 
 	packapunch = packapunch_obj.target_ent;
 	self bot_set_objective( "packapunch", packapunch );
@@ -1122,7 +1163,7 @@ bot_packapunch_purchase_post_think( state )
 	self.successfully_bought_packapunch = false;
 }
 
-bot_should_purchase_packapunch()
+bot_should_purchase_packapunch( struct )
 {
 	packapunch_objs = get_all_objectives_for_group( "packapunch" );
 	if ( packapunch_objs.size <= 0 )
@@ -1148,6 +1189,7 @@ bot_should_purchase_packapunch()
 		}
 		self.available_packapunchs[ self.available_packapunchs.size ] = obj;
 	}
+	struct.possible_objs = self.available_packapunchs;
 	return self.available_packapunchs.size > 0;
 }
 
@@ -1172,14 +1214,14 @@ bot_packapunch_purchase_should_cancel()
 	return goal_canceled;
 }
 
-bot_packapunch_purchase_priority()
+bot_packapunch_purchase_priority( obj )
 {
 	return 0;
 }
 
-bot_power_activate()
+bot_power_activate( obj )
 {
-	if ( !isDefined( self.available_powers ) || self.available_powers.size <= 0 )
+	if ( !isDefined( obj ) )
 	{
 		return;
 	}
@@ -1188,7 +1230,7 @@ bot_power_activate()
 	self endon( "power_end_think" );
 	level endon( "end_game" );
 
-	power_obj = self.available_powers[ 0 ];
+	power_obj = obj;
 
 	power_ent = power_obj.target_ent;
 	self bot_set_objective( "power", power_ent );
@@ -1227,7 +1269,7 @@ bot_power_activate_post_think(state)
 	self.successfully_activated_power = false;
 }
 
-bot_should_activate_power()
+bot_should_activate_power( struct )
 {
 	power_objs = get_all_objectives_for_group( "power" );
 	if ( power_objs.size <= 0 )
@@ -1248,6 +1290,7 @@ bot_should_activate_power()
 		}
 		self.available_powers[ self.available_powers.size ] = obj;
 	}
+	struct.possible_objs = self.available_powers;
 	return self.available_powers.size > 0;
 }
 
@@ -1269,7 +1312,7 @@ bot_power_activate_should_cancel()
 	return goal_canceled;
 }
 
-bot_power_activate_priority()
+bot_power_activate_priority( obj )
 {
 	return 0;
 }

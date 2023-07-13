@@ -202,7 +202,6 @@ store_powerups_dropped()
 
 	level thread free_powerups_dropped();
 
-	level.zbots_powerups = [];
 	while ( true )
 	{
 		level waittill( "powerup_dropped", powerup );
@@ -212,9 +211,6 @@ store_powerups_dropped()
 			continue;
 		}
 		obj = add_possible_bot_objective( "powerup", powerup, true );
-		obj.accessible = true;
-		//maps\bots\_bot_utility::assign_priority_to_powerup( powerup );
-		//level.zbots_powerups = maps\bots\_bot_utility::sort_array_by_priority_field( level.zbots_powerups, powerup );
 	}
 }
 
