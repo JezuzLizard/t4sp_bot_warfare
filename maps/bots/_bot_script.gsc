@@ -7,7 +7,7 @@
 */
 bot_script_init()
 {
-	level thread maps\bots\script_objectives\_obj_init::init();
+	level thread maps\bots\objectives\_manager::init();
 }
 
 /*
@@ -31,7 +31,7 @@ connected()
 	self thread onBotSpawned();
 	self thread onSpawned();
 
-	self thread maps\bots\script_objectives\_obj_init::connected();
+	self thread maps\bots\objectives\_manager::connected();
 }
 
 /*
@@ -389,10 +389,7 @@ onSpawned()
 	{
 		self waittill( "spawned_player" );
 
-		self.bot_lock_goal = false;
-		self.bot_was_follow_script_update = undefined;
-
-		self thread maps\bots\script_objectives\_obj_init::spawned();
+		self thread maps\bots\objectives\_manager::spawned();
 	}
 }
 
@@ -407,7 +404,7 @@ start_bot_threads()
 
 	self thread doReloadCancel();
 
-	self thread maps\bots\script_objectives\_obj_init::start_bot_threads();
+	self thread maps\bots\objectives\_manager::start_bot_threads();
 }
 
 /*

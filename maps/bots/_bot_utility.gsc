@@ -822,7 +822,7 @@ ReverseHeap( item, item2 )
 
 HeapPriority( item, item2 )
 {
-	return item.priority > item2.priority;
+	return item.fPriority > item2.fPriority;
 }
 
 /*

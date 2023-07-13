@@ -1,0 +1,146 @@
+#include common_scripts\utility;
+#include maps\_utility;
+#include maps\bots\_bot_utility;
+#include maps\bots\objectives\_utility;
+
+init()
+{
+	level.bot_objectives = [];
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "revive", maps\bots\objectives\_revive::Finder, maps\bots\objectives\_revive::Executer, maps\bots\objectives\_revive::Priority );
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "powerup", maps\bots\objectives\_powerup::Finder, maps\bots\objectives\_powerup::Executer, maps\bots\objectives\_powerup::Priority );
+}
+
+connected()
+{
+	self.bot_current_objective = undefined;
+}
+
+spawned()
+{
+	self.bot_current_objective = undefined;
+
+	self thread clean_objective_on_completion();
+	self thread watch_for_objective_canceled();
+}
+
+watch_for_objective_canceled()
+{
+	self endon( "disconnect" );
+	level endon( "intermission" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		self waittill( "cancel_bot_objective", reason );
+
+		obj_name = "undefined";
+
+		if ( isDefined( self.bot_current_objective ) )
+		{
+			obj_name = self.bot_current_objective.sName;
+		}
+
+		PrintConsole( "watch_for_objective_canceled: " + self.playername + ": " + obj_name + ": " + reason );
+	}
+}
+
+clean_objective_on_completion()
+{
+	self endon( "disconnect" );
+	level endon( "intermission" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		self waittill( "completed_bot_objective", successful, reason );
+
+		obj_name = "undefined";
+
+		if ( isDefined( self.bot_current_objective ) )
+		{
+			obj_name = self.bot_current_objective.sName;
+		}
+
+		PrintConsole( "clean_objective_on_completion: " + self.playername + ": " + obj_name + ": " + successful + ": " + reason );
+
+		waittillframeend;
+		self.bot_current_objective = undefined;
+	}
+}
+
+start_bot_threads()
+{
+	self endon( "disconnect" );
+	level endon( "intermission" );
+	self endon( "zombified" );
+
+	self thread bot_objective_think();
+}
+
+bot_objective_think()
+{
+	self endon( "disconnect" );
+	level endon( "intermission" );
+	self endon( "zombified" );
+
+	for ( ;; )
+	{
+		wait 1;
+
+		// find all avail objectives
+		objectives = [];
+
+		for ( i = 0; i < level.bot_objectives.size; i++ )
+		{
+			objective = level.bot_objectives[i];
+
+			objectives = array_merge( objectives, self [[objective.fpFinder]]( objective ) );
+		}
+
+		if ( objectives.size <= 0 )
+		{
+			continue;
+		}
+
+		// sort according to priority
+		heap = NewHeap( ::HeapPriority );
+
+		for ( i = 0; i < objectives.size; i++ )
+		{
+			heap HeapInsert( objectives[i] );
+		}
+
+		// pop the top!
+		best_prio = heap.data[0];
+
+		if ( !isDefined( best_prio ) )
+		{
+			continue;
+		}
+
+		// already on a better obj
+		if ( self HasBotObjective() && ( best_prio.GUID == self.bot_current_objective.GUID || best_prio.fPriority < self.bot_current_objective.fPriority ) )
+		{
+			continue;
+		}
+
+		// DO THE OBJ
+		// cancel the old obj
+		if ( self HasBotObjective() )
+		{
+			// cancel it
+			self CancelObjective( "new obj: " + best_prio.sName );
+
+			// wait for it to clean up
+			self waittill( "completed_bot_objective" );
+
+			// redo the loop, should do the obj next iteration
+			continue;
+		}
+
+		// ready to execute
+		PrintConsole( "bot_objective_think: " + self.playername + ": " + best_prio.sName );
+		self.bot_current_objective = best_prio;
+		self thread [[best_prio.eParentObj.fpExecuter]]( best_prio );
+	}
+}
