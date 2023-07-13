@@ -679,7 +679,7 @@ bot_lookat( pos, time, vel, doAimPredict )
 	self endon( "spawned_player" );
 	level endon ( "intermission" );
 
-	if ( level.intermission || self.bot.isfrozen || !getDvarInt( "bots_play_aim" ) )
+	if ( ( isDefined( level.intermission ) && level.intermission ) || self.bot.isfrozen || !getDvarInt( "bots_play_aim" ) )
 		return;
 
 	if ( !isDefined( pos ) )
@@ -1435,7 +1435,7 @@ aim()
 	{
 		wait 0.05;
 
-		if ( level.intermission || self.bot.isfrozen )
+		if ( ( isDefined( level.intermission ) && level.intermission ) || self.bot.isfrozen )
 			continue;
 
 		self aim_loop();
@@ -1459,7 +1459,7 @@ walk()
 		if ( !getDvarInt( "bots_play_move" ) )
 			continue;
 
-		if ( level.intermission || self.bot.isfrozen || self.bot.stop_move )
+		if ( ( isdefined( level.intermission ) && level.intermission ) || self.bot.isfrozen || self.bot.stop_move )
 			continue;
 
 		self walk_loop();
