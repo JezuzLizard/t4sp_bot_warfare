@@ -905,7 +905,9 @@ target_loop()
 			            ( traceAnkleRight["fraction"] >= 1.0 || traceAnkleRight["surfacetype"] == "glass" ) )
 
 			        && ( getConeDot( enemy.origin, self.origin, myAngles ) >= myFov ||
-			            ( isObjDef && obj.trace_time ) ) );
+			            ( isObjDef && obj.trace_time ) )
+
+			        && ( !isDefined( enemy.magic_bullet_shield ) || !enemy.magic_bullet_shield ) );
 
 			if ( isDefined( self.bot.target_this_frame ) && self.bot.target_this_frame == enemy )
 			{

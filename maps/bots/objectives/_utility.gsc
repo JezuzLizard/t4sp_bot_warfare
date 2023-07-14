@@ -189,6 +189,69 @@ debug_offset_line( node )
 	}
 }
 
+PointInsideUseTrigger( point )
+{
+	self thread debug_bounding_box_for_ent();
+
+	mins = self getmins();
+	maxs = self getmaxs();
+
+	box = spawnstruct();
+	box.x0 = self.origin[0] + mins[0];
+	box.x1 = self.origin[0] + maxs[0];
+	box.y0 = self.origin[1] + mins[1];
+	box.y1 = self.origin[1] + maxs[1];
+	box.z0 = self.origin[2] + mins[2];
+	box.z1 = self.origin[2] + maxs[2];
+
+	if ( box RectDistanceSquared( self.origin ) > 72 * 72 )
+	{
+		return false;
+	}
+
+	if ( !bulletTracePassed( point, self.origin, false, undefined ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+debug_bounding_box_for_ent( color )
+{
+	self endon( "death" );
+	self notify( "debug_bounding_box_for_ent" );
+	self endon( "debug_bounding_box_for_ent" );
+
+	if ( !isDefined( color ) )
+		color = ( randomFloatRange( 0, 1 ), randomFloatRange( 0, 1 ), randomFloatRange( 0, 1 ) );
+
+	while ( isDefined( self ) )
+	{
+		mins = self getmins();
+		maxs = self getmaxs();
+
+		line( self.origin + ( mins[0], mins[1], mins[2] ), self.origin + ( mins[0], mins[1], maxs[2] ), color );
+		line( self.origin + ( mins[0], mins[1], mins[2] ), self.origin + ( mins[0], maxs[1], mins[2] ), color );
+		line( self.origin + ( mins[0], mins[1], mins[2] ), self.origin + ( maxs[0], mins[1], mins[2] ), color );
+
+		line( self.origin + ( maxs[0], maxs[1], maxs[2] ), self.origin + ( maxs[0], maxs[1], mins[2] ), color );
+		line( self.origin + ( maxs[0], maxs[1], maxs[2] ), self.origin + ( maxs[0], mins[1], maxs[2] ), color );
+		line( self.origin + ( maxs[0], maxs[1], maxs[2] ), self.origin + ( mins[0], maxs[1], maxs[2] ), color );
+
+		line( self.origin + ( maxs[0], mins[1], mins[2] ), self.origin + ( maxs[0], maxs[1], mins[2] ), color );
+		line( self.origin + ( maxs[0], mins[1], mins[2] ), self.origin + ( maxs[0], mins[1], maxs[2] ), color );
+
+		line( self.origin + ( mins[0], mins[1], maxs[2] ), self.origin + ( maxs[0], mins[1], maxs[2] ), color );
+		line( self.origin + ( mins[0], mins[1], maxs[2] ), self.origin + ( mins[0], maxs[1], maxs[2] ), color );
+
+		line( self.origin + ( mins[0], maxs[1], mins[2] ), self.origin + ( maxs[0], maxs[1], mins[2] ), color );
+		line( self.origin + ( mins[0], maxs[1], mins[2] ), self.origin + ( mins[0], maxs[1], maxs[2] ), color );
+
+		wait 0.05;
+	}
+}
+
 clamp_to_ground( org )
 {
 	trace = playerPhysicsTrace( org + ( 0, 0, 20 ), org - ( 0, 0, 2000 ) );

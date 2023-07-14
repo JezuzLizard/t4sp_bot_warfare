@@ -68,7 +68,7 @@ Finder( eObj )
 			continue;
 		}
 
-		org = self getOffset( model );
+		org = self getOffset( model, weapon_spawns[ i ] );
 
 		if ( GetPathIsInaccessible( self.origin, org ) )
 		{
@@ -81,12 +81,16 @@ Finder( eObj )
 	return answer;
 }
 
-getOffset( model )
+getOffset( model, weapon )
 {
-	// some weapons have 90 offset... how to handle this??
-	angle_off = -90;
+	org = model get_angle_offset_node( 40, ( 0, -90, 0 ), ( 0, 0, 1 ) );
 
-	org = model get_angle_offset_node( 40, ( 0, angle_off, 0 ), ( 0, 0, 1 ) );
+	test_org = ( org[0], org[1], weapon.origin[2] );
+
+	if ( !weapon PointInsideUseTrigger( test_org ) )
+	{
+		org = model get_angle_offset_node( 40, ( 0, 90, 0 ), ( 0, 0, 1 ) );
+	}
 
 	return org;
 }
@@ -164,7 +168,7 @@ WatchToGoToWeapon( weapon )
 	{
 		wait 0.05;
 
-		if ( self IsTouching( weapon ) )
+		if ( self IsTouching( weapon ) || weapon PointInsideUseTrigger( self.origin ) )
 		{
 			self notify( "goal" );
 			break; // is this needed?
@@ -178,7 +182,7 @@ GoDoWallweapon( eObj )
 
 	weapon = eObj.eEnt;
 	model = getEnt( weapon.target, "targetname" );
-	org = self getOffset( model );
+	org = self getOffset( model, weapon );
 
 	// go to weapon
 	self thread WatchToGoToWeapon( weapon );
@@ -192,8 +196,7 @@ GoDoWallweapon( eObj )
 		return;
 	}
 
-	// istouching use triggers doesnt work well
-	if ( !self IsTouching( weapon ) && false )
+	if ( !self IsTouching( weapon ) && !weapon PointInsideUseTrigger( self.origin ) )
 	{
 		eObj.sReason = "not touching weapon";
 		return;

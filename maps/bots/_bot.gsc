@@ -171,7 +171,7 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 
 onActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset )
 {
-	if ( isDefined( eAttacker ) && isPlayer( eAttacker ) && eAttacker isBot() && getDvarInt( "bots_t8_mode" ) )
+	if ( isDefined( eAttacker ) && isPlayer( eAttacker ) && eAttacker isBot() && getDvarInt( "bots_t8_mode" ) && ( !isDefined( self.magic_bullet_shield ) || !self.magic_bullet_shield ) )
 	{
 		iDamage += int( self.maxhealth * randomFloatRange( 0.25, 1.25 ) );
 	}

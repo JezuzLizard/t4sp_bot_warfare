@@ -648,6 +648,31 @@ DistanceSquared2D( to, from )
 	return DistanceSquared( to, from );
 }
 
+RectDistanceSquared( origin )
+{
+	dx = 0;
+	dy = 0;
+	dz = 0;
+
+	if ( origin[0] < self.x0 )
+		dx = origin[0] - self.x0;
+	else if ( origin[0] > self.x1 )
+		dx = origin[0] - self.x1;
+
+	if ( origin[1] < self.y0 )
+		dy = origin[1] - self.y0;
+	else if ( origin[1] > self.y1 )
+		dy = origin[1] - self.y1;
+
+
+	if ( origin[2] < self.z0 )
+		dz = origin[2] - self.z0;
+	else if ( origin[2] > self.z1 )
+		dz = origin[2] - self.z1;
+
+	return dx * dx + dy * dy + dz * dz;
+}
+
 /*
 	Rounds to the nearest whole number.
 */
