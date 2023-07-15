@@ -129,6 +129,7 @@ Executer( eObj )
 	self WatchForCancelCleanup();
 	self ClearScriptAimPos();
 	self ClearScriptGoal();
+	self ClearPriorityObjective();
 	self CompletedObjective( eObj.bWasSuccessful, eObj.sReason );
 }
 
@@ -183,6 +184,13 @@ GoDoWallweapon( eObj )
 	weapon = eObj.eEnt;
 	model = getEnt( weapon.target, "targetname" );
 	org = self getOffset( model, weapon );
+
+	weap = self GetCurrentWeapon();
+
+	if ( weap == "none" || !self getAmmoCount( weap ) )
+	{
+		self SetPriorityObjective();
+	}
 
 	// go to weapon
 	self thread WatchToGoToWeapon( weapon );
