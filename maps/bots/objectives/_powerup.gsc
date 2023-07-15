@@ -126,6 +126,11 @@ GoDoPowerup( eObj )
 		return;
 	}
 
+	if ( !isDefined( powerup ) || !isDefined( powerup.origin ) )
+	{
+		return;
+	}
+
 	if ( distance( powerup.origin, self.origin ) > 64 )
 	{
 		eObj.sReason = "not touching it";

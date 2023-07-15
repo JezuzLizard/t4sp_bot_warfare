@@ -292,9 +292,36 @@ watchBotDebugEvent()
 	{
 		self waittill( "bot_event", msg, str, b, c, d, e, f, g );
 
-		if ( msg == "debug" && GetDvarInt( "bots_main_debug" ) )
+		if ( GetDvarInt( "bots_main_debug" ) >= 2 )
 		{
-			PrintConsole( "Bot Warfare debug: " + self.playername + ": " + str + "\n" );
+			big_str = "Bot Warfare debug: " + self getPlayerName() + ": " + msg;
+
+			if ( isDefined( str ) && isString( str ) )
+				big_str += ", " + str;
+
+			if ( isDefined( b ) && isString( b ) )
+				big_str += ", " + b;
+
+			if ( isDefined( c ) && isString( c ) )
+				big_str += ", " + c;
+
+			if ( isDefined( d ) && isString( d ) )
+				big_str += ", " + d;
+
+			if ( isDefined( e ) && isString( e ) )
+				big_str += ", " + e;
+
+			if ( isDefined( f ) && isString( f ) )
+				big_str += ", " + f;
+
+			if ( isDefined( g ) && isString( g ) )
+				big_str += ", " + g;
+
+			PrintConsole( big_str );
+		}
+		else if ( msg == "debug" && GetDvarInt( "bots_main_debug" ) )
+		{
+			PrintConsole( "Bot Warfare debug: " + self getPlayerName() + ": " + str );
 		}
 	}
 }

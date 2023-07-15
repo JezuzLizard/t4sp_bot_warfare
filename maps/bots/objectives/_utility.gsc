@@ -174,7 +174,11 @@ get_angle_offset_node( forward_size, angle_offset, offset )
 	node = self.origin + ( AnglesToForward( angles ) * forward_size ) + offset;
 	node = clamp_to_ground( node );
 
-	self thread debug_offset_line( node );
+	if ( getDvarInt( "bots_main_debug" ) )
+	{
+		self thread debug_offset_line( node );
+	}
+
 	return node;
 }
 
@@ -192,7 +196,10 @@ debug_offset_line( node )
 
 PointInsideUseTrigger( point )
 {
-	self thread debug_bounding_box_for_ent();
+	if ( getDvarInt( "bots_main_debug" ) )
+	{
+		self thread debug_bounding_box_for_ent();
+	}
 
 	mins = self getmins();
 	maxs = self getmaxs();

@@ -41,7 +41,7 @@ watch_for_objective_canceled()
 			obj_name = self.bot_current_objective.sName;
 		}
 
-		PrintConsole( "watch_for_objective_canceled: " + self.playername + ": " + obj_name + ": " + reason );
+		self BotNotifyBotEvent( "debug", "watch_for_objective_canceled: " + obj_name + ": " + reason );
 	}
 }
 
@@ -64,7 +64,7 @@ clean_objective_on_completion()
 			self.bot_current_objective.eParentObj.aBotProcessTimes[self GetEntityNumber() + ""] = getTime();
 		}
 
-		PrintConsole( "clean_objective_on_completion: " + self.playername + ": " + obj_name + ": " + successful + ": " + reason );
+		self BotNotifyBotEvent( "debug", "clean_objective_on_completion: " + obj_name + ": " + successful + ": " + reason );
 
 		waittillframeend;
 		self.bot_current_objective = undefined;
@@ -157,7 +157,8 @@ bot_objective_think()
 		}
 
 		// ready to execute
-		PrintConsole( "bot_objective_think: " + self.playername + ": " + best_prio.sName );
+		self BotNotifyBotEvent( "debug", "bot_objective_think: " + best_prio.sName );
+
 		self.bot_current_objective = best_prio;
 		self thread [[best_prio.eParentObj.fpExecuter]]( best_prio );
 	}
