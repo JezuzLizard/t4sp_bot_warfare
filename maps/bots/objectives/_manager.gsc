@@ -119,6 +119,11 @@ bot_objective_think()
 
 		for ( i = 0; i < objectives.size; i++ )
 		{
+			if ( objectives[i].fPriority <= -100 )
+			{
+				continue;
+			}
+
 			heap HeapInsert( objectives[i] );
 		}
 
