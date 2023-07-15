@@ -134,7 +134,7 @@ handleBots()
 	level thread diffBots();
 	level addBots();
 
-	while ( !level.intermission )
+	while ( !isDefined( level.intermission ) || !level.intermission )
 		wait 0.05;
 
 	setDvar( "bots_manage_add", getBotArray().size );
@@ -462,7 +462,7 @@ addBots()
 
 	bot_wait_for_host();
 
-	for ( ;; )
+	while ( !isDefined( level.intermission ) || !level.intermission )
 	{
 		wait 1.5;
 
