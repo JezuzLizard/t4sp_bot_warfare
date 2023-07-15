@@ -1194,7 +1194,7 @@ aim_loop()
 		aimspeed *= 1 + adsAimSpeedFact * adsAmount;
 	}
 
-	if ( isDefined( self.bot.target ) && isDefined( self.bot.target.entity ) && !self.bot.prio_objective )
+	if ( isDefined( self.bot.target ) && isDefined( self.bot.target.entity ) && !( self.bot.prio_objective && isDefined( self.bot.script_aimpos ) ) )
 	{
 		no_trace_time = self.bot.target.no_trace_time;
 		no_trace_look_time = self.pers["bots"]["skill"]["no_trace_look_time"];
