@@ -75,7 +75,7 @@ Finder( eObj )
 			continue;
 		}
 
-		answer[answer.size] = self CreateFinderObjective( eObj, eObj.sName + "_" + weapon_spawns[i] GetEntityNumber(), weapon_spawns[i], self Priority( eObj, weapon_spawns[i] ) );
+		answer[answer.size] = self CreateFinderObjective( eObj, eObj.sName + "_" + weapon_spawns[i] GetEntityNumber(), weapon_spawns[i], self [[eObj.fpPriorty]]( eObj, weapon_spawns[i] ) );
 	}
 
 	return answer;
@@ -102,14 +102,14 @@ Priority( eObj, eEnt )
 	base_priority = 0;
 	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 0, 800, 2, -2 );
 
-	if ( self HasBotObjective() )
+	if ( self HasBotObjective() && self.bot_current_objective.eEnt != eEnt )
 	{
 		base_priority -= 1;
 	}
 
 	if ( eEnt.zombie_weapon_upgrade == "zombie_kar98k" )
 	{
-		base_priority -= 99;
+		base_priority -= 999;
 	}
 
 	return base_priority;

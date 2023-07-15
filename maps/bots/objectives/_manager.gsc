@@ -6,9 +6,9 @@
 init()
 {
 	level.bot_objectives = [];
-	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "revive", maps\bots\objectives\_revive::Finder, maps\bots\objectives\_revive::Executer, 1000 );
-	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "powerup", maps\bots\objectives\_powerup::Finder, maps\bots\objectives\_powerup::Executer, 2500 );
-	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "wallweapon", maps\bots\objectives\_wallweapon::Finder, maps\bots\objectives\_wallweapon::Executer, 7500 );
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "revive", maps\bots\objectives\_revive::Finder, maps\bots\objectives\_revive::Priority, maps\bots\objectives\_revive::Executer, 1000 );
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "powerup", maps\bots\objectives\_powerup::Finder, maps\bots\objectives\_powerup::Priority, maps\bots\objectives\_powerup::Executer, 2500 );
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "wallweapon", maps\bots\objectives\_wallweapon::Finder, maps\bots\objectives\_wallweapon::Priority, maps\bots\objectives\_wallweapon::Executer, 7500 );
 }
 
 connected()
@@ -136,7 +136,7 @@ bot_objective_think()
 		}
 
 		// already on a better obj
-		if ( self HasBotObjective() && ( best_prio.GUID == self.bot_current_objective.GUID || best_prio.fPriority < self.bot_current_objective.fPriority ) )
+		if ( self HasBotObjective() && ( best_prio.GUID == self.bot_current_objective.GUID || best_prio.fPriority < self [[self.bot_current_objective.eParentObj.fpPriorty]]( self.bot_current_objective.eParentObj, self.bot_current_objective.eEnt ) ) )
 		{
 			continue;
 		}
