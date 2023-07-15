@@ -6,25 +6,29 @@
 Finder( eObj )
 {
 	answer = [];
-	ents = getentarray( "script_model", "classname" );
 
 	if ( self inLastStand() )
 	{
 		return answer;
 	}
 
+	ents = getentarray( "script_model", "classname" );
+
 	for ( i = 0; i < ents.size; i++ )
 	{
+		// not a powerup script_model
 		if ( !isDefined( ents[i].powerup_name ) )
 		{
 			continue;
 		}
 
+		// can we path to it?
 		if ( GetPathIsInaccessible( self.origin, ents[i].origin ) )
 		{
 			continue;
 		}
 
+		// make sure we are the only one going for it
 		if ( self GetBotsAmountForEntity( ents[i] ) >= 1 )
 		{
 			continue;
@@ -56,6 +60,7 @@ Executer( eObj )
 	self endon( "zombified" );
 
 	powerup = eObj.eEnt;
+	org = powerup.origin;
 
 	self thread IncrementBotsForEntity( powerup );
 	self thread WatchForCancel( powerup );
@@ -65,6 +70,12 @@ Executer( eObj )
 	self WatchForCancelCleanup();
 	self DecrementBotsForEntity( powerup );
 	self ClearScriptGoal();
+
+	if ( distance( org, self.origin ) <= 64 )
+	{
+		eObj.sReason = "completed";
+		eObj.bWasSuccessful = true;
+	}
 
 	self CompletedObjective( eObj.bWasSuccessful, eObj.sReason );
 }

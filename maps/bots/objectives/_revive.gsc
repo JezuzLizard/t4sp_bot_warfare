@@ -98,6 +98,8 @@ WatchForCancelRevive( revivee )
 	self endon( "zombified" );
 	self endon( "WatchForCancelRevive" );
 
+	org = revivee.origin;
+
 	for ( ;; )
 	{
 		wait 0.05;
@@ -117,6 +119,12 @@ WatchForCancelRevive( revivee )
 		if ( revivee.revivetrigger.beingrevived && !self isReviving( revivee ) )
 		{
 			self CancelObjective( "revivee.revivetrigger.beingrevived && !self isReviving( revivee )" );
+			break;
+		}
+
+		if ( distance( revivee.origin, org ) > 16 )
+		{
+			self CancelObjective( "distance( revivee.origin, org ) > 16" );
 			break;
 		}
 	}
