@@ -184,10 +184,11 @@ get_angle_offset_node( forward_size, angle_offset, offset )
 
 debug_offset_line( node )
 {
+	self endon( "death" );
 	self notify( "debug_offset_line" );
 	self endon( "debug_offset_line" );
 
-	for ( ;; )
+	while ( isDefined( self ) )
 	{
 		line( self.origin, node );
 		wait 0.05;
@@ -217,7 +218,7 @@ PointInsideUseTrigger( point )
 		return false;
 	}
 
-	if ( !bulletTracePassed( point, self.origin, false, undefined ) )
+	if ( !sightTracePassed( point, self.origin, false, undefined ) )
 	{
 		return false;
 	}

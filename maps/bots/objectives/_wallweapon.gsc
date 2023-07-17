@@ -107,7 +107,7 @@ Priority( eObj, eEnt )
 		base_priority -= 1;
 	}
 
-	if ( eEnt.zombie_weapon_upgrade == "zombie_kar98k" )
+	if ( isSubStr( eEnt.zombie_weapon_upgrade, "kar98k" ) || isSubStr( eEnt.zombie_weapon_upgrade, "type99" ) )
 	{
 		base_priority -= 999;
 	}
@@ -130,6 +130,7 @@ Executer( eObj )
 	self ClearScriptAimPos();
 	self ClearScriptGoal();
 	self ClearPriorityObjective();
+
 	self CompletedObjective( eObj.bWasSuccessful, eObj.sReason );
 }
 
