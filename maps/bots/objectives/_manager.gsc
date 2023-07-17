@@ -10,6 +10,8 @@ init()
 	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "powerup", maps\bots\objectives\_powerup::Finder, maps\bots\objectives\_powerup::Priority, maps\bots\objectives\_powerup::Executer, 2500 );
 	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "wallweapon", maps\bots\objectives\_wallweapon::Finder, maps\bots\objectives\_wallweapon::Priority, maps\bots\objectives\_wallweapon::Executer, 7500 );
 	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "treasurechest", maps\bots\objectives\_treasurechest::Finder, maps\bots\objectives\_treasurechest::Priority, maps\bots\objectives\_treasurechest::Executer, 7000 );
+	maps\bots\objectives\_perkmachine::init();
+	level.bot_objectives[level.bot_objectives.size] = CreateObjectiveForManger( "perkmachine", maps\bots\objectives\_perkmachine::Finder, maps\bots\objectives\_perkmachine::Priority, maps\bots\objectives\_perkmachine::Executer, 10000 );
 }
 
 connected()

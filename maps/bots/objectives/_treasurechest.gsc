@@ -89,7 +89,7 @@ Finder( eObj )
 
 getOffset( model )
 {
-	org = model get_angle_offset_node( 40, ( 0, 90, 0 ), ( 0, 0, 1 ) );
+	org = model get_angle_offset_node( 52, ( 0, 90, 0 ), ( 0, 0, 1 ) );
 
 	return org;
 }
@@ -97,7 +97,7 @@ getOffset( model )
 Priority( eObj, eEnt )
 {
 	base_priority = 1;
-	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 0, 800, 2, -2 );
+	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 600, 1800, 2, 0 );
 
 	if ( self HasBotObjective() && self.bot_current_objective.eEnt != eEnt )
 	{
@@ -218,13 +218,26 @@ GoDoTreasureChest( eObj )
 
 	// press use
 	self thread BotPressUse( 0.15 );
-	wait 0.1;
+	wait 0.25;
 
 	// ok we pressed use, wait for randomization to complete
 	self ClearScriptAimPos();
-	self ClearScriptGoal();
 	self ClearPriorityObjective();
-	weapon_spawn_org waittill( "randomization_done" );
+
+	// randomization isnt happening...
+	if ( !isDefined( chest.disabled ) || !chest.disabled )
+	{
+		eObj.sReason = "chest isnt randomizing";
+		return;
+	}
+
+	ret = weapon_spawn_org waittill_any_timeout( 5, "randomization_done" );
+
+	if (ret == "timeout")
+	{
+		eObj.sReason = "randomization_done timed out";
+		return;
+	}
 
 	if ( isDefined( level.flag[ "moving_chest_now" ] ) && flag( "moving_chest_now" ) )
 	{

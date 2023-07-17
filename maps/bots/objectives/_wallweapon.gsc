@@ -100,7 +100,7 @@ Priority( eObj, eEnt )
 	// TODO: check weallweapon type
 
 	base_priority = 0;
-	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 0, 800, 2, -2 );
+	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 0, 800, 1, -2 );
 
 	if ( self HasBotObjective() && self.bot_current_objective.eEnt != eEnt )
 	{

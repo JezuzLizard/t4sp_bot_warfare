@@ -56,7 +56,7 @@ Finder( eObj )
 Priority( eObj, eEnt )
 {
 	base_priority = 3;
-	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 500, 1200, 2, -2 );
+	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 500, 1200, 2, 0 );
 
 	if ( self HasBotObjective() && self.bot_current_objective.eEnt != eEnt )
 	{

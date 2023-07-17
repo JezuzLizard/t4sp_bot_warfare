@@ -157,7 +157,14 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 {
 	if ( self isBot() && getDvarInt( "bots_t8_mode" ) )
 	{
-		iDamage = int( iDamage * 0.1 );
+		if ( ( level.script == "nazi_zombie_asylum" || level.script == "nazi_zombie_sumpf" ) && self hasPerk( "specialty_armorvest" ) )
+		{
+			iDamage = int( iDamage * 0.333 );
+		}
+		else
+		{
+			iDamage = int( iDamage * 0.1 );
+		}
 	}
 
 	if ( self is_bot() )
@@ -227,6 +234,11 @@ onSpawnedAll()
 		self waittill( "spawned_player" );
 
 		self.lastSpawnTime = getTime();
+
+		if ( getDvarInt( "bots_main_debug" ) )
+		{
+			self.score = 100000;
+		}
 	}
 }
 
