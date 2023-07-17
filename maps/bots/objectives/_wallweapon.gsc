@@ -61,7 +61,12 @@ Finder( eObj )
 			}
 		}
 
-		model = getEnt( weapon_spawns[ i ].target, "targetname" );
+		model = weapon_spawns[ i ];
+
+		if ( isDefined( weapon_spawns[ i ].target ) )
+		{
+			model = getEnt( weapon_spawns[ i ].target, "targetname" );
+		}
 
 		if ( !isDefined( model ) )
 		{
@@ -183,7 +188,13 @@ GoDoWallweapon( eObj )
 	self endon( "cancel_bot_objective" );
 
 	weapon = eObj.eEnt;
-	model = getEnt( weapon.target, "targetname" );
+	model = weapon;
+
+	if ( isDefined( weapon.target ) )
+	{
+		model = getEnt( weapon.target, "targetname" );
+	}
+
 	org = self getOffset( model, weapon );
 
 	weap = self GetCurrentWeapon();

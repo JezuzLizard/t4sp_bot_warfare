@@ -7,11 +7,11 @@ init()
 {
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
 
-	if ( !isDefined( vending_triggers ) && vending_triggers.size < 1 )
+	if ( !isDefined( vending_triggers ) || vending_triggers.size < 1 )
 	{
 		vending_triggers = getEntArray( "harrybo21_perk_trigger", "targetname" );
 
-		if ( !isDefined( vending_triggers ) && vending_triggers.size < 1 )
+		if ( !isDefined( vending_triggers ) || vending_triggers.size < 1 )
 		{
 			return;
 		}
@@ -57,11 +57,11 @@ Finder( eObj )
 
 	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
 
-	if ( !isDefined( vending_triggers ) && vending_triggers.size < 1 )
+	if ( !isDefined( vending_triggers ) || vending_triggers.size < 1 )
 	{
 		vending_triggers = getEntArray( "harrybo21_perk_trigger", "targetname" );
 
-		if ( !isDefined( vending_triggers ) && vending_triggers.size < 1 )
+		if ( !isDefined( vending_triggers ) || vending_triggers.size < 1 )
 		{
 			return answer;
 		}
