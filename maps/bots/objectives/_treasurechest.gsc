@@ -81,7 +81,7 @@ Finder( eObj )
 			continue;
 		}
 
-		answer[answer.size] = self CreateFinderObjective( eObj, eObj.sName + "_" + chest GetEntityNumber(), chest, self [[eObj.fpPriorty]]( eObj, chest ) );
+		answer[answer.size] = self CreateFinderObjectiveEZ( eObj, chest );
 	}
 
 	return answer;
@@ -99,7 +99,7 @@ Priority( eObj, eEnt )
 	base_priority = 1;
 	base_priority += ClampLerp( get_path_dist( self.origin, eEnt.origin ), 600, 1800, 2, 0 );
 
-	if ( self HasBotObjective() && self.bot_current_objective.eEnt != eEnt )
+	if ( self HasBotObjective() && self GetBotObjectiveEnt() != eEnt )
 	{
 		base_priority -= 1;
 	}

@@ -139,14 +139,14 @@ bot_objective_think()
 		}
 
 		// already on a better obj
-		if ( self HasBotObjective() && ( best_prio.GUID == self.bot_current_objective.GUID || best_prio.fPriority < self [[self.bot_current_objective.eParentObj.fpPriorty]]( self.bot_current_objective.eParentObj, self.bot_current_objective.eEnt ) ) )
+		if ( isDefined( self.bot_current_objective ) && ( best_prio.GUID == self.bot_current_objective.GUID || best_prio.fPriority < self [[self.bot_current_objective.eParentObj.fpPriorty]]( self.bot_current_objective.eParentObj, self.bot_current_objective.eEnt ) ) )
 		{
 			continue;
 		}
 
 		// DO THE OBJ
 		// cancel the old obj
-		if ( self HasBotObjective() )
+		if ( isDefined( self.bot_current_objective ) )
 		{
 			// cancel it
 			self CancelObjective( "new obj: " + best_prio.sName );

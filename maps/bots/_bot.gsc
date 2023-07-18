@@ -78,6 +78,9 @@ init()
 	if ( getDvar( "bots_t8_mode" ) == "" )
 		setDvar( "bots_t8_mode", false );
 
+	if ( getDvar( "bots_play_opendoors" ) == "" )
+		setDvar( "bots_play_opendoors", true );
+
 	if ( !isDefined( game["botWarfare"] ) )
 		game["botWarfare"] = true;
 
