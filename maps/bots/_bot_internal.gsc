@@ -1767,14 +1767,14 @@ getRandomLargestStafe( dist )
 */
 initAStar( goal )
 {
-	nodes = generatePath( self.origin, goal, self.team, level.bot_allowed_negotiation_links );
+	nodes = GenerateThePath( self.origin, goal, self.team );
 
-	if ( !isDefined( nodes ) )
+	if ( !isDefined( nodes ) || nodes.size <= 0 )
 	{
 		//Try again to find a path to the origin using best effort algo
-		nodes = generatePath( self.origin, goal, self.team, level.bot_allowed_negotiation_links, 192.0 );
+		nodes = GenerateThePath( self.origin, goal, self.team, 192.0 );
 
-		if ( !isDefined( nodes ) )
+		if ( !isDefined( nodes ) || nodes.size <= 0 )
 		{
 			self.bot.astar = [];
 			return -1;
