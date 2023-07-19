@@ -97,16 +97,37 @@ debug()
 			if ( distance( level.waypoints[i].origin, self.origin ) < getDvarFloat( "bots_main_debug_distance" ) && ( sightTracePassed( myEye, wpOrg, false, self ) || getDVarint( "bots_main_debug_drawThrough" ) ) && getConeDot( wpOrg, myEye, myAngles ) > getDvarFloat( "bots_main_debug_cone" ) )
 			{
 				linked = level.waypoints[i] getLinkedNodes();
+				node_num_str = level.waypoints[i] getNodeNumber() + "";
 
 				for ( h = linked.size - 1; h >= 0; h-- )
-					line( wpOrg, linked[h].origin + ( 0, 0, 25 ), ( 1, 0, 1 ) );
+				{
+					if ( isDefined( level.bot_ignore_links[node_num_str] ) )
+					{
+						found = false;
+						this_node_num = linked[h] getNodeNumber();
 
-				print3d( wpOrg, level.waypoints[i] getNodeNumber(), ( 1, 0, 0 ), 2 );
+						for ( j = 0; j < level.bot_ignore_links[node_num_str].size; j++ )
+						{
+							if ( level.bot_ignore_links[node_num_str][j] == this_node_num )
+							{
+								found = true;
+								break;
+							}
+						}
+
+						if ( found )
+							continue;
+					}
+
+					line( wpOrg, linked[h].origin + ( 0, 0, 25 ), ( 1, 0, 1 ) );
+				}
+
+				print3d( wpOrg, node_num_str, ( 1, 0, 0 ), 2 );
 
 				if ( isDefined( level.waypoints[i].animscript ) )
 				{
 					line( wpOrg, wpOrg + AnglesToForward( level.waypoints[i].angles ) * 64, ( 1, 1, 1 ) );
-					print3d( wpOrg + (0, 0, 15), level.waypoints[i].animscript, ( 1, 0, 0 ), 2 );
+					print3d( wpOrg + ( 0, 0, 15 ), level.waypoints[i].animscript, ( 1, 0, 0 ), 2 );
 				}
 			}
 		}

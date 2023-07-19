@@ -99,23 +99,6 @@ init()
 	level.bots_maxShotgunDistance = 500;
 	level.bots_maxShotgunDistance *= level.bots_maxShotgunDistance;
 
-	level.bot_allowed_negotiation_links = [];
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_72";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_96";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_120";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_127";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_184";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_190";
-
-	level.bot_ignore_links = [];
-
-	switch ( level.script )
-	{
-		case "nazi_zombie_sumpf":
-
-			break;
-	}
-
 	level.players = [];
 	level.bots = [];
 
