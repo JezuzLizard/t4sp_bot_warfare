@@ -798,15 +798,15 @@ is_point_in_playable_area( point )
 */
 load_waypoints()
 {
-	level.bot_allowed_negotiation_links = [];
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_72";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_96";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_120";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_127";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_184";
-	level.bot_allowed_negotiation_links[ level.bot_allowed_negotiation_links.size ] = "zombie_jump_down_190";
+	bot_allowed_negotiation_links = [];
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_72";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_96";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_120";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_127";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_184";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_190";
 
-	level.bot_ignore_links = [];
+	bot_ignore_links = [];
 
 	switch ( level.script )
 	{
@@ -818,33 +818,33 @@ load_waypoints()
 			a[a.size] = 1830;
 			a[a.size] = 1833;
 			a[a.size] = 1837;
-			level.bot_ignore_links[1603 + ""] = a;
+			bot_ignore_links[1603 + ""] = a;
 
 			a = [];
 			a[a.size] = 1829;
-			level.bot_ignore_links[1604 + ""] = a;
+			bot_ignore_links[1604 + ""] = a;
 
 			a = [];
 			a[a.size] = 1904;
-			level.bot_ignore_links[1823 + ""] = a;
+			bot_ignore_links[1823 + ""] = a;
 
 			a = [];
 			a[a.size] = 1603;
 			a[a.size] = 1903;
 			a[a.size] = 1904;
 			a[a.size] = 1906;
-			level.bot_ignore_links[1825 + ""] = a;
+			bot_ignore_links[1825 + ""] = a;
 
 			a = [];
 			a[a.size] = 1603;
 			a[a.size] = 1903;
 			a[a.size] = 1904;
 			a[a.size] = 1907;
-			level.bot_ignore_links[1826 + ""] = a;
+			bot_ignore_links[1826 + ""] = a;
 
 			a = [];
 			a[a.size] = 1904;
-			level.bot_ignore_links[1827 + ""] = a;
+			bot_ignore_links[1827 + ""] = a;
 
 			a = [];
 			a[a.size] = 1603;
@@ -853,7 +853,7 @@ load_waypoints()
 			a[a.size] = 1904;
 			a[a.size] = 1906;
 			a[a.size] = 1907;
-			level.bot_ignore_links[1829 + ""] = a;
+			bot_ignore_links[1829 + ""] = a;
 
 
 			a = [];
@@ -861,24 +861,11 @@ load_waypoints()
 			a[a.size] = 1903;
 			a[a.size] = 1904;
 			a[a.size] = 1907;
-			level.bot_ignore_links[1830 + ""] = a;
+			bot_ignore_links[1830 + ""] = a;
 
 			a = [];
 			a[a.size] = 1904;
-			level.bot_ignore_links[1831 + ""] = a;
-
-			a = [];
-			a[a.size] = 1603;
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			a[a.size] = 1906;
-			a[a.size] = 1907;
-			level.bot_ignore_links[1833 + ""] = a;
-
-			a = [];
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			level.bot_ignore_links[1834 + ""] = a;
+			bot_ignore_links[1831 + ""] = a;
 
 			a = [];
 			a[a.size] = 1603;
@@ -886,12 +873,25 @@ load_waypoints()
 			a[a.size] = 1904;
 			a[a.size] = 1906;
 			a[a.size] = 1907;
-			level.bot_ignore_links[1837 + ""] = a;
+			bot_ignore_links[1833 + ""] = a;
 
 			a = [];
 			a[a.size] = 1903;
 			a[a.size] = 1904;
-			level.bot_ignore_links[1838 + ""] = a;
+			bot_ignore_links[1834 + ""] = a;
+
+			a = [];
+			a[a.size] = 1603;
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			a[a.size] = 1906;
+			a[a.size] = 1907;
+			bot_ignore_links[1837 + ""] = a;
+
+			a = [];
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			bot_ignore_links[1838 + ""] = a;
 
 			a = [];
 			a[a.size] = 1825;
@@ -902,7 +902,7 @@ load_waypoints()
 			a[a.size] = 1834;
 			a[a.size] = 1837;
 			a[a.size] = 1838;
-			level.bot_ignore_links[1903 + ""] = a;
+			bot_ignore_links[1903 + ""] = a;
 
 			a = [];
 			a[a.size] = 1823;
@@ -916,14 +916,14 @@ load_waypoints()
 			a[a.size] = 1834;
 			a[a.size] = 1837;
 			a[a.size] = 1838;
-			level.bot_ignore_links[1904 + ""] = a;
+			bot_ignore_links[1904 + ""] = a;
 
 			a = [];
 			a[a.size] = 1825;
 			a[a.size] = 1829;
 			a[a.size] = 1833;
 			a[a.size] = 1837;
-			level.bot_ignore_links[1906 + ""] = a;
+			bot_ignore_links[1906 + ""] = a;
 
 			a = [];
 			a[a.size] = 1826;
@@ -931,9 +931,13 @@ load_waypoints()
 			a[a.size] = 1830;
 			a[a.size] = 1833;
 			a[a.size] = 1837;
-			level.bot_ignore_links[1907 + ""] = a;
+			bot_ignore_links[1907 + ""] = a;
 			break;
 	}
+
+	setAllowedTraversals( bot_allowed_negotiation_links );
+	setIgnoredLinks( bot_ignore_links );
+	level.bot_ignore_links = bot_ignore_links;
 
 	level.waypoints = GetAllNodes();
 	level.waypointCount = level.waypoints.size;
@@ -1280,7 +1284,7 @@ isWeaponPrimary( weap )
 */
 GenerateThePath( from, to, team, best_effort )
 {
-	return generatePath( from, to, team, level.bot_allowed_negotiation_links, best_effort, level.bot_ignore_links );
+	return generatePath( from, to, team, best_effort );
 }
 
 /*
