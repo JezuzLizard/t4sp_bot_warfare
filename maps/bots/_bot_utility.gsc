@@ -811,7 +811,127 @@ load_waypoints()
 	switch ( level.script )
 	{
 		case "nazi_zombie_sumpf":
+			a = [];
+			a[a.size] = 1825;
+			a[a.size] = 1826;
+			a[a.size] = 1829;
+			a[a.size] = 1830;
+			a[a.size] = 1833;
+			a[a.size] = 1837;
+			level.bot_ignore_links[1603 + ""] = a;
 
+			a = [];
+			a[a.size] = 1829;
+			level.bot_ignore_links[1604 + ""] = a;
+
+			a = [];
+			a[a.size] = 1904;
+			level.bot_ignore_links[1823 + ""] = a;
+
+			a = [];
+			a[a.size] = 1603;
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			a[a.size] = 1906;
+			level.bot_ignore_links[1825 + ""] = a;
+
+			a = [];
+			a[a.size] = 1603;
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			a[a.size] = 1907;
+			level.bot_ignore_links[1826 + ""] = a;
+
+			a = [];
+			a[a.size] = 1904;
+			level.bot_ignore_links[1827 + ""] = a;
+
+			a = [];
+			a[a.size] = 1603;
+			a[a.size] = 1604;
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			a[a.size] = 1906;
+			a[a.size] = 1907;
+			level.bot_ignore_links[1829 + ""] = a;
+
+
+			a = [];
+			a[a.size] = 1603;
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			a[a.size] = 1907;
+			level.bot_ignore_links[1830 + ""] = a;
+
+			a = [];
+			a[a.size] = 1904;
+			level.bot_ignore_links[1831 + ""] = a;
+
+			a = [];
+			a[a.size] = 1603;
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			a[a.size] = 1906;
+			a[a.size] = 1907;
+			level.bot_ignore_links[1833 + ""] = a;
+
+			a = [];
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			level.bot_ignore_links[1834 + ""] = a;
+
+			a = [];
+			a[a.size] = 1603;
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			a[a.size] = 1906;
+			a[a.size] = 1907;
+			level.bot_ignore_links[1837 + ""] = a;
+
+			a = [];
+			a[a.size] = 1903;
+			a[a.size] = 1904;
+			level.bot_ignore_links[1838 + ""] = a;
+
+			a = [];
+			a[a.size] = 1825;
+			a[a.size] = 1826;
+			a[a.size] = 1829;
+			a[a.size] = 1830;
+			a[a.size] = 1833;
+			a[a.size] = 1834;
+			a[a.size] = 1837;
+			a[a.size] = 1838;
+			level.bot_ignore_links[1903 + ""] = a;
+
+			a = [];
+			a[a.size] = 1823;
+			a[a.size] = 1825;
+			a[a.size] = 1826;
+			a[a.size] = 1827;
+			a[a.size] = 1829;
+			a[a.size] = 1830;
+			a[a.size] = 1831;
+			a[a.size] = 1833;
+			a[a.size] = 1834;
+			a[a.size] = 1837;
+			a[a.size] = 1838;
+			level.bot_ignore_links[1904 + ""] = a;
+
+			a = [];
+			a[a.size] = 1825;
+			a[a.size] = 1829;
+			a[a.size] = 1833;
+			a[a.size] = 1837;
+			level.bot_ignore_links[1906 + ""] = a;
+
+			a = [];
+			a[a.size] = 1826;
+			a[a.size] = 1829;
+			a[a.size] = 1830;
+			a[a.size] = 1833;
+			a[a.size] = 1837;
+			level.bot_ignore_links[1907 + ""] = a;
 			break;
 	}
 

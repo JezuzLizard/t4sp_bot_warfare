@@ -71,13 +71,125 @@ beginDebug()
 	self endon( "zombified" );
 
 	self thread debug();
+	self thread watch_for_unlink();
 	self thread textScroll( "^1xDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" );
+}
+
+watch_for_unlink()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+
+	self notifyOnPlayerCommand( "+smoke", "toggle_unlink" );
+
+	for ( ;; )
+	{
+		self waittill( "toggle_unlink" );
+
+		if ( self.closest == -1 )
+		{
+			self iprintln( "not close to node" );
+			continue;
+		}
+
+		firstwp = level.waypoints[self.closest];
+
+		self iprintln( "wp selected for unlink: " + firstwp getNodeNumber() );
+
+		self waittill( "toggle_unlink" );
+
+		if ( self.closest == -1 )
+		{
+			self iprintln( "not close to node" );
+			continue;
+		}
+
+		self toggle_link( firstwp, level.waypoints[self.closest] );
+	}
+}
+
+array_contains( arr, it )
+{
+	for ( i = 0; i < arr.size; i++ )
+	{
+		if ( arr[i] == it )
+			return true;
+	}
+
+	return false;
+}
+
+toggle_link( firstwp, secondwp )
+{
+	// check if it exists
+	key = firstwp getNodeNumber() + "";
+	secnum = secondwp getNodeNumber();
+
+	links = firstwp getLinkedNodes();
+	linked = false;
+
+	for ( i = 0; i < links.size; i++ )
+	{
+		if ( links[i] getNodeNumber() == secnum )
+		{
+			linked = true;
+			break;
+		}
+	}
+
+	if ( !linked )
+	{
+		self iprintln( "no link: " + key + " " + secnum );
+		return;
+	}
+
+	if ( key == secnum + "" )
+	{
+		self iprintln( "same unlink: " + key + " " + secnum );
+		return;
+	}
+
+	if ( isDefined( level.bot_ignore_links[key] ) && array_contains( level.bot_ignore_links[key], secnum ) )
+	{
+		a = level.bot_ignore_links[key];
+
+		a = array_remove( a, secnum );
+
+		if ( a.size <= 0 )
+		{
+			level.bot_ignore_links[key] = undefined;
+		}
+		else
+		{
+			level.bot_ignore_links[key] = a;
+		}
+
+		self iprintln( "removed unlink: " + key + " " + secnum );
+		PrintConsole( "toggle_link: add: " + key + " " + secnum );
+	}
+	else
+	{
+		if ( !isDefined( level.bot_ignore_links[key] ) )
+		{
+			level.bot_ignore_links[key] = [];
+		}
+
+		a = level.bot_ignore_links[key];
+		a[a.size] = secnum;
+
+		level.bot_ignore_links[key] = a;
+
+		self iprintln( "added unlink: " + key + " " + secnum );
+		PrintConsole( "toggle_link: del: " + key + " " + secnum );
+	}
 }
 
 debug()
 {
 	self endon( "disconnect" );
 	self endon( "zombified" );
+
+	self.closest = -1;
 
 	for ( ;; )
 	{
@@ -131,6 +243,11 @@ debug()
 				}
 			}
 		}
+
+		if ( distance( self.origin, level.waypoints[closest].origin ) < 64 )
+			self.closest = closest;
+		else
+			self.closest = -1;
 	}
 }
 
