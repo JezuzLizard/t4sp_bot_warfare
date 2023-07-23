@@ -3,6 +3,24 @@
 #include maps\bots\_bot_utility;
 
 /*
+	main
+*/
+main()
+{
+	// stop the meme
+	func = GetFunction( "maps/_utility", "wait_network_frame" );
+	replaceFunc( func, ::wait_network_frame_func );
+}
+
+/*
+	oof
+*/
+wait_network_frame_func()
+{
+	wait 0.05;
+}
+
+/*
 	Initiates the whole bot scripts.
 */
 init()
