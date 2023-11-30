@@ -497,19 +497,6 @@ ClearScriptGoal()
 }
 
 /*
-	Returns whether the bot is at it's goal
-*/
-AtScriptGoal()
-{
-	if ( !isDefined( self.bot.script_goal ) )
-	{
-		return false;
-	}
-
-	return distanceSquared( self.origin, self.bot.script_goal ) <= ( self.bot.script_goal_dist * self.bot.script_goal_dist );
-}
-
-/*
 	Returns whether the bot has a priority objective
 */
 HasPriorityObjective()
