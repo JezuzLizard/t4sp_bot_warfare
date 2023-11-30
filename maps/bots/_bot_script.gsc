@@ -104,7 +104,6 @@ difficulty()
 					self.pers["bots"]["behavior"]["follow"] = 5;
 					self.pers["bots"]["behavior"]["crouch"] = 20;
 					self.pers["bots"]["behavior"]["switch"] = 2;
-					self.pers["bots"]["behavior"]["class"] = 2;
 					self.pers["bots"]["behavior"]["jump"] = 0;
 					break;
 
@@ -136,7 +135,6 @@ difficulty()
 					self.pers["bots"]["behavior"]["follow"] = 5;
 					self.pers["bots"]["behavior"]["crouch"] = 15;
 					self.pers["bots"]["behavior"]["switch"] = 2;
-					self.pers["bots"]["behavior"]["class"] = 2;
 					self.pers["bots"]["behavior"]["jump"] = 10;
 					break;
 
@@ -168,7 +166,6 @@ difficulty()
 					self.pers["bots"]["behavior"]["follow"] = 5;
 					self.pers["bots"]["behavior"]["crouch"] = 10;
 					self.pers["bots"]["behavior"]["switch"] = 2;
-					self.pers["bots"]["behavior"]["class"] = 2;
 					self.pers["bots"]["behavior"]["jump"] = 25;
 					break;
 
@@ -200,7 +197,6 @@ difficulty()
 					self.pers["bots"]["behavior"]["follow"] = 5;
 					self.pers["bots"]["behavior"]["crouch"] = 10;
 					self.pers["bots"]["behavior"]["switch"] = 2;
-					self.pers["bots"]["behavior"]["class"] = 2;
 					self.pers["bots"]["behavior"]["jump"] = 35;
 					break;
 
@@ -232,7 +228,6 @@ difficulty()
 					self.pers["bots"]["behavior"]["follow"] = 5;
 					self.pers["bots"]["behavior"]["crouch"] = 10;
 					self.pers["bots"]["behavior"]["switch"] = 2;
-					self.pers["bots"]["behavior"]["class"] = 2;
 					self.pers["bots"]["behavior"]["jump"] = 50;
 					break;
 
@@ -264,7 +259,6 @@ difficulty()
 					self.pers["bots"]["behavior"]["follow"] = 5;
 					self.pers["bots"]["behavior"]["crouch"] = 10;
 					self.pers["bots"]["behavior"]["switch"] = 2;
-					self.pers["bots"]["behavior"]["class"] = 2;
 					self.pers["bots"]["behavior"]["jump"] = 75;
 					break;
 
@@ -296,7 +290,6 @@ difficulty()
 					self.pers["bots"]["behavior"]["follow"] = 5;
 					self.pers["bots"]["behavior"]["crouch"] = 5;
 					self.pers["bots"]["behavior"]["switch"] = 2;
-					self.pers["bots"]["behavior"]["class"] = 2;
 					self.pers["bots"]["behavior"]["jump"] = 90;
 					break;
 			}
@@ -352,7 +345,6 @@ set_diff()
 			self.pers["bots"]["behavior"]["follow"] = randomInt( 100 );
 			self.pers["bots"]["behavior"]["crouch"] = randomInt( 100 );
 			self.pers["bots"]["behavior"]["switch"] = randomInt( 100 );
-			self.pers["bots"]["behavior"]["class"] = randomInt( 100 );
 			self.pers["bots"]["behavior"]["jump"] = randomInt( 100 );
 			break;
 
@@ -419,7 +411,7 @@ changeToWeapon( weap )
 	if ( !self HasWeapon( weap ) )
 		return false;
 
-	self BotChangeToWeapon( weap );
+	self switchToWeapon( weap );
 
 	if ( self GetCurrentWeapon() == weap )
 		return true;

@@ -97,11 +97,10 @@ resetBotVars()
 	self.bot.is_cur_sniper = false;
 
 	self.bot.prio_objective = false;
-	self.bot.path_inaccessible = false;
 
 	self.bot.rand = randomInt( 100 );
 
-	self botStop();
+	self BotBuiltinBotStop();
 }
 
 /*
@@ -664,7 +663,7 @@ doBotMovement_loop( data )
 	if ( self.bot.wantsprint && self.bot.issprinting )
 		dir = ( 127, dir[1], 0 );
 
-	self botMovement( int( dir[0] ), int( dir[1] ) );
+	self BotBuiltinBotMovement( int( dir[0] ), int( dir[1] ) );
 }
 
 /*
@@ -1456,7 +1455,7 @@ walk()
 	{
 		wait 0.05;
 
-		self botMoveTo( self.origin );
+		self botSetMoveTo( self.origin );
 
 		if ( !getDvarInt( "bots_play_move" ) )
 			continue;
@@ -1544,12 +1543,8 @@ doWalk( goal, dist, isScriptGoal )
 
 	path_was_truncated = ( current + 1 ) >= 32;
 
-	//Couldn't generate path to goal
-	self.bot.path_inaccessible = false;
-
 	if ( current <= -1 )
 	{
-		self.bot.path_inaccessible = true;
 		self notify( "bad_path_internal" );
 		return;
 	}
@@ -1629,7 +1624,7 @@ movetowards( goal )
 
 	while ( distanceSquared( self.origin, goal ) > tempGoalDist )
 	{
-		self botMoveTo( goal );
+		self botSetMoveTo( goal );
 
 		if ( time > 3000 )
 		{
@@ -1646,7 +1641,7 @@ movetowards( goal )
 
 				self BotNotifyBotEvent( "stuck" );
 
-				self botMoveTo( randomDir );
+				self botSetMoveTo( randomDir );
 				wait stucks;
 				self stand();
 
@@ -1724,7 +1719,7 @@ strafe( target )
 
 	self.bot.last_next_wp = -1;
 	self.bot.last_second_next_wp = -1;
-	self botMoveTo( strafe );
+	self botSetMoveTo( strafe );
 	wait 2;
 	self notify( "kill_goal" );
 }
@@ -1767,12 +1762,12 @@ getRandomLargestStafe( dist )
 */
 initAStar( goal )
 {
-	nodes = GenerateThePath( self.origin, goal, self.team );
+	nodes = BotBuiltinGeneratePath( self.origin, goal, self.team );
 
 	if ( !isDefined( nodes ) || nodes.size <= 0 )
 	{
 		//Try again to find a path to the origin using best effort algo
-		nodes = GenerateThePath( self.origin, goal, self.team, 192.0 );
+		nodes = BotBuiltinGeneratePath( self.origin, goal, self.team, 192.0 );
 
 		if ( !isDefined( nodes ) || nodes.size <= 0 )
 		{
@@ -1785,7 +1780,7 @@ initAStar( goal )
 
 	for ( i = nodes.size - 1; i >= 0; i-- )
 	{
-		node_indexes[ node_indexes.size ] = nodes[ i ] getNodeNumber();
+		node_indexes[ node_indexes.size ] = nodes[ i ] BotBuiltinGetNodeNumber();
 	}
 
 	self.bot.astar = node_indexes;
@@ -1854,7 +1849,7 @@ watchOnGoal( goal, dis )
 /*
 	Bot will move towards here
 */
-botMoveTo( where )
+botSetMoveTo( where )
 {
 	self.bot.moveTo = where;
 }
@@ -1872,12 +1867,12 @@ pressADS( time )
 	if ( !isDefined( time ) )
 		time = 0.05;
 
-	self botAction( "+ads" );
+	self BotBuiltinBotAction( "+ads" );
 
 	if ( time )
 		wait time;
 
-	self botAction( "-ads" );
+	self BotBuiltinBotAction( "-ads" );
 }
 
 /*
@@ -1893,14 +1888,14 @@ frag( time )
 	if ( !isDefined( time ) )
 		time = 0.05;
 
-	self botAction( "+frag" );
+	self BotBuiltinBotAction( "+frag" );
 	self.bot.isfragging = true;
 	self.bot.isfraggingafter = true;
 
 	if ( time )
 		wait time;
 
-	self botAction( "-frag" );
+	self BotBuiltinBotAction( "-frag" );
 	self.bot.isfragging = false;
 
 	wait 1.25;
@@ -1913,9 +1908,9 @@ frag( time )
 holdbreath( what )
 {
 	if ( what )
-		self botAction( "+holdbreath" );
+		self BotBuiltinBotAction( "+holdbreath" );
 	else
-		self botAction( "-holdbreath" );
+		self BotBuiltinBotAction( "-holdbreath" );
 }
 
 /*
@@ -1931,14 +1926,14 @@ smoke( time )
 	if ( !isDefined( time ) )
 		time = 0.05;
 
-	self botAction( "+smoke" );
+	self BotBuiltinBotAction( "+smoke" );
 	self.bot.issmoking = true;
 	self.bot.issmokingafter = true;
 
 	if ( time )
 		wait time;
 
-	self botAction( "-smoke" );
+	self BotBuiltinBotAction( "-smoke" );
 	self.bot.issmoking = false;
 
 	wait 1.25;
@@ -2009,12 +2004,12 @@ pressFire( time )
 	if ( !isDefined( time ) )
 		time = 0.05;
 
-	self botAction( "+fire" );
+	self BotBuiltinBotAction( "+fire" );
 
 	if ( time )
 		wait time;
 
-	self botAction( "-fire" );
+	self BotBuiltinBotAction( "-fire" );
 }
 
 /*
@@ -2027,9 +2022,9 @@ reload()
 	self notify( "bot_reload" );
 	self endon( "bot_reload" );
 
-	self botAction( "+reload" );
+	self BotBuiltinBotAction( "+reload" );
 	wait 0.05;
-	self botAction( "-reload" );
+	self BotBuiltinBotAction( "-reload" );
 }
 
 /*
@@ -2045,9 +2040,9 @@ knife()
 	self.bot.isknifing = true;
 	self.bot.isknifingafter = true;
 
-	self botAction( "+melee" );
+	self BotBuiltinBotAction( "+melee" );
 	wait 0.05;
-	self botAction( "-melee" );
+	self BotBuiltinBotAction( "-melee" );
 
 	self.bot.isknifing = false;
 
@@ -2069,12 +2064,12 @@ use( time )
 	if ( !isDefined( time ) )
 		time = 0.05;
 
-	self botAction( "+activate" );
+	self BotBuiltinBotAction( "+activate" );
 
 	if ( time )
 		wait time;
 
-	self botAction( "-activate" );
+	self BotBuiltinBotAction( "-activate" );
 }
 
 /*
@@ -2093,9 +2088,9 @@ jump()
 		wait 1;
 	}
 
-	self botAction( "+gostand" );
+	self BotBuiltinBotAction( "+gostand" );
 	wait 0.05;
-	self botAction( "-gostand" );
+	self BotBuiltinBotAction( "-gostand" );
 }
 
 /*
@@ -2103,8 +2098,8 @@ jump()
 */
 stand()
 {
-	self botAction( "-gocrouch" );
-	self botAction( "-goprone" );
+	self BotBuiltinBotAction( "-gocrouch" );
+	self BotBuiltinBotAction( "-goprone" );
 }
 
 /*
@@ -2112,8 +2107,8 @@ stand()
 */
 crouch()
 {
-	self botAction( "+gocrouch" );
-	self botAction( "-goprone" );
+	self BotBuiltinBotAction( "+gocrouch" );
+	self BotBuiltinBotAction( "-goprone" );
 }
 
 /*
@@ -2121,8 +2116,8 @@ crouch()
 */
 prone()
 {
-	self botAction( "-gocrouch" );
-	self botAction( "+goprone" );
+	self BotBuiltinBotAction( "-gocrouch" );
+	self BotBuiltinBotAction( "+goprone" );
 }
 
 /*
@@ -2135,7 +2130,7 @@ sprint()
 	self notify( "bot_sprint" );
 	self endon( "bot_sprint" );
 
-	self botAction( "+sprint" );
+	self BotBuiltinBotAction( "+sprint" );
 	wait 0.05;
-	self botAction( "-sprint" );
+	self BotBuiltinBotAction( "-sprint" );
 }

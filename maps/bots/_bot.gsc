@@ -3,24 +3,6 @@
 #include maps\bots\_bot_utility;
 
 /*
-	main
-*/
-main()
-{
-	// stop the meme
-	func = GetFunction( "maps/_utility", "wait_network_frame" );
-	replaceFunc( func, ::wait_network_frame_func );
-}
-
-/*
-	oof
-*/
-wait_network_frame_func()
-{
-	wait 0.05;
-}
-
-/*
 	Initiates the whole bot scripts.
 */
 init()
@@ -32,6 +14,9 @@ init()
 
 	if ( !getDvarInt( "bots_main" ) )
 		return;
+
+	if ( !wait_for_builtins() )
+		PrintLn( "FATAL: NO BUILT-INS FOR BOTS" );
 
 	thread load_waypoints();
 	thread hook_callbacks();
@@ -159,7 +144,7 @@ handleBots()
 
 	for ( i = 0; i < bots.size; i++ )
 	{
-		bots[i] RemoveTestClient();
+		BotBuiltinCmdExec( "clientkick " + bots[i] getEntityNumber() );
 	}
 }
 
@@ -168,7 +153,7 @@ handleBots()
 */
 onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )
 {
-	if ( self isBot() && getDvarInt( "bots_t8_mode" ) )
+	if ( self is_bot() && getDvarInt( "bots_t8_mode" ) )
 	{
 		if ( ( level.script == "nazi_zombie_asylum" || level.script == "nazi_zombie_sumpf" ) && self hasPerk( "specialty_armorvest" ) )
 		{
@@ -191,7 +176,7 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 
 onActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset )
 {
-	if ( isDefined( eAttacker ) && isPlayer( eAttacker ) && eAttacker isBot() && getDvarInt( "bots_t8_mode" ) && ( !isDefined( self.magic_bullet_shield ) || !self.magic_bullet_shield ) )
+	if ( isDefined( eAttacker ) && isPlayer( eAttacker ) && eAttacker is_bot() && getDvarInt( "bots_t8_mode" ) && ( !isDefined( self.magic_bullet_shield ) || !self.magic_bullet_shield ) )
 	{
 		iDamage += int( self.maxhealth * randomFloatRange( 0.25, 1.25 ) );
 	}
@@ -319,7 +304,7 @@ watchBotDebugEvent()
 
 		if ( GetDvarInt( "bots_main_debug" ) >= 2 )
 		{
-			big_str = "Bot Warfare debug: " + self getPlayerName() + ": " + msg;
+			big_str = "Bot Warfare debug: " + self.playername + ": " + msg;
 
 			if ( isDefined( str ) && isString( str ) )
 				big_str += ", " + str;
@@ -342,11 +327,11 @@ watchBotDebugEvent()
 			if ( isDefined( g ) && isString( g ) )
 				big_str += ", " + g;
 
-			PrintConsole( big_str );
+			BotBuiltinPrintConsole( big_str );
 		}
 		else if ( msg == "debug" && GetDvarInt( "bots_main_debug" ) )
 		{
-			PrintConsole( "Bot Warfare debug: " + self getPlayerName() + ": " + str );
+			BotBuiltinPrintConsole( "Bot Warfare debug: " + self.playername + ": " + str );
 		}
 	}
 }
@@ -367,7 +352,7 @@ added()
 */
 add_bot()
 {
-	bot = addtestclient();
+	bot = BotBuiltinAddTestClient();
 
 	if ( isdefined( bot ) )
 	{
@@ -501,7 +486,7 @@ addBots_loop()
 		tempBot = PickRandom( getBotArray() );
 
 		if ( isDefined( tempBot ) )
-			tempBot RemoveTestClient();
+			BotBuiltinCmdExec( "clientkick " + tempBot getEntityNumber() );
 	}
 }
 

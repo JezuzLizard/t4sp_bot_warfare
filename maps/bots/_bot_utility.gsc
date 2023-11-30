@@ -2,6 +2,227 @@
 #include maps\_utility;
 
 /*
+	Waits for the built-ins to be defined
+*/
+wait_for_builtins()
+{
+	for ( i = 0; i < 20; i++ )
+	{
+		if ( isDefined( level.bot_builtins ) )
+			return true;
+
+		if ( i < 18 )
+			waittillframeend;
+		else
+			wait 0.05;
+	}
+
+	return false;
+}
+
+/*
+	Prints to console without dev script on
+*/
+BotBuiltinPrintConsole( s )
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["printconsole"] ) )
+	{
+		[[ level.bot_builtins["printconsole" ]]]( s );
+	}
+}
+
+/*
+	Bot action, does a bot action
+	<client> botAction(<action string (+ or - then action like frag or smoke)>)
+*/
+BotBuiltinBotAction( action )
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["botaction"] ) )
+	{
+		self [[ level.bot_builtins["botaction" ]]]( action );
+	}
+}
+
+/*
+	Clears the bot from movement and actions
+	<client> botStop()
+*/
+BotBuiltinBotStop()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["botstop"] ) )
+	{
+		self [[ level.bot_builtins["botstop" ]]]();
+	}
+}
+
+/*
+	Sets the bot's movement
+	<client> botMovement(<int left>, <int forward>)
+*/
+BotBuiltinBotMovement( left, forward )
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["botmovement"] ) )
+	{
+		self [[ level.bot_builtins["botmovement" ]]]( left, forward );
+	}
+}
+
+/*
+	Test if is a bot
+
+*/
+BotBuiltinIsBot()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["isbot"] ) )
+	{
+		return self [[ level.bot_builtins["isbot" ]]]();
+	}
+
+	return false;
+}
+
+/*
+	Generates a path
+*/
+BotBuiltinGeneratePath( from, to, team, best_effort )
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["generatepath"] ) )
+	{
+		return [[ level.bot_builtins["generatepath" ]]]( from, to, team, best_effort );
+	}
+
+	return [];
+}
+
+/*
+	Returns function pointer
+*/
+BotBuiltinGetFunction( file, threadname )
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getfunction"] ) )
+	{
+		return [[ level.bot_builtins["getfunction" ]]]( file, threadname );
+	}
+
+	return undefined;
+}
+
+/*
+	waw sp doesnt have
+*/
+BotBuiltinGetMins()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getmins"] ) )
+	{
+		return self [[ level.bot_builtins["getmins" ]]]();
+	}
+
+	return ( 0, 0, 0 );
+}
+
+/*
+	waw sp doesnt have
+*/
+BotBuiltinGetMaxs()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getmaxs"] ) )
+	{
+		return self [[ level.bot_builtins["getmaxs" ]]]();
+	}
+
+	return ( 0, 0, 0 );
+}
+
+/*
+	waw sp doesnt have
+*/
+BotBuiltinGetGuid()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getguid"] ) )
+	{
+		return self [[ level.bot_builtins["getguid" ]]]();
+	}
+
+	return 0;
+}
+
+/*
+*/
+BotBuiltinsSetAllowedTraversals( bot_allowed_negotiation_links )
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["setallowedtraversals"] ) )
+	{
+		[[ level.bot_builtins["setallowedtraversals" ]]]( bot_allowed_negotiation_links );
+	}
+}
+
+/*
+*/
+BotBuiltinsSetIgnoredLinks( bot_ignore_links )
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["setignoredlinks"] ) )
+	{
+		[[ level.bot_builtins["setignoredlinks" ]]]( bot_ignore_links );
+	}
+}
+
+/*
+*/
+BotBuiltinGetNodeNumber()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getnodenumber"] ) )
+	{
+		return self [[ level.bot_builtins["getnodenumber" ]]]();
+	}
+
+	return 0;
+}
+
+/*
+*/
+BotBuiltinGetLinkedNodes()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getlinkednodes"] ) )
+	{
+		return self [[ level.bot_builtins["getlinkednodes" ]]]();
+	}
+
+	return [];
+}
+
+/*
+*/
+BotBuiltinAddTestClient()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["addtestclient"] ) )
+	{
+		return [[ level.bot_builtins["addtestclient" ]]]();
+	}
+
+	return undefined;
+}
+
+/*
+*/
+BotBuiltinCmdExec( what )
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["cmdexec"] ) )
+	{
+		[[ level.bot_builtins["cmdexec" ]]]( what );
+	}
+}
+
+/*
+*/
+BotBuiltinNotifyOnPlayerCommand( cmd, notif )
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["notifyonplayercommand"] ) )
+	{
+		self [[ level.bot_builtins["notifyonplayercommand" ]]]( cmd, notif );
+	}
+}
+
+/*
 	Returns if player is the host
 */
 is_host()
@@ -23,14 +244,14 @@ doHostCheck()
 
 	if ( getDvar( "bots_main_firstIsHost" ) != "0" )
 	{
-		PrintConsole( "WARNING: bots_main_firstIsHost is enabled\n" );
+		BotBuiltinPrintConsole( "WARNING: bots_main_firstIsHost is enabled" );
 
 		if ( getDvar( "bots_main_firstIsHost" ) == "1" )
 		{
-			setDvar( "bots_main_firstIsHost", self getguid() );
+			setDvar( "bots_main_firstIsHost", self BotBuiltinGetGuid() );
 		}
 
-		if ( getDvar( "bots_main_firstIsHost" ) == self getguid() + "" )
+		if ( getDvar( "bots_main_firstIsHost" ) == self BotBuiltinGetGuid() + "" )
 			result = true;
 	}
 
@@ -42,7 +263,7 @@ doHostCheck()
 
 		for ( i = 0; i < guids.size; i++ )
 		{
-			if ( self getguid() + "" == guids[i] )
+			if ( self BotBuiltinGetGuid() + "" == guids[i] )
 				result = true;
 		}
 	}
@@ -58,7 +279,7 @@ doHostCheck()
 */
 is_bot()
 {
-	return self isBot();
+	return self BotBuiltinIsBot();
 }
 
 /*
@@ -80,14 +301,6 @@ BotSetStance( stance )
 			self maps\bots\_bot_internal::prone();
 			break;
 	}
-}
-
-/*
-	Bot changes to the weap
-*/
-BotChangeToWeapon( weap )
-{
-	self botWeapon( weap );
 }
 
 /*
@@ -133,7 +346,6 @@ BotPressSmoke( time )
 /*
 	Bot jumps
 */
-
 BotJump()
 {
 	self maps\bots\_bot_internal::jump();
@@ -935,8 +1147,9 @@ load_waypoints()
 			break;
 	}
 
-	setAllowedTraversals( bot_allowed_negotiation_links );
-	setIgnoredLinks( bot_ignore_links );
+	// arrays are passed by value in gsc... hope this isnt gunna run out of vars
+	BotBuiltinsSetAllowedTraversals( bot_allowed_negotiation_links );
+	BotBuiltinsSetIgnoredLinks( bot_ignore_links );
 	level.bot_ignore_links = bot_ignore_links;
 
 	level.waypoints = GetAllNodes();
@@ -1219,7 +1432,7 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 */
 inLastStand()
 {
-	func = GetFunction( "maps/_laststand", "player_is_in_laststand" );
+	func = BotBuiltinGetFunction( "maps/_laststand", "player_is_in_laststand" );
 
 	return self [[func]]();
 }
@@ -1229,7 +1442,7 @@ inLastStand()
 */
 isReviving( revivee )
 {
-	func = GetFunction( "maps/_laststand", "is_reviving" );
+	func = BotBuiltinGetFunction( "maps/_laststand", "is_reviving" );
 
 	return self [[func]]( revivee );
 }
@@ -1280,19 +1493,11 @@ isWeaponPrimary( weap )
 }
 
 /*
-	Generates the path
-*/
-GenerateThePath( from, to, team, best_effort )
-{
-	return generatePath( from, to, team, best_effort );
-}
-
-/*
 	Checks whether the path generated by the ASTAR path finding is inaccessible
 */
 GetPathIsInaccessible( from, to, team, best_effort )
 {
-	path = GenerateThePath( from, to, team, best_effort );
+	path = BotBuiltinGeneratePath( from, to, team, best_effort );
 	return ( !isDefined( path ) || ( path.size <= 0 ) );
 }
 
@@ -1301,7 +1506,7 @@ GetPathIsInaccessible( from, to, team, best_effort )
 */
 get_path_dist( start, end, team )
 {
-	path = GenerateThePath( start, end, team, 192.0 );
+	path = BotBuiltinGeneratePath( start, end, team, 192.0 );
 
 	if ( !isDefined( path ) || path.size <= 0 )
 	{
@@ -1409,8 +1614,8 @@ PointInsideUseTrigger( point )
 		self thread debug_bounding_box_for_ent();
 	}
 
-	mins = self getmins();
-	maxs = self getmaxs();
+	mins = self BotBuiltinGetMins();
+	maxs = self BotBuiltinGetMaxs();
 
 	box = spawnstruct();
 	box.x0 = self.origin[0] + mins[0];
@@ -1447,8 +1652,8 @@ debug_bounding_box_for_ent( color )
 
 	while ( isDefined( self ) )
 	{
-		mins = self getmins();
-		maxs = self getmaxs();
+		mins = self BotBuiltinGetMins();
+		maxs = self BotBuiltinGetMaxs();
 
 		line( self.origin + ( mins[0], mins[1], mins[2] ), self.origin + ( mins[0], mins[1], maxs[2] ), color );
 		line( self.origin + ( mins[0], mins[1], mins[2] ), self.origin + ( mins[0], maxs[1], mins[2] ), color );

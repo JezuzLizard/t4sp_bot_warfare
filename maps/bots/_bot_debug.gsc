@@ -80,7 +80,7 @@ watch_for_unlink()
 	self endon( "disconnect" );
 	self endon( "zombified" );
 
-	self notifyOnPlayerCommand( "+smoke", "toggle_unlink" );
+	self BotBuiltinNotifyOnPlayerCommand( "+smoke", "toggle_unlink" );
 
 	for ( ;; )
 	{
@@ -94,7 +94,7 @@ watch_for_unlink()
 
 		firstwp = level.waypoints[self.closest];
 
-		self iprintln( "wp selected for unlink: " + firstwp getNodeNumber() );
+		self iprintln( "wp selected for unlink: " + firstwp BotBuiltinGetNodeNumber() );
 
 		self waittill( "toggle_unlink" );
 
@@ -122,15 +122,15 @@ array_contains( arr, it )
 toggle_link( firstwp, secondwp )
 {
 	// check if it exists
-	key = firstwp getNodeNumber() + "";
-	secnum = secondwp getNodeNumber();
+	key = firstwp BotBuiltinGetNodeNumber() + "";
+	secnum = secondwp BotBuiltinGetNodeNumber();
 
-	links = firstwp getLinkedNodes();
+	links = firstwp BotBuiltinGetLinkedNodes();
 	linked = false;
 
 	for ( i = 0; i < links.size; i++ )
 	{
-		if ( links[i] getNodeNumber() == secnum )
+		if ( links[i] BotBuiltinGetNodeNumber() == secnum )
 		{
 			linked = true;
 			break;
@@ -165,7 +165,7 @@ toggle_link( firstwp, secondwp )
 		}
 
 		self iprintln( "removed unlink: " + key + " " + secnum );
-		PrintConsole( "toggle_link: add: " + key + " " + secnum );
+		BotBuiltinPrintConsole( "toggle_link: add: " + key + " " + secnum );
 	}
 	else
 	{
@@ -180,7 +180,7 @@ toggle_link( firstwp, secondwp )
 		level.bot_ignore_links[key] = a;
 
 		self iprintln( "added unlink: " + key + " " + secnum );
-		PrintConsole( "toggle_link: del: " + key + " " + secnum );
+		BotBuiltinPrintConsole( "toggle_link: del: " + key + " " + secnum );
 	}
 }
 
@@ -208,15 +208,15 @@ debug()
 
 			if ( distance( level.waypoints[i].origin, self.origin ) < getDvarFloat( "bots_main_debug_distance" ) && ( sightTracePassed( myEye, wpOrg, false, self ) || getDVarint( "bots_main_debug_drawThrough" ) ) && getConeDot( wpOrg, myEye, myAngles ) > getDvarFloat( "bots_main_debug_cone" ) )
 			{
-				linked = level.waypoints[i] getLinkedNodes();
-				node_num_str = level.waypoints[i] getNodeNumber() + "";
+				linked = level.waypoints[i] BotBuiltinGetLinkedNodes();
+				node_num_str = level.waypoints[i] BotBuiltinGetNodeNumber() + "";
 
 				for ( h = linked.size - 1; h >= 0; h-- )
 				{
 					if ( isDefined( level.bot_ignore_links[node_num_str] ) )
 					{
 						found = false;
-						this_node_num = linked[h] getNodeNumber();
+						this_node_num = linked[h] BotBuiltinGetNodeNumber();
 
 						for ( j = 0; j < level.bot_ignore_links[node_num_str].size; j++ )
 						{
