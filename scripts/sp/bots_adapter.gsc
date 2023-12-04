@@ -17,6 +17,7 @@ init()
 	level.bot_builtins["addtestclient"] = ::do_addtestclient;
 	level.bot_builtins["notifyonplayercommand"] = ::do_notifyonplayercommand;
 	level.bot_builtins["cmdexec"] = ::do_cmdexec;
+	level.bot_builtins["ishost"] = ::do_ishost;
 }
 
 do_printconsole( s )
@@ -102,4 +103,9 @@ do_notifyonplayercommand( a, b )
 do_cmdexec( a )
 {
 	cmdexec( a );
+}
+
+do_ishost()
+{
+	self isHost();
 }

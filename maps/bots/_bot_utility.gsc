@@ -223,6 +223,19 @@ BotBuiltinNotifyOnPlayerCommand( cmd, notif )
 }
 
 /*
+	waw doesnt have
+*/
+BotBuiltinIsHost()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["ishost"] ) )
+	{
+		return self [[ level.bot_builtins["ishost" ]]]();
+	}
+
+	return false;
+}
+
+/*
 	Returns if player is the host
 */
 is_host()
@@ -268,7 +281,7 @@ doHostCheck()
 		}
 	}
 
-	if ( !result )
+	if ( !self BotBuiltinIsHost() && !result )
 		return;
 
 	self.pers["bot_host"] = true;
