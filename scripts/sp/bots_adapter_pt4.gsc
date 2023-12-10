@@ -4,6 +4,7 @@ init()
 	level.bot_builtins["botaction"] = ::do_botaction;
 	level.bot_builtins["botstop"] = ::do_botstop;
 	level.bot_builtins["botmovement"] = ::do_botmovement;
+	level.bot_builtins["botmeleeparams"] = ::do_botmeleeparams;
 	level.bot_builtins["isbot"] = ::do_isbot;
 	level.bot_builtins["generatepath"] = ::do_generatepath;
 	level.bot_builtins["getfunction"] = ::do_getfunction;
@@ -38,6 +39,11 @@ do_botstop()
 do_botmovement( left, forward )
 {
 	self BotMovement( left, forward );
+}
+
+do_botmeleeparams( yaw, dist )
+{
+	// self BotMeleeParams( yaw, dist );
 }
 
 do_isbot()
