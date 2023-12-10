@@ -920,7 +920,7 @@ target_loop()
 			{
 				if ( !isObjDef )
 				{
-					obj = self createTargetObj( enemy, theTime, true );
+					obj = self createTargetObj( enemy, theTime );
 
 					self.bot.targets[key] = obj;
 				}
@@ -1056,7 +1056,7 @@ updateBones()
 /*
 	Creates the base target obj
 */
-createTargetObj( ent, theTime, isActor )
+createTargetObj( ent, theTime )
 {
 	obj = spawnStruct();
 	obj.entity = ent;
@@ -1068,7 +1068,7 @@ createTargetObj( ent, theTime, isActor )
 	obj.trace_time_time = 0;
 	obj.rand = randomInt( 100 );
 	obj.didlook = false;
-	obj.isactor = isDefined( isActor ) && isActor;
+	obj.isactor = isai( ent );
 	obj.offset = undefined;
 	obj.bone = undefined;
 	obj.aim_offset = undefined;
@@ -1319,7 +1319,7 @@ aim_loop()
 				if ( isActor && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && !self.bot.isreloading && getDvarInt( "bots_play_knife" ) )
 				{
 					self clear_bot_after_target();
-					self thread knife( target, isActor );
+					self thread knife( target );
 					return;
 				}
 
@@ -2036,13 +2036,13 @@ reload()
 /*
 	Performs melee target
 */
-do_knife_target( target, isActor )
+do_knife_target( target )
 {
 	self endon( "death" );
 	self endon( "disconnect" );
 	self endon( "bot_knife" );
 
-	if ( !isDefined( target ) || ( !isPlayer( target ) && ( !isDefined( isActor ) || !isActor ) ) )
+	if ( !isDefined( target ) || ( !isPlayer( target ) && !isai( target ) ) )
 	{
 		self.bot.knifing_target = undefined;
 		self BotBuiltinBotMeleeParams( 0, 0 );
@@ -2072,14 +2072,14 @@ do_knife_target( target, isActor )
 /*
 	Bot will knife.
 */
-knife( target, isActor )
+knife( target )
 {
 	self endon( "zombified" );
 	self endon( "disconnect" );
 	self notify( "bot_knife" );
 	self endon( "bot_knife" );
 
-	self thread do_knife_target( target, isActor );
+	self thread do_knife_target( target );
 
 	self.bot.isknifing = true;
 	self.bot.isknifingafter = true;
