@@ -311,7 +311,7 @@ onNewEnemy()
 		if ( !isDefined( self.bot.target ) )
 			continue;
 
-		if ( !isDefined( self.bot.target.entity ) || !self.bot.target.isactor )
+		if ( !isDefined( self.bot.target.entity ) || !isAi( self.bot.target.entity ) )
 			continue;
 
 		if ( self.bot.target.didlook )
@@ -1068,7 +1068,6 @@ createTargetObj( ent, theTime )
 	obj.trace_time_time = 0;
 	obj.rand = randomInt( 100 );
 	obj.didlook = false;
-	obj.isactor = isai( ent );
 	obj.offset = undefined;
 	obj.bone = undefined;
 	obj.aim_offset = undefined;
@@ -1205,7 +1204,7 @@ aim_loop()
 			last_pos = self.bot.target.last_seen_pos;
 			target = self.bot.target.entity;
 			conedot = 0;
-			isActor = self.bot.target.isactor;
+			isact = isAi( self.bot.target.entity );
 
 			offset = self.bot.target.offset;
 
@@ -1242,7 +1241,7 @@ aim_loop()
 			{
 				if ( no_trace_time > no_trace_ads_time )
 				{
-					if ( isActor )
+					if ( isact )
 					{
 						//better room to nade? cook time function with dist?
 						if ( !self.bot.isfraggingafter && !self.bot.issmokingafter )
@@ -1281,7 +1280,7 @@ aim_loop()
 
 			if ( trace_time )
 			{
-				if ( isActor )
+				if ( isact )
 				{
 					aimpos = target getTagOrigin( bone );
 
@@ -1316,7 +1315,7 @@ aim_loop()
 						self thread bot_lookat( aimpos, aimspeed );
 				}
 
-				if ( isActor && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && !self.bot.isreloading && getDvarInt( "bots_play_knife" ) )
+				if ( isact && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && !self.bot.isreloading && getDvarInt( "bots_play_knife" ) )
 				{
 					self clear_bot_after_target();
 					self thread knife( target );
@@ -1349,7 +1348,7 @@ aim_loop()
 					if ( ( !canADS || adsAmount >= 1.0 || self InLastStand() || self GetStance() == "prone" ) && ( conedot > 0.99 || dist < level.bots_maxKnifeDistance ) && getDvarInt( "bots_play_fire" ) )
 						self botFire();
 
-					if ( isActor )
+					if ( isact )
 						self thread start_bot_after_target( target );
 				}
 
@@ -1489,7 +1488,7 @@ walk_loop()
 			return;
 		}
 
-		if ( self.bot.target.trace_time && self canFire( curweap ) && self isInRange( self.bot.target.dist, curweap ) )
+		if ( isAi( self.bot.target.entity ) self.bot.target.trace_time && self canFire( curweap ) && self isInRange( self.bot.target.dist, curweap ) )
 		{
 			if ( self inLastStand() || self GetStance() == "prone" || ( self.bot.is_cur_sniper && self PlayerADS() > 0 ) )
 				return;
