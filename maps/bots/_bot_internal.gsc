@@ -453,7 +453,7 @@ stance_loop()
 	if ( self.bot.sprintendtime != -1 && time - self.bot.sprintendtime < 2000 )
 		return;
 
-	if ( !isDefined( self.bot.towards_goal ) || DistanceSquared( self.origin, physicsTrace( self getEyePos(), self getEyePos() + anglesToForward( self getPlayerAngles() ) * 1024, false, undefined ) ) < level.bots_minSprintDistance || getConeDot( self.bot.towards_goal, self.origin, self GetPlayerAngles() ) < 0.75 )
+	if ( !isDefined( self.bot.towards_goal ) || DistanceSquared( self.origin, physicsTrace( self getEye(), self getEye() + anglesToForward( self getPlayerAngles() ) * 1024, false, undefined ) ) < level.bots_minSprintDistance || getConeDot( self.bot.towards_goal, self.origin, self GetPlayerAngles() ) < 0.75 )
 		return;
 
 	self thread sprint();
@@ -699,7 +699,7 @@ bot_lookat( pos, time, vel, doAimPredict )
 	if ( steps < 1 )
 		steps = 1;
 
-	myEye = self GetEyePos(); // get our eye pos
+	myEye = self getEye(); // get our eye pos
 
 	if ( doAimPredict )
 	{
@@ -787,7 +787,7 @@ canAds( dist, curweap )
 */
 target_loop()
 {
-	myEye = self GetEyePos();
+	myEye = self getEye();
 	theTime = getTime();
 	myAngles = self GetPlayerAngles();
 	myFov = self.pers["bots"]["skill"]["fov"];
@@ -1181,7 +1181,7 @@ aim_loop()
 {
 	aimspeed = self.pers["bots"]["skill"]["aim_time"];
 
-	eyePos = self getEyePos();
+	eyePos = self getEye();
 	curweap = self getCurrentWeapon();
 	angles = self GetPlayerAngles();
 	adsAmount = self PlayerADS();
@@ -1274,7 +1274,7 @@ aim_loop()
 					}
 				}
 
-				self thread bot_lookat( last_pos + ( 0, 0, self getEyeHeight() + nadeAimOffset ), aimspeed );
+				self thread bot_lookat( last_pos + ( 0, 0, self GetPlayerViewHeight() + nadeAimOffset ), aimspeed );
 				return;
 			}
 
@@ -1373,7 +1373,7 @@ aim_loop()
 				nadeAimOffset = dist / 3000;
 		}
 
-		aimpos = last_pos + ( 0, 0, self getEyeHeight() + nadeAimOffset );
+		aimpos = last_pos + ( 0, 0, self GetPlayerViewHeight() + nadeAimOffset );
 		conedot = getConeDot( aimpos, eyePos, angles );
 
 		self thread bot_lookat( aimpos, aimspeed );
@@ -1425,7 +1425,7 @@ aim_loop()
 			lookat = self.bot.towards_goal;
 
 		if ( isDefined( lookat ) )
-			self thread bot_lookat( lookat + ( 0, 0, self getEyeHeight() ), aimspeed );
+			self thread bot_lookat( lookat + ( 0, 0, self GetPlayerViewHeight() ), aimspeed );
 	}
 }
 
@@ -1488,7 +1488,7 @@ walk_loop()
 			return;
 		}
 
-		if ( isAi( self.bot.target.entity ) self.bot.target.trace_time && self canFire( curweap ) && self isInRange( self.bot.target.dist, curweap ) )
+		if ( isAi( self.bot.target.entity ) && self.bot.target.trace_time && self canFire( curweap ) && self isInRange( self.bot.target.dist, curweap ) )
 		{
 			if ( self inLastStand() || self GetStance() == "prone" || ( self.bot.is_cur_sniper && self PlayerADS() > 0 ) )
 				return;

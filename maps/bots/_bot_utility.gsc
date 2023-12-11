@@ -159,7 +159,7 @@ BotBuiltinGetGuid()
 
 /*
 */
-BotBuiltinsSetAllowedTraversals( bot_allowed_negotiation_links )
+BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links )
 {
 	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["setallowedtraversals"] ) )
 	{
@@ -169,7 +169,7 @@ BotBuiltinsSetAllowedTraversals( bot_allowed_negotiation_links )
 
 /*
 */
-BotBuiltinsSetIgnoredLinks( bot_ignore_links )
+BotBuiltinSetIgnoredLinks( bot_ignore_links )
 {
 	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["setignoredlinks"] ) )
 	{
@@ -713,24 +713,6 @@ WeaponIsFullAuto( weap )
 }
 
 /*
-	Returns what our eye height is.
-*/
-GetEyeHeight()
-{
-	myEye = self GetEyePos();
-
-	return myEye[2] - self.origin[2];
-}
-
-/*
-	Returns (iw4) eye pos.
-*/
-GetEyePos()
-{
-	return self getTagOrigin( "tag_eye" );
-}
-
-/*
 	helper
 */
 waittill_either_return_( str1, str2 )
@@ -1159,8 +1141,8 @@ load_waypoints()
 	}
 
 	// arrays are passed by value in gsc... hope this isnt gunna run out of vars
-	BotBuiltinsSetAllowedTraversals( bot_allowed_negotiation_links );
-	BotBuiltinsSetIgnoredLinks( bot_ignore_links );
+	BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links );
+	BotBuiltinSetIgnoredLinks( bot_ignore_links );
 	level.bot_ignore_links = bot_ignore_links;
 
 	level.waypoints = GetAllNodes();

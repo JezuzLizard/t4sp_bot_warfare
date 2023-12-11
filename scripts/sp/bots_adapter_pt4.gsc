@@ -113,5 +113,5 @@ do_cmdexec( a )
 
 do_ishost()
 {
-	self isHost();
+	return self isHost();
 }
