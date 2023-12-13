@@ -1169,6 +1169,38 @@ getMapName( map )
 }
 
 /*
+	Returns a bot to be kicked
+*/
+getBotToKick()
+{
+	bots = getBotArray();
+
+	if ( !isDefined( bots ) || !isDefined( bots.size ) || bots.size <= 0 || !isDefined( bots[0] ) )
+		return undefined;
+
+	tokick = undefined;
+
+	// just kick lowest skill
+	for ( i = 0; i < bots.size; i++ )
+	{
+		bot = bots[i];
+
+		if ( !isDefined( bot ) )
+			continue;
+
+		if ( !isDefined( bot.pers ) || !isDefined( bot.pers["bots"] ) || !isDefined( bot.pers["bots"]["skill"] ) || !isDefined( bot.pers["bots"]["skill"]["base"] ) )
+			continue;
+
+		if ( isDefined( tokick ) && bot.pers["bots"]["skill"]["base"] > tokick.pers["bots"]["skill"]["base"] )
+			continue;
+
+		tokick = bot;
+	}
+
+	return tokick;
+}
+
+/*
 	Returns an array of all the bots in the game.
 */
 getBotArray()
