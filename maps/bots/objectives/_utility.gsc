@@ -19,7 +19,7 @@ CreateObjectiveForManger( sName, fpFinder, fpPriorty, fpExecuter, iProcessRate )
 
 CreateFinderObjectiveEZ( eObj, eEnt )
 {
-	return self CreateFinderObjective( eObj, eObj.sname + "_" + eEnt getentitynumber(), eEnt, self [[eObj.fppriorty]]( eObj, eEnt ) );
+	return self CreateFinderObjective( eObj, eObj.sname + "_" + eEnt getentitynumber(), eEnt, self [[ eObj.fppriorty ]]( eObj, eEnt ) );
 }
 
 CreateFinderObjective( eObj, sName, eEnt, fPriority )

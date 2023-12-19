@@ -29,7 +29,7 @@ Finder( eObj )
 
 	for ( i = 0; i < chests.size; i ++ )
 	{
-		chest = chests[i];
+		chest = chests[ i ];
 
 		// not active chest
 		if ( isdefined( chest.disabled ) && chest.disabled )
@@ -81,7 +81,7 @@ Finder( eObj )
 			continue;
 		}
 
-		answer[answer.size] = self CreateFinderObjectiveEZ( eObj, chest );
+		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, chest );
 	}
 
 	return answer;

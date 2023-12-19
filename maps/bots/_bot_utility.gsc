@@ -25,9 +25,9 @@ wait_for_builtins()
 */
 BotBuiltinPrintConsole( s )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["printconsole"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "printconsole" ] ) )
 	{
-		[[ level.bot_builtins["printconsole" ]]]( s );
+		[[ level.bot_builtins[ "printconsole" ] ]]( s );
 	}
 }
 
@@ -37,9 +37,9 @@ BotBuiltinPrintConsole( s )
 */
 BotBuiltinBotAction( action )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["botaction"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botaction" ] ) )
 	{
-		self [[ level.bot_builtins["botaction" ]]]( action );
+		self [[ level.bot_builtins[ "botaction" ] ]]( action );
 	}
 }
 
@@ -49,9 +49,9 @@ BotBuiltinBotAction( action )
 */
 BotBuiltinBotStop()
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["botstop"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botstop" ] ) )
 	{
-		self [[ level.bot_builtins["botstop" ]]]();
+		self [[ level.bot_builtins[ "botstop" ] ]]();
 	}
 }
 
@@ -61,9 +61,9 @@ BotBuiltinBotStop()
 */
 BotBuiltinBotMovement( left, forward )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["botmovement"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botmovement" ] ) )
 	{
-		self [[ level.bot_builtins["botmovement" ]]]( left, forward );
+		self [[ level.bot_builtins[ "botmovement" ] ]]( left, forward );
 	}
 }
 
@@ -72,9 +72,9 @@ BotBuiltinBotMovement( left, forward )
 */
 BotBuiltinBotMeleeParams( yaw, dist )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["botmeleeparams"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botmeleeparams" ] ) )
 	{
-		self [[ level.bot_builtins["botmeleeparams" ]]]( yaw, dist );
+		self [[ level.bot_builtins[ "botmeleeparams" ] ]]( yaw, dist );
 	}
 }
 
@@ -84,9 +84,9 @@ BotBuiltinBotMeleeParams( yaw, dist )
 */
 BotBuiltinIsBot()
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["isbot"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "isbot" ] ) )
 	{
-		return self [[ level.bot_builtins["isbot" ]]]();
+		return self [[ level.bot_builtins[ "isbot" ] ]]();
 	}
 
 	return false;
@@ -97,9 +97,9 @@ BotBuiltinIsBot()
 */
 BotBuiltinGeneratePath( from, to, team, best_effort )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["generatepath"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "generatepath" ] ) )
 	{
-		return [[ level.bot_builtins["generatepath" ]]]( from, to, team, best_effort );
+		return [[ level.bot_builtins[ "generatepath" ] ]]( from, to, team, best_effort );
 	}
 
 	return [];
@@ -110,9 +110,9 @@ BotBuiltinGeneratePath( from, to, team, best_effort )
 */
 BotBuiltinGetFunction( file, threadname )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getfunction"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getfunction" ] ) )
 	{
-		return [[ level.bot_builtins["getfunction" ]]]( file, threadname );
+		return [[ level.bot_builtins[ "getfunction" ] ]]( file, threadname );
 	}
 
 	return undefined;
@@ -123,9 +123,9 @@ BotBuiltinGetFunction( file, threadname )
 */
 BotBuiltinGetMins()
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getmins"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getmins" ] ) )
 	{
-		return self [[ level.bot_builtins["getmins" ]]]();
+		return self [[ level.bot_builtins[ "getmins" ] ]]();
 	}
 
 	return ( 0, 0, 0 );
@@ -136,9 +136,9 @@ BotBuiltinGetMins()
 */
 BotBuiltinGetMaxs()
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getmaxs"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getmaxs" ] ) )
 	{
-		return self [[ level.bot_builtins["getmaxs" ]]]();
+		return self [[ level.bot_builtins[ "getmaxs" ] ]]();
 	}
 
 	return ( 0, 0, 0 );
@@ -149,9 +149,9 @@ BotBuiltinGetMaxs()
 */
 BotBuiltinGetGuid()
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getguid"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getguid" ] ) )
 	{
-		return self [[ level.bot_builtins["getguid" ]]]();
+		return self [[ level.bot_builtins[ "getguid" ] ]]();
 	}
 
 	return 0;
@@ -161,9 +161,9 @@ BotBuiltinGetGuid()
 */
 BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["setallowedtraversals"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "setallowedtraversals" ] ) )
 	{
-		[[ level.bot_builtins["setallowedtraversals" ]]]( bot_allowed_negotiation_links );
+		[[ level.bot_builtins[ "setallowedtraversals" ] ]]( bot_allowed_negotiation_links );
 	}
 }
 
@@ -171,9 +171,9 @@ BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links )
 */
 BotBuiltinSetIgnoredLinks( bot_ignore_links )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["setignoredlinks"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "setignoredlinks" ] ) )
 	{
-		[[ level.bot_builtins["setignoredlinks" ]]]( bot_ignore_links );
+		[[ level.bot_builtins[ "setignoredlinks" ] ]]( bot_ignore_links );
 	}
 }
 
@@ -181,9 +181,9 @@ BotBuiltinSetIgnoredLinks( bot_ignore_links )
 */
 BotBuiltinGetNodeNumber()
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getnodenumber"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getnodenumber" ] ) )
 	{
-		return self [[ level.bot_builtins["getnodenumber" ]]]();
+		return self [[ level.bot_builtins[ "getnodenumber" ] ]]();
 	}
 
 	return 0;
@@ -193,9 +193,9 @@ BotBuiltinGetNodeNumber()
 */
 BotBuiltinGetLinkedNodes()
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getlinkednodes"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getlinkednodes" ] ) )
 	{
-		return self [[ level.bot_builtins["getlinkednodes" ]]]();
+		return self [[ level.bot_builtins[ "getlinkednodes" ] ]]();
 	}
 
 	return [];
@@ -205,9 +205,9 @@ BotBuiltinGetLinkedNodes()
 */
 BotBuiltinAddTestClient()
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["addtestclient"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "addtestclient" ] ) )
 	{
-		return [[ level.bot_builtins["addtestclient" ]]]();
+		return [[ level.bot_builtins[ "addtestclient" ] ]]();
 	}
 
 	return undefined;
@@ -217,9 +217,9 @@ BotBuiltinAddTestClient()
 */
 BotBuiltinCmdExec( what )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["cmdexec"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "cmdexec" ] ) )
 	{
-		[[ level.bot_builtins["cmdexec" ]]]( what );
+		[[ level.bot_builtins[ "cmdexec" ] ]]( what );
 	}
 }
 
@@ -227,9 +227,9 @@ BotBuiltinCmdExec( what )
 */
 BotBuiltinNotifyOnPlayerCommand( cmd, notif )
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["notifyonplayercommand"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "notifyonplayercommand" ] ) )
 	{
-		self [[ level.bot_builtins["notifyonplayercommand" ]]]( cmd, notif );
+		self [[ level.bot_builtins[ "notifyonplayercommand" ] ]]( cmd, notif );
 	}
 }
 
@@ -238,9 +238,9 @@ BotBuiltinNotifyOnPlayerCommand( cmd, notif )
 */
 BotBuiltinIsHost()
 {
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["ishost"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "ishost" ] ) )
 	{
-		return self [[ level.bot_builtins["ishost" ]]]();
+		return self [[ level.bot_builtins[ "ishost" ] ]]();
 	}
 
 	return false;
@@ -251,7 +251,7 @@ BotBuiltinIsHost()
 */
 is_host()
 {
-	return ( isdefined( self.pers["bot_host"] ) && self.pers["bot_host"] );
+	return ( isdefined( self.pers[ "bot_host" ] ) && self.pers[ "bot_host" ] );
 }
 
 /*
@@ -259,7 +259,7 @@ is_host()
 */
 doHostCheck()
 {
-	self.pers["bot_host"] = false;
+	self.pers[ "bot_host" ] = false;
 
 	if ( self is_bot() )
 		return;
@@ -287,7 +287,7 @@ doHostCheck()
 
 		for ( i = 0; i < guids.size; i++ )
 		{
-			if ( self BotBuiltinGetGuid() + "" == guids[i] )
+			if ( self BotBuiltinGetGuid() + "" == guids[ i ] )
 				result = true;
 		}
 	}
@@ -295,7 +295,7 @@ doHostCheck()
 	if ( !self BotBuiltinIsHost() && !result )
 		return;
 
-	self.pers["bot_host"] = true;
+	self.pers[ "bot_host" ] = true;
 }
 
 /*
@@ -639,7 +639,7 @@ getValidTube()
 
 	for ( i = 0; i < weaps.size; i++ )
 	{
-		weap = weaps[i];
+		weap = weaps[ i ];
 
 		if ( !self getammocount( weap ) )
 			continue;
@@ -657,19 +657,19 @@ getValidTube()
 getValidGrenade()
 {
 	grenadeTypes = [];
-	grenadeTypes[grenadeTypes.size] = "stielhandgranate";
+	grenadeTypes[ grenadeTypes.size ] = "stielhandgranate";
 
 	possibles = [];
 
 	for ( i = 0; i < grenadeTypes.size; i++ )
 	{
-		if ( !self hasweapon( grenadeTypes[i] ) )
+		if ( !self hasweapon( grenadeTypes[ i ] ) )
 			continue;
 
-		if ( !self getammocount( grenadeTypes[i] ) )
+		if ( !self getammocount( grenadeTypes[ i ] ) )
 			continue;
 
-		possibles[possibles.size] = grenadeTypes[i];
+		possibles[ possibles.size ] = grenadeTypes[ i ];
 	}
 
 	return PickRandom( possibles );
@@ -683,7 +683,7 @@ PickRandom( arr )
 	if ( !arr.size )
 		return undefined;
 
-	return arr[randomint( arr.size )];
+	return arr[ randomint( arr.size ) ];
 }
 
 /*
@@ -699,7 +699,7 @@ isSecondaryGrenade( gnade )
 */
 getBaseWeaponName( weap )
 {
-	return strtok( weap, "_" )[0];
+	return strtok( weap, "_" )[ 0 ];
 }
 
 /*
@@ -709,7 +709,7 @@ WeaponIsFullAuto( weap )
 {
 	weaptoks = strtok( weap, "_" );
 
-	return isdefined( weaptoks[0] ) && isstring( weaptoks[0] ) && isdefined( level.bots_fullautoguns[weaptoks[0]] );
+	return isdefined( weaptoks[ 0 ] ) && isstring( weaptoks[ 0 ] ) && isdefined( level.bots_fullautoguns[ weaptoks[ 0 ]] );
 }
 
 /*
@@ -787,7 +787,7 @@ GetHostPlayer()
 {
 	for ( i = 0; i < level.players.size; i++ )
 	{
-		player = level.players[i];
+		player = level.players[ i ];
 
 		if ( !player is_host() )
 			continue;
@@ -856,8 +856,8 @@ getConeDot( to, from, dir )
 */
 distancesquared2D( to, from )
 {
-	to = ( to[0], to[1], 0 );
-	from = ( from[0], from[1], 0 );
+	to = ( to[ 0 ], to[ 1 ], 0 );
+	from = ( from[ 0 ], from[ 1 ], 0 );
 
 	return distancesquared( to, from );
 }
@@ -871,21 +871,21 @@ Rectdistancesquared( origin )
 	dy = 0;
 	dz = 0;
 
-	if ( origin[0] < self.x0 )
-		dx = origin[0] - self.x0;
-	else if ( origin[0] > self.x1 )
-		dx = origin[0] - self.x1;
+	if ( origin[ 0 ] < self.x0 )
+		dx = origin[ 0 ] - self.x0;
+	else if ( origin[ 0 ] > self.x1 )
+		dx = origin[ 0 ] - self.x1;
 
-	if ( origin[1] < self.y0 )
-		dy = origin[1] - self.y0;
-	else if ( origin[1] > self.y1 )
-		dy = origin[1] - self.y1;
+	if ( origin[ 1 ] < self.y0 )
+		dy = origin[ 1 ] - self.y0;
+	else if ( origin[ 1 ] > self.y1 )
+		dy = origin[ 1 ] - self.y1;
 
 
-	if ( origin[2] < self.z0 )
-		dz = origin[2] - self.z0;
-	else if ( origin[2] > self.z1 )
-		dz = origin[2] - self.z1;
+	if ( origin[ 2 ] < self.z0 )
+		dz = origin[ 2 ] - self.z0;
+	else if ( origin[ 2 ] > self.z1 )
+		dz = origin[ 2 ] - self.z1;
 
 	return dx * dx + dy * dy + dz * dz;
 }
@@ -1017,126 +1017,126 @@ load_waypoints()
 	{
 		case "nazi_zombie_sumpf":
 			a = [];
-			a[a.size] = 1825;
-			a[a.size] = 1826;
-			a[a.size] = 1829;
-			a[a.size] = 1830;
-			a[a.size] = 1833;
-			a[a.size] = 1837;
-			bot_ignore_links[1603 + ""] = a;
+			a[ a.size ] = 1825;
+			a[ a.size ] = 1826;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1830;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1837;
+			bot_ignore_links[ 1603 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1829;
-			bot_ignore_links[1604 + ""] = a;
+			a[ a.size ] = 1829;
+			bot_ignore_links[ 1604 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1904;
-			bot_ignore_links[1823 + ""] = a;
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1823 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1603;
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			a[a.size] = 1906;
-			bot_ignore_links[1825 + ""] = a;
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1906;
+			bot_ignore_links[ 1825 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1603;
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			a[a.size] = 1907;
-			bot_ignore_links[1826 + ""] = a;
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1826 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1904;
-			bot_ignore_links[1827 + ""] = a;
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1827 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1603;
-			a[a.size] = 1604;
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			a[a.size] = 1906;
-			a[a.size] = 1907;
-			bot_ignore_links[1829 + ""] = a;
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1604;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1906;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1829 + "" ] = a;
 
 
 			a = [];
-			a[a.size] = 1603;
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			a[a.size] = 1907;
-			bot_ignore_links[1830 + ""] = a;
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1830 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1904;
-			bot_ignore_links[1831 + ""] = a;
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1831 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1603;
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			a[a.size] = 1906;
-			a[a.size] = 1907;
-			bot_ignore_links[1833 + ""] = a;
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1906;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1833 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			bot_ignore_links[1834 + ""] = a;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1834 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1603;
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			a[a.size] = 1906;
-			a[a.size] = 1907;
-			bot_ignore_links[1837 + ""] = a;
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1906;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1837 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1903;
-			a[a.size] = 1904;
-			bot_ignore_links[1838 + ""] = a;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1838 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1825;
-			a[a.size] = 1826;
-			a[a.size] = 1829;
-			a[a.size] = 1830;
-			a[a.size] = 1833;
-			a[a.size] = 1834;
-			a[a.size] = 1837;
-			a[a.size] = 1838;
-			bot_ignore_links[1903 + ""] = a;
+			a[ a.size ] = 1825;
+			a[ a.size ] = 1826;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1830;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1834;
+			a[ a.size ] = 1837;
+			a[ a.size ] = 1838;
+			bot_ignore_links[ 1903 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1823;
-			a[a.size] = 1825;
-			a[a.size] = 1826;
-			a[a.size] = 1827;
-			a[a.size] = 1829;
-			a[a.size] = 1830;
-			a[a.size] = 1831;
-			a[a.size] = 1833;
-			a[a.size] = 1834;
-			a[a.size] = 1837;
-			a[a.size] = 1838;
-			bot_ignore_links[1904 + ""] = a;
+			a[ a.size ] = 1823;
+			a[ a.size ] = 1825;
+			a[ a.size ] = 1826;
+			a[ a.size ] = 1827;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1830;
+			a[ a.size ] = 1831;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1834;
+			a[ a.size ] = 1837;
+			a[ a.size ] = 1838;
+			bot_ignore_links[ 1904 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1825;
-			a[a.size] = 1829;
-			a[a.size] = 1833;
-			a[a.size] = 1837;
-			bot_ignore_links[1906 + ""] = a;
+			a[ a.size ] = 1825;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1837;
+			bot_ignore_links[ 1906 + "" ] = a;
 
 			a = [];
-			a[a.size] = 1826;
-			a[a.size] = 1829;
-			a[a.size] = 1830;
-			a[a.size] = 1833;
-			a[a.size] = 1837;
-			bot_ignore_links[1907 + ""] = a;
+			a[ a.size ] = 1826;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1830;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1837;
+			bot_ignore_links[ 1907 + "" ] = a;
 			break;
 	}
 
@@ -1175,7 +1175,7 @@ getBotToKick()
 {
 	bots = getBotArray();
 
-	if ( !isdefined( bots ) || !isdefined( bots.size ) || bots.size <= 0 || !isdefined( bots[0] ) )
+	if ( !isdefined( bots ) || !isdefined( bots.size ) || bots.size <= 0 || !isdefined( bots[ 0 ] ) )
 		return undefined;
 
 	tokick = undefined;
@@ -1183,15 +1183,15 @@ getBotToKick()
 	// just kick lowest skill
 	for ( i = 0; i < bots.size; i++ )
 	{
-		bot = bots[i];
+		bot = bots[ i ];
 
 		if ( !isdefined( bot ) )
 			continue;
 
-		if ( !isdefined( bot.pers ) || !isdefined( bot.pers["bots"] ) || !isdefined( bot.pers["bots"]["skill"] ) || !isdefined( bot.pers["bots"]["skill"]["base"] ) )
+		if ( !isdefined( bot.pers ) || !isdefined( bot.pers[ "bots" ] ) || !isdefined( bot.pers[ "bots" ][ "skill" ] ) || !isdefined( bot.pers[ "bots" ][ "skill" ][ "base" ] ) )
 			continue;
 
-		if ( isdefined( tokick ) && bot.pers["bots"]["skill"]["base"] > tokick.pers["bots"]["skill"]["base"] )
+		if ( isdefined( tokick ) && bot.pers[ "bots" ][ "skill" ][ "base" ] > tokick.pers[ "bots" ][ "skill" ][ "base" ] )
 			continue;
 
 		tokick = bot;
@@ -1210,12 +1210,12 @@ getBotArray()
 
 	for ( i = 0; i < playercount; i++ )
 	{
-		player = level.players[i];
+		player = level.players[ i ];
 
 		if ( !player is_bot() )
 			continue;
 
-		result[result.size] = player;
+		result[ result.size ] = player;
 	}
 
 	return result;
@@ -1247,7 +1247,7 @@ HeapPriority( item, item2 )
 */
 HeapTraceFraction( item, item2 )
 {
-	return item["fraction"] > item2["fraction"];
+	return item[ "fraction" ] > item2[ "fraction" ];
 }
 
 /*
@@ -1268,7 +1268,7 @@ NewHeap( compare )
 HeapInsert( item )
 {
 	insert = self.data.size;
-	self.data[insert] = item;
+	self.data[ insert ] = item;
 
 	current = insert + 1;
 
@@ -1277,11 +1277,11 @@ HeapInsert( item )
 		last = current;
 		current = int( current / 2 );
 
-		if ( ![[self.compare]]( item, self.data[current - 1] ) )
+		if ( ![[ self.compare ]]( item, self.data[ current - 1 ] ) )
 			break;
 
-		self.data[last - 1] = self.data[current - 1];
-		self.data[current - 1] = item;
+		self.data[ last - 1 ] = self.data[ current - 1 ];
+		self.data[ current - 1 ] = item;
 	}
 }
 
@@ -1299,7 +1299,7 @@ _HeapNextChild( node, hsize )
 	if ( right > hsize )
 		return left;
 
-	if ( [[self.compare]]( self.data[left - 1], self.data[right - 1] ) )
+	if ( [[ self.compare ]]( self.data[ left - 1 ], self.data[ right - 1 ] ) )
 		return left;
 	else
 		return right;
@@ -1315,9 +1315,9 @@ HeapRemove()
 	if ( !remove )
 		return remove;
 
-	move = self.data[remove - 1];
-	self.data[0] = move;
-	self.data[remove - 1] = undefined;
+	move = self.data[ remove - 1 ];
+	self.data[ 0 ] = move;
+	self.data[ remove - 1 ] = undefined;
 	remove--;
 
 	if ( !remove )
@@ -1328,11 +1328,11 @@ HeapRemove()
 
 	while ( next != -1 )
 	{
-		if ( [[self.compare]]( move, self.data[next - 1] ) )
+		if ( [[ self.compare ]]( move, self.data[ next - 1 ] ) )
 			break;
 
-		self.data[last - 1] = self.data[next - 1];
-		self.data[next - 1] = move;
+		self.data[ last - 1 ] = self.data[ next - 1 ];
+		self.data[ next - 1 ] = move;
 
 		last = next;
 		next = self _HeapNextChild( next, remove );
@@ -1376,7 +1376,7 @@ array_average( array )
 
 	for ( i = 0; i < array.size; i++ )
 	{
-		total += array[i];
+		total += array[ i ];
 	}
 
 	return ( total / array.size );
@@ -1393,14 +1393,14 @@ array_std_deviation( array, mean )
 
 	for ( i = 0; i < array.size; i++ )
 	{
-		tmp[i] = ( array[i] - mean ) * ( array[i] - mean );
+		tmp[ i ] = ( array[ i ] - mean ) * ( array[ i ] - mean );
 	}
 
 	total = 0;
 
 	for ( i = 0; i < tmp.size; i++ )
 	{
-		total = total + tmp[i];
+		total = total + tmp[ i ];
 	}
 
 	return sqrt( total / array.size );
@@ -1448,7 +1448,7 @@ inLastStand()
 {
 	func = BotBuiltinGetFunction( "maps/_laststand", "player_is_in_laststand" );
 
-	return self [[func]]();
+	return self [[ func ]]();
 }
 
 /*
@@ -1458,7 +1458,7 @@ isReviving( revivee )
 {
 	func = BotBuiltinGetFunction( "maps/_laststand", "is_reviving" );
 
-	return self [[func]]( revivee );
+	return self [[ func ]]( revivee );
 }
 
 /*
@@ -1499,7 +1499,7 @@ isWeaponPrimary( weap )
 
 	for ( i = 0; i < weaps.size; i++ )
 	{
-		if ( weap == weaps[i] )
+		if ( weap == weaps[ i ] )
 			return true;
 	}
 
@@ -1632,12 +1632,12 @@ PointInsideUseTrigger( point )
 	maxs = self BotBuiltinGetMaxs();
 
 	box = spawnstruct();
-	box.x0 = self.origin[0] + mins[0];
-	box.x1 = self.origin[0] + maxs[0];
-	box.y0 = self.origin[1] + mins[1];
-	box.y1 = self.origin[1] + maxs[1];
-	box.z0 = self.origin[2] + mins[2];
-	box.z1 = self.origin[2] + maxs[2];
+	box.x0 = self.origin[ 0 ] + mins[ 0 ];
+	box.x1 = self.origin[ 0 ] + maxs[ 0 ];
+	box.y0 = self.origin[ 1 ] + mins[ 1 ];
+	box.y1 = self.origin[ 1 ] + maxs[ 1 ];
+	box.z0 = self.origin[ 2 ] + mins[ 2 ];
+	box.z1 = self.origin[ 2 ] + maxs[ 2 ];
 
 	if ( box Rectdistancesquared( self.origin ) > 72 * 72 )
 	{
@@ -1669,22 +1669,22 @@ debug_bounding_box_for_ent( color )
 		mins = self BotBuiltinGetMins();
 		maxs = self BotBuiltinGetMaxs();
 
-		line( self.origin + ( mins[0], mins[1], mins[2] ), self.origin + ( mins[0], mins[1], maxs[2] ), color );
-		line( self.origin + ( mins[0], mins[1], mins[2] ), self.origin + ( mins[0], maxs[1], mins[2] ), color );
-		line( self.origin + ( mins[0], mins[1], mins[2] ), self.origin + ( maxs[0], mins[1], mins[2] ), color );
+		line( self.origin + ( mins[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( mins[ 0 ], mins[ 1 ], maxs[ 2 ] ), color );
+		line( self.origin + ( mins[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( mins[ 0 ], maxs[ 1 ], mins[ 2 ] ), color );
+		line( self.origin + ( mins[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( maxs[ 0 ], mins[ 1 ], mins[ 2 ] ), color );
 
-		line( self.origin + ( maxs[0], maxs[1], maxs[2] ), self.origin + ( maxs[0], maxs[1], mins[2] ), color );
-		line( self.origin + ( maxs[0], maxs[1], maxs[2] ), self.origin + ( maxs[0], mins[1], maxs[2] ), color );
-		line( self.origin + ( maxs[0], maxs[1], maxs[2] ), self.origin + ( mins[0], maxs[1], maxs[2] ), color );
+		line( self.origin + ( maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] ), self.origin + ( maxs[ 0 ], maxs[ 1 ], mins[ 2 ] ), color );
+		line( self.origin + ( maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] ), self.origin + ( maxs[ 0 ], mins[ 1 ], maxs[ 2 ] ), color );
+		line( self.origin + ( maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] ), self.origin + ( mins[ 0 ], maxs[ 1 ], maxs[ 2 ] ), color );
 
-		line( self.origin + ( maxs[0], mins[1], mins[2] ), self.origin + ( maxs[0], maxs[1], mins[2] ), color );
-		line( self.origin + ( maxs[0], mins[1], mins[2] ), self.origin + ( maxs[0], mins[1], maxs[2] ), color );
+		line( self.origin + ( maxs[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( maxs[ 0 ], maxs[ 1 ], mins[ 2 ] ), color );
+		line( self.origin + ( maxs[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( maxs[ 0 ], mins[ 1 ], maxs[ 2 ] ), color );
 
-		line( self.origin + ( mins[0], mins[1], maxs[2] ), self.origin + ( maxs[0], mins[1], maxs[2] ), color );
-		line( self.origin + ( mins[0], mins[1], maxs[2] ), self.origin + ( mins[0], maxs[1], maxs[2] ), color );
+		line( self.origin + ( mins[ 0 ], mins[ 1 ], maxs[ 2 ] ), self.origin + ( maxs[ 0 ], mins[ 1 ], maxs[ 2 ] ), color );
+		line( self.origin + ( mins[ 0 ], mins[ 1 ], maxs[ 2 ] ), self.origin + ( mins[ 0 ], maxs[ 1 ], maxs[ 2 ] ), color );
 
-		line( self.origin + ( mins[0], maxs[1], mins[2] ), self.origin + ( maxs[0], maxs[1], mins[2] ), color );
-		line( self.origin + ( mins[0], maxs[1], mins[2] ), self.origin + ( mins[0], maxs[1], maxs[2] ), color );
+		line( self.origin + ( mins[ 0 ], maxs[ 1 ], mins[ 2 ] ), self.origin + ( maxs[ 0 ], maxs[ 1 ], mins[ 2 ] ), color );
+		line( self.origin + ( mins[ 0 ], maxs[ 1 ], mins[ 2 ] ), self.origin + ( mins[ 0 ], maxs[ 1 ], maxs[ 2 ] ), color );
 
 		wait 0.05;
 	}

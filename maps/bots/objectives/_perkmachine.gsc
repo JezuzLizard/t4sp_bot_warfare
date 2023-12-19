@@ -19,7 +19,7 @@ init()
 
 	for ( i = 0 ; i < vending_triggers.size; i++ )
 	{
-		vending_triggers[i] thread init_vending_trigger();
+		vending_triggers[ i ] thread init_vending_trigger();
 	}
 }
 
@@ -69,7 +69,7 @@ Finder( eObj )
 
 	for ( i = 0 ; i < vending_triggers.size; i++ )
 	{
-		vending = vending_triggers[i];
+		vending = vending_triggers[ i ];
 
 		if ( !isdefined( vending.bot_powered_on ) || !vending.bot_powered_on )
 		{
@@ -104,7 +104,7 @@ Finder( eObj )
 			continue;
 		}
 
-		answer[answer.size] = self CreateFinderObjectiveEZ( eObj, vending );
+		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, vending );
 	}
 
 	return answer;
@@ -130,10 +130,10 @@ getPerkCost()
 {
 	if ( self.targetname == "harrybo21_perk_trigger" )
 	{
-		return level.zombie_perks[self getVendingPerk()].perk_cost;
+		return level.zombie_perks[ self getVendingPerk() ].perk_cost;
 	}
 
-	cost = level.zombie_vars["zombie_perk_cost"];
+	cost = level.zombie_vars[ "zombie_perk_cost" ];
 
 	switch ( self getVendingPerk() )
 	{

@@ -15,7 +15,7 @@ Finder( eObj )
 
 	for ( i = 0; i < Players.size; i++ )
 	{
-		Player = Players[i];
+		Player = Players[ i ];
 
 		if ( !isdefined( Player ) || !isdefined( Player.team ) )
 		{
@@ -47,7 +47,7 @@ Finder( eObj )
 			continue;
 		}
 
-		Answer[Answer.size] = self CreateFinderObjectiveEZ( eObj, Player );
+		Answer[ Answer.size ] = self CreateFinderObjectiveEZ( eObj, Player );
 	}
 
 	return Answer;

@@ -17,24 +17,24 @@ Finder( eObj )
 	for ( i = 0; i < ents.size; i++ )
 	{
 		// not a powerup script_model
-		if ( !isdefined( ents[i].powerup_name ) )
+		if ( !isdefined( ents[ i ].powerup_name ) )
 		{
 			continue;
 		}
 
 		// can we path to it?
-		if ( GetPathIsInaccessible( self.origin, ents[i].origin ) )
+		if ( GetPathIsInaccessible( self.origin, ents[ i ].origin ) )
 		{
 			continue;
 		}
 
 		// make sure we are the only one going for it
-		if ( self GetBotsAmountForEntity( ents[i] ) >= 1 )
+		if ( self GetBotsAmountForEntity( ents[ i ] ) >= 1 )
 		{
 			continue;
 		}
 
-		answer[answer.size] = self CreateFinderObjectiveEZ( eObj, ents[i] );
+		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, ents[ i ] );
 	}
 
 	return answer;

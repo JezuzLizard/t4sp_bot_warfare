@@ -27,26 +27,26 @@ Finder( eObj )
 	{
 		player_has_weapon = false;
 
-		if ( !isdefined( weapon_spawns[i].zombie_weapon_upgrade ) )
+		if ( !isdefined( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 		{
 			continue;
 		}
 
 		for ( h = 0; h < weapons.size; h++ )
 		{
-			if ( weapons[h] == weapon_spawns[i].zombie_weapon_upgrade )
+			if ( weapons[ h ] == weapon_spawns[ i ].zombie_weapon_upgrade )
 			{
 				player_has_weapon = true;
 			}
 		}
 
-		is_grenade = ( weapontype( weapon_spawns[i].zombie_weapon_upgrade ) == "grenade" );
+		is_grenade = ( weapontype( weapon_spawns[ i ].zombie_weapon_upgrade ) == "grenade" );
 
 		if ( !player_has_weapon || is_grenade )
 		{
 			func = BotBuiltinGetFunction( "maps/_zombiemode_weapons", "get_weapon_cost" );
 
-			if ( self.score < [[func]]( weapon_spawns[i].zombie_weapon_upgrade ) )
+			if ( self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 			{
 				continue;
 			}
@@ -55,7 +55,7 @@ Finder( eObj )
 		{
 			func = BotBuiltinGetFunction( "maps/_zombiemode_weapons", "get_ammo_cost" );
 
-			if ( self.score < [[func]]( weapon_spawns[i].zombie_weapon_upgrade ) )
+			if ( self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 			{
 				continue;
 			}
@@ -80,7 +80,7 @@ Finder( eObj )
 			continue;
 		}
 
-		answer[answer.size] = self CreateFinderObjectiveEZ( eObj, weapon_spawns[i] );
+		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, weapon_spawns[ i ] );
 	}
 
 	return answer;
@@ -90,7 +90,7 @@ getOffset( model, weapon )
 {
 	org = model get_angle_offset_node( 40, ( 0, -90, 0 ), ( 0, 0, 1 ) );
 
-	test_org = ( org[0], org[1], weapon.origin[2] );
+	test_org = ( org[ 0 ], org[ 1 ], weapon.origin[ 2 ] );
 
 	if ( !weapon PointInsideUseTrigger( test_org ) )
 	{

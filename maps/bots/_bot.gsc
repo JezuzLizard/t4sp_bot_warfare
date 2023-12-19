@@ -84,8 +84,8 @@ init()
 	if ( getdvar( "bots_play_opendoors" ) == "" )
 		setdvar( "bots_play_opendoors", true );
 
-	if ( !isdefined( game["botWarfare"] ) )
-		game["botWarfare"] = true;
+	if ( !isdefined( game[ "botWarfare" ] ) )
+		game[ "botWarfare" ] = true;
 
 	level.bots_minsprintdistance = 315;
 	level.bots_minsprintdistance *= level.bots_minsprintdistance;
@@ -106,17 +106,17 @@ init()
 	level.bots = [];
 
 	level.bots_fullautoguns = [];
-	level.bots_fullautoguns["thompson"] = true;
-	level.bots_fullautoguns["mp40"] = true;
-	level.bots_fullautoguns["type100smg"] = true;
-	level.bots_fullautoguns["ppsh"] = true;
-	level.bots_fullautoguns["stg44"] = true;
-	level.bots_fullautoguns["30cal"] = true;
-	level.bots_fullautoguns["mg42"] = true;
-	level.bots_fullautoguns["dp28"] = true;
-	level.bots_fullautoguns["bar"] = true;
-	level.bots_fullautoguns["fg42"] = true;
-	level.bots_fullautoguns["type99lmg"] = true;
+	level.bots_fullautoguns[ "thompson" ] = true;
+	level.bots_fullautoguns[ "mp40" ] = true;
+	level.bots_fullautoguns[ "type100smg" ] = true;
+	level.bots_fullautoguns[ "ppsh" ] = true;
+	level.bots_fullautoguns[ "stg44" ] = true;
+	level.bots_fullautoguns[ "30cal" ] = true;
+	level.bots_fullautoguns[ "mg42" ] = true;
+	level.bots_fullautoguns[ "dp28" ] = true;
+	level.bots_fullautoguns[ "bar" ] = true;
+	level.bots_fullautoguns[ "fg42" ] = true;
+	level.bots_fullautoguns[ "type99lmg" ] = true;
 
 	level thread onPlayerConnect();
 	level thread handleBots();
@@ -144,7 +144,7 @@ handleBots()
 
 	for ( i = 0; i < bots.size; i++ )
 	{
-		BotBuiltinCmdExec( "clientkick " + bots[i] getentitynumber() );
+		BotBuiltinCmdExec( "clientkick " + bots[ i ] getentitynumber() );
 	}
 }
 
@@ -171,7 +171,7 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 		self maps\bots\_bot_script::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
 	}
 
-	self [[level.prevcallbackplayerdamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
+	self [[ level.prevcallbackplayerdamage ]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
 }
 
 onActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset )
@@ -181,7 +181,7 @@ onActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 		iDamage += int( self.maxhealth * randomfloatrange( 0.25, 1.25 ) );
 	}
 
-	self [[level.prevcallbackactordamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset );
+	self [[ level.prevcallbackactordamage ]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset );
 }
 
 /*
@@ -257,10 +257,10 @@ connected()
 {
 	self endon( "disconnect" );
 
-	if ( !isdefined( self.pers["bot_host"] ) )
+	if ( !isdefined( self.pers[ "bot_host" ] ) )
 		self thread doHostCheck();
 
-	level.players[level.players.size] = self;
+	level.players[ level.players.size ] = self;
 	self thread onDisconnectAll();
 
 	self thread onSpawnedAll();
@@ -268,22 +268,22 @@ connected()
 	if ( !self is_bot() )
 		return;
 
-	if ( !isdefined( self.pers["isBot"] ) )
+	if ( !isdefined( self.pers[ "isBot" ] ) )
 	{
 		// fast restart...
-		self.pers["isBot"] = true;
+		self.pers[ "isBot" ] = true;
 	}
 
-	if ( !isdefined( self.pers["isBotWarfare"] ) )
+	if ( !isdefined( self.pers[ "isBotWarfare" ] ) )
 	{
-		self.pers["isBotWarfare"] = true;
+		self.pers[ "isBotWarfare" ] = true;
 		self thread added();
 	}
 
 	self thread maps\bots\_bot_internal::connected();
 	self thread maps\bots\_bot_script::connected();
 
-	level.bots[level.bots.size] = self;
+	level.bots[ level.bots.size ] = self;
 	self thread onDisconnect();
 
 	level notify( "bot_connected", self );
@@ -356,8 +356,8 @@ add_bot()
 
 	if ( isdefined( bot ) )
 	{
-		bot.pers["isBot"] = true;
-		bot.pers["isBotWarfare"] = true;
+		bot.pers[ "isBot" ] = true;
+		bot.pers[ "isBotWarfare" ] = true;
 		bot thread added();
 	}
 }
@@ -380,9 +380,9 @@ diffBots_loop()
 
 		for ( i = 0; i < playercount; i++ )
 		{
-			player = level.players[i];
+			player = level.players[ i ];
 
-			if ( !isdefined( player.pers["team"] ) )
+			if ( !isdefined( player.pers[ "team" ] ) )
 				continue;
 
 			if ( !player is_bot() )
@@ -391,15 +391,15 @@ diffBots_loop()
 			if ( hard < var_hard )
 			{
 				hard++;
-				player.pers["bots"]["skill"]["base"] = 7;
+				player.pers[ "bots" ][ "skill" ][ "base" ] = 7;
 			}
 			else if ( med < var_med )
 			{
 				med++;
-				player.pers["bots"]["skill"]["base"] = 4;
+				player.pers[ "bots" ][ "skill" ][ "base" ] = 4;
 			}
 			else
-				player.pers["bots"]["skill"]["base"] = 1;
+				player.pers[ "bots" ][ "skill" ][ "base" ] = 1;
 		}
 	}
 	else if ( var_skill != 0 && var_skill != 9 )
@@ -408,12 +408,12 @@ diffBots_loop()
 
 		for ( i = 0; i < playercount; i++ )
 		{
-			player = level.players[i];
+			player = level.players[ i ];
 
 			if ( !player is_bot() )
 				continue;
 
-			player.pers["bots"]["skill"]["base"] = var_skill;
+			player.pers[ "bots" ][ "skill" ][ "base" ] = var_skill;
 		}
 	}
 }
@@ -466,7 +466,7 @@ addBots_loop()
 
 	for ( i = 0; i < playercount; i++ )
 	{
-		player = level.players[i];
+		player = level.players[ i ];
 
 		if ( player is_bot() )
 			bots++;
