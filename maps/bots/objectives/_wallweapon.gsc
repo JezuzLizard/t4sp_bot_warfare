@@ -12,14 +12,14 @@ Finder( eObj )
 		return answer;
 	}
 
-	weapon_spawns = GetEntArray( "weapon_upgrade", "targetname" );
+	weapon_spawns = getentarray( "weapon_upgrade", "targetname" );
 
-	if ( !isDefined( weapon_spawns ) || weapon_spawns.size <= 0 )
+	if ( !isdefined( weapon_spawns ) || weapon_spawns.size <= 0 )
 	{
 		return answer;
 	}
 
-	weapons = self GetWeaponsList();
+	weapons = self getweaponslist();
 
 	// TODO check if need a new weapon, rate weapons too is better then current etc
 
@@ -27,7 +27,7 @@ Finder( eObj )
 	{
 		player_has_weapon = false;
 
-		if ( !isDefined( weapon_spawns[i].zombie_weapon_upgrade ) )
+		if ( !isdefined( weapon_spawns[i].zombie_weapon_upgrade ) )
 		{
 			continue;
 		}
@@ -40,7 +40,7 @@ Finder( eObj )
 			}
 		}
 
-		is_grenade = ( WeaponType( weapon_spawns[i].zombie_weapon_upgrade ) == "grenade" );
+		is_grenade = ( weapontype( weapon_spawns[i].zombie_weapon_upgrade ) == "grenade" );
 
 		if ( !player_has_weapon || is_grenade )
 		{
@@ -63,12 +63,12 @@ Finder( eObj )
 
 		model = weapon_spawns[ i ];
 
-		if ( isDefined( weapon_spawns[ i ].target ) )
+		if ( isdefined( weapon_spawns[ i ].target ) )
 		{
-			model = getEnt( weapon_spawns[ i ].target, "targetname" );
+			model = getent( weapon_spawns[ i ].target, "targetname" );
 		}
 
-		if ( !isDefined( model ) )
+		if ( !isdefined( model ) )
 		{
 			continue;
 		}
@@ -112,7 +112,7 @@ Priority( eObj, eEnt )
 		base_priority -= 1;
 	}
 
-	if ( isSubStr( eEnt.zombie_weapon_upgrade, "kar98k" ) || isSubStr( eEnt.zombie_weapon_upgrade, "type99" ) )
+	if ( issubstr( eEnt.zombie_weapon_upgrade, "kar98k" ) || issubstr( eEnt.zombie_weapon_upgrade, "type99" ) )
 	{
 		base_priority -= 999;
 	}
@@ -125,7 +125,7 @@ Executer( eObj )
 	self endon( "disconnect" );
 	self endon( "zombified" );
 
-	weapon = eObj.eEnt;
+	weapon = eObj.eent;
 
 	self thread WatchForCancel( weapon );
 
@@ -136,7 +136,7 @@ Executer( eObj )
 	self ClearScriptGoal();
 	self ClearPriorityObjective();
 
-	self CompletedObjective( eObj.bWasSuccessful, eObj.sReason );
+	self CompletedObjective( eObj.bwassuccessful, eObj.sreason );
 }
 
 WatchForCancelCleanup()
@@ -175,7 +175,7 @@ WatchToGoToWeapon( weapon )
 	{
 		wait 0.05;
 
-		if ( self IsTouching( weapon ) || weapon PointInsideUseTrigger( self.origin ) )
+		if ( self istouching( weapon ) || weapon PointInsideUseTrigger( self.origin ) )
 		{
 			self notify( "goal" );
 			break; // is this needed?
@@ -187,19 +187,19 @@ GoDoWallweapon( eObj )
 {
 	self endon( "cancel_bot_objective" );
 
-	weapon = eObj.eEnt;
+	weapon = eObj.eent;
 	model = weapon;
 
-	if ( isDefined( weapon.target ) )
+	if ( isdefined( weapon.target ) )
 	{
-		model = getEnt( weapon.target, "targetname" );
+		model = getent( weapon.target, "targetname" );
 	}
 
 	org = self getOffset( model, weapon );
 
-	weap = self GetCurrentWeapon();
+	weap = self getcurrentweapon();
 
-	if ( weap == "none" || !self getAmmoCount( weap ) )
+	if ( weap == "none" || !self getammocount( weap ) )
 	{
 		self SetPriorityObjective();
 	}
@@ -212,13 +212,13 @@ GoDoWallweapon( eObj )
 
 	if ( result != "goal" )
 	{
-		eObj.sReason = "didn't go to weapon";
+		eObj.sreason = "didn't go to weapon";
 		return;
 	}
 
-	if ( !self IsTouching( weapon ) && !weapon PointInsideUseTrigger( self.origin ) )
+	if ( !self istouching( weapon ) && !weapon PointInsideUseTrigger( self.origin ) )
 	{
-		eObj.sReason = "not touching weapon";
+		eObj.sreason = "not touching weapon";
 		return;
 	}
 
@@ -232,6 +232,6 @@ GoDoWallweapon( eObj )
 	self thread BotPressUse( 0.15 );
 	wait 0.1;
 
-	eObj.sReason = "completed";
-	eObj.bWasSuccessful = true;
+	eObj.sreason = "completed";
+	eObj.bwassuccessful = true;
 }

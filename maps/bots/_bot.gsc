@@ -7,100 +7,100 @@
 */
 init()
 {
-	level.bw_VERSION = "z0.1";
+	level.bw_version = "z0.1";
 
-	if ( getDvar( "bots_main" ) == "" )
-		setDvar( "bots_main", true );
+	if ( getdvar( "bots_main" ) == "" )
+		setdvar( "bots_main", true );
 
-	if ( !getDvarInt( "bots_main" ) )
+	if ( !getdvarint( "bots_main" ) )
 		return;
 
 	if ( !wait_for_builtins() )
-		PrintLn( "FATAL: NO BUILT-INS FOR BOTS" );
+		println( "FATAL: NO BUILT-INS FOR BOTS" );
 
 	thread load_waypoints();
 	thread hook_callbacks();
 
-	if ( getDvar( "bots_main_GUIDs" ) == "" )
-		setDvar( "bots_main_GUIDs", "" ); //guids of players who will be given host powers, comma seperated
+	if ( getdvar( "bots_main_GUIDs" ) == "" )
+		setdvar( "bots_main_GUIDs", "" ); //guids of players who will be given host powers, comma seperated
 
-	if ( getDvar( "bots_main_firstIsHost" ) == "" )
-		setDvar( "bots_main_firstIsHost", false ); //first player to connect is a host
+	if ( getdvar( "bots_main_firstIsHost" ) == "" )
+		setdvar( "bots_main_firstIsHost", false ); //first player to connect is a host
 
-	if ( getDvar( "bots_main_waitForHostTime" ) == "" )
-		setDvar( "bots_main_waitForHostTime", 10.0 ); //how long to wait to wait for the host player
+	if ( getdvar( "bots_main_waitForHostTime" ) == "" )
+		setdvar( "bots_main_waitForHostTime", 10.0 ); //how long to wait to wait for the host player
 
-	if ( getDvar( "bots_main_kickBotsAtEnd" ) == "" )
-		setDvar( "bots_main_kickBotsAtEnd", false ); //kicks the bots at game end
+	if ( getdvar( "bots_main_kickBotsAtEnd" ) == "" )
+		setdvar( "bots_main_kickBotsAtEnd", false ); //kicks the bots at game end
 
-	if ( getDvar( "bots_manage_add" ) == "" )
-		setDvar( "bots_manage_add", 0 ); //amount of bots to add to the game
+	if ( getdvar( "bots_manage_add" ) == "" )
+		setdvar( "bots_manage_add", 0 ); //amount of bots to add to the game
 
-	if ( getDvar( "bots_manage_fill" ) == "" )
-		setDvar( "bots_manage_fill", 0 ); //amount of bots to maintain
+	if ( getdvar( "bots_manage_fill" ) == "" )
+		setdvar( "bots_manage_fill", 0 ); //amount of bots to maintain
 
-	if ( getDvar( "bots_manage_fill_mode" ) == "" )
-		setDvar( "bots_manage_fill_mode", 0 ); //fill mode, 0 adds everyone, 1 just bots, 2 maintains at maps, 3 is 2 with 1
+	if ( getdvar( "bots_manage_fill_mode" ) == "" )
+		setdvar( "bots_manage_fill_mode", 0 ); //fill mode, 0 adds everyone, 1 just bots, 2 maintains at maps, 3 is 2 with 1
 
-	if ( getDvar( "bots_manage_fill_kick" ) == "" )
-		setDvar( "bots_manage_fill_kick", false ); //kick bots if too many
+	if ( getdvar( "bots_manage_fill_kick" ) == "" )
+		setdvar( "bots_manage_fill_kick", false ); //kick bots if too many
 
-	if ( getDvar( "bots_skill" ) == "" )
-		setDvar( "bots_skill", 0 ); //0 is random, 1 is easy 7 is hard, 8 is custom, 9 is completely random
+	if ( getdvar( "bots_skill" ) == "" )
+		setdvar( "bots_skill", 0 ); //0 is random, 1 is easy 7 is hard, 8 is custom, 9 is completely random
 
-	if ( getDvar( "bots_skill_hard" ) == "" )
-		setDvar( "bots_skill_hard", 0 ); //amount of hard bots on axis team
+	if ( getdvar( "bots_skill_hard" ) == "" )
+		setdvar( "bots_skill_hard", 0 ); //amount of hard bots on axis team
 
-	if ( getDvar( "bots_skill_med" ) == "" )
-		setDvar( "bots_skill_med", 0 );
+	if ( getdvar( "bots_skill_med" ) == "" )
+		setdvar( "bots_skill_med", 0 );
 
-	if ( getDvar( "bots_loadout_rank" ) == "" ) // what rank the bots should be around, -1 is around the players, 0 is all random
-		setDvar( "bots_loadout_rank", -1 );
+	if ( getdvar( "bots_loadout_rank" ) == "" ) // what rank the bots should be around, -1 is around the players, 0 is all random
+		setdvar( "bots_loadout_rank", -1 );
 
-	if ( getDvar( "bots_loadout_prestige" ) == "" ) // what pretige the bots will be, -1 is the players, -2 is random
-		setDvar( "bots_loadout_prestige", -1 );
+	if ( getdvar( "bots_loadout_prestige" ) == "" ) // what pretige the bots will be, -1 is the players, -2 is random
+		setdvar( "bots_loadout_prestige", -1 );
 
-	if ( getDvar( "bots_play_move" ) == "" ) //bots move
-		setDvar( "bots_play_move", true );
+	if ( getdvar( "bots_play_move" ) == "" ) //bots move
+		setdvar( "bots_play_move", true );
 
-	if ( getDvar( "bots_play_knife" ) == "" ) //bots knife
-		setDvar( "bots_play_knife", true );
+	if ( getdvar( "bots_play_knife" ) == "" ) //bots knife
+		setdvar( "bots_play_knife", true );
 
-	if ( getDvar( "bots_play_fire" ) == "" ) //bots fire
-		setDvar( "bots_play_fire", true );
+	if ( getdvar( "bots_play_fire" ) == "" ) //bots fire
+		setdvar( "bots_play_fire", true );
 
-	if ( getDvar( "bots_play_nade" ) == "" ) //bots grenade
-		setDvar( "bots_play_nade", true );
+	if ( getdvar( "bots_play_nade" ) == "" ) //bots grenade
+		setdvar( "bots_play_nade", true );
 
-	if ( getDvar( "bots_play_ads" ) == "" ) //bot ads
-		setDvar( "bots_play_ads", true );
+	if ( getdvar( "bots_play_ads" ) == "" ) //bot ads
+		setdvar( "bots_play_ads", true );
 
-	if ( getDvar( "bots_play_aim" ) == "" )
-		setDvar( "bots_play_aim", true );
+	if ( getdvar( "bots_play_aim" ) == "" )
+		setdvar( "bots_play_aim", true );
 
-	if ( getDvar( "bots_t8_mode" ) == "" )
-		setDvar( "bots_t8_mode", false );
+	if ( getdvar( "bots_t8_mode" ) == "" )
+		setdvar( "bots_t8_mode", false );
 
-	if ( getDvar( "bots_play_opendoors" ) == "" )
-		setDvar( "bots_play_opendoors", true );
+	if ( getdvar( "bots_play_opendoors" ) == "" )
+		setdvar( "bots_play_opendoors", true );
 
-	if ( !isDefined( game["botWarfare"] ) )
+	if ( !isdefined( game["botWarfare"] ) )
 		game["botWarfare"] = true;
 
-	level.bots_minSprintDistance = 315;
-	level.bots_minSprintDistance *= level.bots_minSprintDistance;
-	level.bots_minGrenadeDistance = 256;
-	level.bots_minGrenadeDistance *= level.bots_minGrenadeDistance;
-	level.bots_maxGrenadeDistance = 1024;
-	level.bots_maxGrenadeDistance *= level.bots_maxGrenadeDistance;
-	level.bots_maxKnifeDistance = 128;
-	level.bots_maxKnifeDistance *= level.bots_maxKnifeDistance;
-	level.bots_goalDistance = 27.5;
-	level.bots_goalDistance *= level.bots_goalDistance;
-	level.bots_noADSDistance = 200;
-	level.bots_noADSDistance *= level.bots_noADSDistance;
-	level.bots_maxShotgunDistance = 500;
-	level.bots_maxShotgunDistance *= level.bots_maxShotgunDistance;
+	level.bots_minsprintdistance = 315;
+	level.bots_minsprintdistance *= level.bots_minsprintdistance;
+	level.bots_mingrenadedistance = 256;
+	level.bots_mingrenadedistance *= level.bots_mingrenadedistance;
+	level.bots_maxgrenadedistance = 1024;
+	level.bots_maxgrenadedistance *= level.bots_maxgrenadedistance;
+	level.bots_maxknifedistance = 128;
+	level.bots_maxknifedistance *= level.bots_maxknifedistance;
+	level.bots_goaldistance = 27.5;
+	level.bots_goaldistance *= level.bots_goaldistance;
+	level.bots_noadsdistance = 200;
+	level.bots_noadsdistance *= level.bots_noadsdistance;
+	level.bots_maxshotgundistance = 500;
+	level.bots_maxshotgundistance *= level.bots_maxshotgundistance;
 
 	level.players = [];
 	level.bots = [];
@@ -132,19 +132,19 @@ handleBots()
 	level thread diffBots();
 	level addBots();
 
-	while ( !isDefined( level.intermission ) || !level.intermission )
+	while ( !isdefined( level.intermission ) || !level.intermission )
 		wait 0.05;
 
-	setDvar( "bots_manage_add", getBotArray().size );
+	setdvar( "bots_manage_add", getBotArray().size );
 
-	if ( !getDvarInt( "bots_main_kickBotsAtEnd" ) )
+	if ( !getdvarint( "bots_main_kickBotsAtEnd" ) )
 		return;
 
 	bots = getBotArray();
 
 	for ( i = 0; i < bots.size; i++ )
 	{
-		BotBuiltinCmdExec( "clientkick " + bots[i] getEntityNumber() );
+		BotBuiltinCmdExec( "clientkick " + bots[i] getentitynumber() );
 	}
 }
 
@@ -153,9 +153,9 @@ handleBots()
 */
 onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )
 {
-	if ( self is_bot() && getDvarInt( "bots_t8_mode" ) )
+	if ( self is_bot() && getdvarint( "bots_t8_mode" ) )
 	{
-		if ( ( level.script == "nazi_zombie_asylum" || level.script == "nazi_zombie_sumpf" ) && self hasPerk( "specialty_armorvest" ) )
+		if ( ( level.script == "nazi_zombie_asylum" || level.script == "nazi_zombie_sumpf" ) && self hasperk( "specialty_armorvest" ) )
 		{
 			iDamage = int( iDamage * 0.333 );
 		}
@@ -171,17 +171,17 @@ onPlayerDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon,
 		self maps\bots\_bot_script::onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
 	}
 
-	self [[level.prevCallbackPlayerDamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
+	self [[level.prevcallbackplayerdamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime );
 }
 
 onActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset )
 {
-	if ( isDefined( eAttacker ) && isPlayer( eAttacker ) && eAttacker is_bot() && getDvarInt( "bots_t8_mode" ) && ( !isDefined( self.magic_bullet_shield ) || !self.magic_bullet_shield ) )
+	if ( isdefined( eAttacker ) && isplayer( eAttacker ) && eAttacker is_bot() && getdvarint( "bots_t8_mode" ) && ( !isdefined( self.magic_bullet_shield ) || !self.magic_bullet_shield ) )
 	{
-		iDamage += int( self.maxhealth * randomFloatRange( 0.25, 1.25 ) );
+		iDamage += int( self.maxhealth * randomfloatrange( 0.25, 1.25 ) );
 	}
 
-	self [[level.prevCallbackActorDamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset );
+	self [[level.prevcallbackactordamage]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset );
 }
 
 /*
@@ -190,11 +190,11 @@ onActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 hook_callbacks()
 {
 	wait 0.05;
-	level.prevCallbackPlayerDamage = level.callbackPlayerDamage;
-	level.callbackPlayerDamage = ::onPlayerDamage;
+	level.prevcallbackplayerdamage = level.callbackplayerdamage;
+	level.callbackplayerdamage = ::onPlayerDamage;
 
-	level.prevCallbackActorDamage = level.callbackActorDamage;
-	level.callbackActorDamage = ::onActorDamage;
+	level.prevcallbackactordamage = level.callbackactordamage;
+	level.callbackactordamage = ::onActorDamage;
 }
 
 /*
@@ -231,9 +231,9 @@ onSpawnedAll()
 	{
 		self waittill( "spawned_player" );
 
-		self.lastSpawnTime = getTime();
+		self.lastspawntime = gettime();
 
-		if ( getDvarInt( "bots_main_debug" ) )
+		if ( getdvarint( "bots_main_debug" ) )
 		{
 			self.score = 100000;
 		}
@@ -257,7 +257,7 @@ connected()
 {
 	self endon( "disconnect" );
 
-	if ( !isDefined( self.pers["bot_host"] ) )
+	if ( !isdefined( self.pers["bot_host"] ) )
 		self thread doHostCheck();
 
 	level.players[level.players.size] = self;
@@ -268,13 +268,13 @@ connected()
 	if ( !self is_bot() )
 		return;
 
-	if ( !isDefined( self.pers["isBot"] ) )
+	if ( !isdefined( self.pers["isBot"] ) )
 	{
 		// fast restart...
 		self.pers["isBot"] = true;
 	}
 
-	if ( !isDefined( self.pers["isBotWarfare"] ) )
+	if ( !isdefined( self.pers["isBotWarfare"] ) )
 	{
 		self.pers["isBotWarfare"] = true;
 		self thread added();
@@ -302,34 +302,34 @@ watchBotDebugEvent()
 	{
 		self waittill( "bot_event", msg, str, b, c, d, e, f, g );
 
-		if ( GetDvarInt( "bots_main_debug" ) >= 2 )
+		if ( getdvarint( "bots_main_debug" ) >= 2 )
 		{
 			big_str = "Bot Warfare debug: " + self.playername + ": " + msg;
 
-			if ( isDefined( str ) && isString( str ) )
+			if ( isdefined( str ) && isstring( str ) )
 				big_str += ", " + str;
 
-			if ( isDefined( b ) && isString( b ) )
+			if ( isdefined( b ) && isstring( b ) )
 				big_str += ", " + b;
 
-			if ( isDefined( c ) && isString( c ) )
+			if ( isdefined( c ) && isstring( c ) )
 				big_str += ", " + c;
 
-			if ( isDefined( d ) && isString( d ) )
+			if ( isdefined( d ) && isstring( d ) )
 				big_str += ", " + d;
 
-			if ( isDefined( e ) && isString( e ) )
+			if ( isdefined( e ) && isstring( e ) )
 				big_str += ", " + e;
 
-			if ( isDefined( f ) && isString( f ) )
+			if ( isdefined( f ) && isstring( f ) )
 				big_str += ", " + f;
 
-			if ( isDefined( g ) && isString( g ) )
+			if ( isdefined( g ) && isstring( g ) )
 				big_str += ", " + g;
 
 			BotBuiltinPrintConsole( big_str );
 		}
-		else if ( msg == "debug" && GetDvarInt( "bots_main_debug" ) )
+		else if ( msg == "debug" && getdvarint( "bots_main_debug" ) )
 		{
 			BotBuiltinPrintConsole( "Bot Warfare debug: " + self.playername + ": " + str );
 		}
@@ -367,9 +367,9 @@ add_bot()
 */
 diffBots_loop()
 {
-	var_hard = getDVarInt( "bots_skill_hard" );
-	var_med = getDVarInt( "bots_skill_med" );
-	var_skill = getDvarInt( "bots_skill" );
+	var_hard = getdvarint( "bots_skill_hard" );
+	var_med = getdvarint( "bots_skill_med" );
+	var_skill = getdvarint( "bots_skill" );
 
 	hard = 0;
 	med = 0;
@@ -382,7 +382,7 @@ diffBots_loop()
 		{
 			player = level.players[i];
 
-			if ( !isDefined( player.pers["team"] ) )
+			if ( !isdefined( player.pers["team"] ) )
 				continue;
 
 			if ( !player is_bot() )
@@ -436,11 +436,11 @@ diffBots()
 */
 addBots_loop()
 {
-	botsToAdd = GetDvarInt( "bots_manage_add" );
+	botsToAdd = getdvarint( "bots_manage_add" );
 
 	if ( botsToAdd > 0 )
 	{
-		SetDvar( "bots_manage_add", 0 );
+		setdvar( "bots_manage_add", 0 );
 
 		if ( botsToAdd > 4 )
 			botsToAdd = 4;
@@ -452,12 +452,12 @@ addBots_loop()
 		}
 	}
 
-	fillMode = getDVarInt( "bots_manage_fill_mode" );
+	fillMode = getdvarint( "bots_manage_fill_mode" );
 
 	if ( fillMode == 2 || fillMode == 3 )
-		setDvar( "bots_manage_fill", getGoodMapAmount() );
+		setdvar( "bots_manage_fill", getGoodMapAmount() );
 
-	fillAmount = getDvarInt( "bots_manage_fill" );
+	fillAmount = getdvarint( "bots_manage_fill" );
 
 	players = 0;
 	bots = 0;
@@ -480,13 +480,13 @@ addBots_loop()
 		amount += players;
 
 	if ( amount < fillAmount )
-		setDvar( "bots_manage_add", 1 );
-	else if ( amount > fillAmount && getDvarInt( "bots_manage_fill_kick" ) )
+		setdvar( "bots_manage_add", 1 );
+	else if ( amount > fillAmount && getdvarint( "bots_manage_fill_kick" ) )
 	{
 		tempBot = getBotToKick();
 
-		if ( isDefined( tempBot ) )
-			BotBuiltinCmdExec( "clientkick " + tempBot getEntityNumber() );
+		if ( isdefined( tempBot ) )
+			BotBuiltinCmdExec( "clientkick " + tempBot getentitynumber() );
 	}
 }
 
@@ -499,7 +499,7 @@ addBots()
 
 	bot_wait_for_host();
 
-	while ( !isDefined( level.intermission ) || !level.intermission )
+	while ( !isdefined( level.intermission ) || !level.intermission )
 	{
 		wait 1.5;
 

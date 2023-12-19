@@ -17,7 +17,7 @@ Finder( eObj )
 	{
 		Player = Players[i];
 
-		if ( !IsDefined( Player ) || !IsDefined( Player.team ) )
+		if ( !isdefined( Player ) || !isdefined( Player.team ) )
 		{
 			continue;
 		}
@@ -71,7 +71,7 @@ Executer( eObj )
 	self endon( "disconnect" );
 	self endon( "zombified" );
 
-	revivee = eObj.eEnt;
+	revivee = eObj.eent;
 
 	self thread IncrementBotsForEntity( revivee );
 	self thread WatchForCancelRevive( revivee );
@@ -84,7 +84,7 @@ Executer( eObj )
 	self ClearScriptGoal();
 	self ClearPriorityObjective();
 
-	self CompletedObjective( eObj.bWasSuccessful, eObj.sReason );
+	self CompletedObjective( eObj.bwassuccessful, eObj.sreason );
 }
 
 WatchForCancelReviveCleanup()
@@ -143,7 +143,7 @@ WatchToGoToGuy( revivee )
 	{
 		wait 1;
 
-		if ( self IsTouching( revivee.revivetrigger ) )
+		if ( self istouching( revivee.revivetrigger ) )
 		{
 			self notify( "goal" );
 			break; // is this needed?
@@ -156,14 +156,14 @@ WatchForSuccessRevive( eObj )
 	self endon( "disconnect" );
 	self endon( "zombified" );
 
-	revivee = eObj.eEnt;
+	revivee = eObj.eent;
 
 	ret = self waittill_either_return( "cancel_bot_objective", "completed_bot_objective" );
 
-	if ( ret == "cancel_bot_objective" && isDefined( revivee ) && !revivee inLastStand() )
+	if ( ret == "cancel_bot_objective" && isdefined( revivee ) && !revivee inLastStand() )
 	{
-		eObj.bWasSuccessful = true;
-		eObj.sReason = "revived him!";
+		eObj.bwassuccessful = true;
+		eObj.sreason = "revived him!";
 	}
 }
 
@@ -171,7 +171,7 @@ GoDoRevive( eObj )
 {
 	self endon( "cancel_bot_objective" );
 
-	revivee = eObj.eEnt;
+	revivee = eObj.eent;
 
 	// go to guy
 	self thread WatchToGoToGuy( revivee );
@@ -182,13 +182,13 @@ GoDoRevive( eObj )
 
 	if ( result != "goal" )
 	{
-		eObj.sReason = "didn't go to guy";
+		eObj.sreason = "didn't go to guy";
 		return;
 	}
 
-	if ( !self IsTouching( revivee.revivetrigger ) )
+	if ( !self istouching( revivee.revivetrigger ) )
 	{
-		eObj.sReason = "not touching guy";
+		eObj.sreason = "not touching guy";
 		return;
 	}
 
@@ -198,12 +198,12 @@ GoDoRevive( eObj )
 	// now lets hold use until he is up or otherwise
 	self thread WatchForSuccessRevive( eObj );
 
-	while ( self IsTouching( revivee.revivetrigger ) )
+	while ( self istouching( revivee.revivetrigger ) )
 	{
 		self thread BotPressUse( 0.15 );
 
 		wait 0.1;
 	}
 
-	eObj.sReason = "not touching guy";
+	eObj.sreason = "not touching guy";
 }

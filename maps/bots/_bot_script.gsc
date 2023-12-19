@@ -39,10 +39,10 @@ connected()
 */
 onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )
 {
-	if ( !IsDefined( self ) || !isDefined( self.team ) )
+	if ( !isdefined( self ) || !isdefined( self.team ) )
 		return;
 
-	if ( !isAlive( self ) )
+	if ( !isalive( self ) )
 		return;
 
 	if ( sMeansOfDeath == "MOD_FALLING" || sMeansOfDeath == "MOD_SUICIDE" )
@@ -51,13 +51,13 @@ onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoin
 	if ( iDamage <= 0 )
 		return;
 
-	if ( !IsDefined( eAttacker ) || !isDefined( eAttacker.team ) )
+	if ( !isdefined( eAttacker ) || !isdefined( eAttacker.team ) )
 		return;
 
 	if ( eAttacker == self )
 		return;
 
-	if ( !isAlive( eAttacker ) )
+	if ( !isalive( eAttacker ) )
 		return;
 
 	self SetAttacker( eAttacker );
@@ -72,7 +72,7 @@ difficulty()
 
 	for ( ;; )
 	{
-		if ( GetDvarInt( "bots_skill" ) != 9 )
+		if ( getdvarint( "bots_skill" ) != 9 )
 		{
 			switch ( self.pers["bots"]["skill"]["base"] )
 			{
@@ -304,7 +304,7 @@ difficulty()
 */
 set_diff()
 {
-	rankVar = GetDvarInt( "bots_skill" );
+	rankVar = getdvarint( "bots_skill" );
 
 	switch ( rankVar )
 	{
@@ -316,36 +316,36 @@ set_diff()
 			break;
 
 		case 9:
-			self.pers["bots"]["skill"]["base"] = randomIntRange( 1, 7 );
-			self.pers["bots"]["skill"]["aim_time"] = 0.05 * randomIntRange( 1, 20 );
-			self.pers["bots"]["skill"]["init_react_time"] = 50 * randomInt( 100 );
-			self.pers["bots"]["skill"]["reaction_time"] = 50 * randomInt( 100 );
-			self.pers["bots"]["skill"]["no_trace_ads_time"] = 50 * randomInt( 100 );
-			self.pers["bots"]["skill"]["no_trace_look_time"] = 50 * randomInt( 100 );
-			self.pers["bots"]["skill"]["remember_time"] = 50 * randomInt( 100 );
-			self.pers["bots"]["skill"]["fov"] = randomFloatRange( -1, 1 );
+			self.pers["bots"]["skill"]["base"] = randomintrange( 1, 7 );
+			self.pers["bots"]["skill"]["aim_time"] = 0.05 * randomintrange( 1, 20 );
+			self.pers["bots"]["skill"]["init_react_time"] = 50 * randomint( 100 );
+			self.pers["bots"]["skill"]["reaction_time"] = 50 * randomint( 100 );
+			self.pers["bots"]["skill"]["no_trace_ads_time"] = 50 * randomint( 100 );
+			self.pers["bots"]["skill"]["no_trace_look_time"] = 50 * randomint( 100 );
+			self.pers["bots"]["skill"]["remember_time"] = 50 * randomint( 100 );
+			self.pers["bots"]["skill"]["fov"] = randomfloatrange( -1, 1 );
 
-			randomNum = randomIntRange( 500, 25000 );
+			randomNum = randomintrange( 500, 25000 );
 			self.pers["bots"]["skill"]["dist_start"] = randomNum;
 			self.pers["bots"]["skill"]["dist_max"] = randomNum * 2;
 
-			self.pers["bots"]["skill"]["spawn_time"] = 0.05 * randomInt( 20 );
-			self.pers["bots"]["skill"]["help_dist"] = randomIntRange( 500, 25000 );
-			self.pers["bots"]["skill"]["semi_time"] = randomFloatRange( 0.05, 1 );
-			self.pers["bots"]["skill"]["shoot_after_time"] = randomFloatRange( 0.05, 1 );
-			self.pers["bots"]["skill"]["aim_offset_time"] = randomFloatRange( 0.05, 1 );
-			self.pers["bots"]["skill"]["aim_offset_amount"] = randomFloatRange( 0.05, 1 );
-			self.pers["bots"]["skill"]["bone_update_interval"] = randomFloatRange( 0.05, 1 );
+			self.pers["bots"]["skill"]["spawn_time"] = 0.05 * randomint( 20 );
+			self.pers["bots"]["skill"]["help_dist"] = randomintrange( 500, 25000 );
+			self.pers["bots"]["skill"]["semi_time"] = randomfloatrange( 0.05, 1 );
+			self.pers["bots"]["skill"]["shoot_after_time"] = randomfloatrange( 0.05, 1 );
+			self.pers["bots"]["skill"]["aim_offset_time"] = randomfloatrange( 0.05, 1 );
+			self.pers["bots"]["skill"]["aim_offset_amount"] = randomfloatrange( 0.05, 1 );
+			self.pers["bots"]["skill"]["bone_update_interval"] = randomfloatrange( 0.05, 1 );
 			self.pers["bots"]["skill"]["bones"] = "j_head,j_spineupper,j_ankle_ri,j_ankle_le";
 
-			self.pers["bots"]["behavior"]["strafe"] = randomInt( 100 );
-			self.pers["bots"]["behavior"]["nade"] = randomInt( 100 );
-			self.pers["bots"]["behavior"]["sprint"] = randomInt( 100 );
-			self.pers["bots"]["behavior"]["camp"] = randomInt( 100 );
-			self.pers["bots"]["behavior"]["follow"] = randomInt( 100 );
-			self.pers["bots"]["behavior"]["crouch"] = randomInt( 100 );
-			self.pers["bots"]["behavior"]["switch"] = randomInt( 100 );
-			self.pers["bots"]["behavior"]["jump"] = randomInt( 100 );
+			self.pers["bots"]["behavior"]["strafe"] = randomint( 100 );
+			self.pers["bots"]["behavior"]["nade"] = randomint( 100 );
+			self.pers["bots"]["behavior"]["sprint"] = randomint( 100 );
+			self.pers["bots"]["behavior"]["camp"] = randomint( 100 );
+			self.pers["bots"]["behavior"]["follow"] = randomint( 100 );
+			self.pers["bots"]["behavior"]["crouch"] = randomint( 100 );
+			self.pers["bots"]["behavior"]["switch"] = randomint( 100 );
+			self.pers["bots"]["behavior"]["jump"] = randomint( 100 );
 			break;
 
 		default:
@@ -408,17 +408,17 @@ changeToWeapon( weap )
 	self endon( "zombified" );
 	level endon( "game_ended" );
 
-	if ( !self HasWeapon( weap ) )
+	if ( !self hasweapon( weap ) )
 		return false;
 
-	self switchToWeapon( weap );
+	self switchtoweapon( weap );
 
-	if ( self GetCurrentWeapon() == weap )
+	if ( self getcurrentweapon() == weap )
 		return true;
 
 	self waittill_any_timeout( 5, "weapon_change" );
 
-	return ( self GetCurrentWeapon() == weap );
+	return ( self getcurrentweapon() == weap );
 }
 
 /*
@@ -431,13 +431,13 @@ doReloadCancel_loop()
 	if ( self BotIsFrozen() )
 		return;
 
-	if ( self useButtonPressed() )
+	if ( self usebuttonpressed() )
 		return;
 
-	if ( self InLastStand() )
+	if ( self inLastStand() )
 		return;
 
-	curWeap = self GetCurrentWeapon();
+	curWeap = self getcurrentweapon();
 
 	if ( !self isWeaponPrimary( curWeap ) )
 		return;
@@ -445,7 +445,7 @@ doReloadCancel_loop()
 	if ( ret == "reload" )
 	{
 		// check single reloads
-		if ( self GetWeaponAmmoClip( curWeap ) < WeaponClipSize( curWeap ) )
+		if ( self getweaponammoclip( curWeap ) < weaponclipsize( curWeap ) )
 			return;
 	}
 
@@ -454,12 +454,12 @@ doReloadCancel_loop()
 		return;
 
 	// check if got another weapon
-	weaponslist = self GetWeaponsListPrimaries();
+	weaponslist = self getweaponslistprimaries();
 	weap = "";
 
 	while ( weaponslist.size )
 	{
-		weapon = weaponslist[randomInt( weaponslist.size )];
+		weapon = weaponslist[randomint( weaponslist.size )];
 		weaponslist = array_remove( weaponslist, weapon );
 
 		if ( !self isWeaponPrimary( weapon ) )
@@ -477,9 +477,9 @@ doReloadCancel_loop()
 
 	// do the cancel
 	wait 0.1;
-	self thread ChangeToWeapon( weap );
+	self thread changeToWeapon( weap );
 	wait 0.25;
-	self thread ChangeToWeapon( curWeap );
+	self thread changeToWeapon( curWeap );
 	wait 2;
 }
 

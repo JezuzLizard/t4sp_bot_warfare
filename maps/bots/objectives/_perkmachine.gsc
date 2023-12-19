@@ -5,13 +5,13 @@
 
 init()
 {
-	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+	vending_triggers = getentarray( "zombie_vending", "targetname" );
 
-	if ( !isDefined( vending_triggers ) || vending_triggers.size < 1 )
+	if ( !isdefined( vending_triggers ) || vending_triggers.size < 1 )
 	{
-		vending_triggers = getEntArray( "harrybo21_perk_trigger", "targetname" );
+		vending_triggers = getentarray( "harrybo21_perk_trigger", "targetname" );
 
-		if ( !isDefined( vending_triggers ) || vending_triggers.size < 1 )
+		if ( !isdefined( vending_triggers ) || vending_triggers.size < 1 )
 		{
 			return;
 		}
@@ -55,13 +55,13 @@ Finder( eObj )
 		return answer;
 	}
 
-	vending_triggers = GetEntArray( "zombie_vending", "targetname" );
+	vending_triggers = getentarray( "zombie_vending", "targetname" );
 
-	if ( !isDefined( vending_triggers ) || vending_triggers.size < 1 )
+	if ( !isdefined( vending_triggers ) || vending_triggers.size < 1 )
 	{
-		vending_triggers = getEntArray( "harrybo21_perk_trigger", "targetname" );
+		vending_triggers = getentarray( "harrybo21_perk_trigger", "targetname" );
 
-		if ( !isDefined( vending_triggers ) || vending_triggers.size < 1 )
+		if ( !isdefined( vending_triggers ) || vending_triggers.size < 1 )
 		{
 			return answer;
 		}
@@ -85,14 +85,14 @@ Finder( eObj )
 		}
 
 		// perk limit??
-		if ( self HasPerk( perk ) )
+		if ( self hasperk( perk ) )
 		{
 			continue;
 		}
 
 		machine = vending getMachine();
 
-		if ( !isDefined( machine ) )
+		if ( !isdefined( machine ) )
 		{
 			continue;
 		}
@@ -112,7 +112,7 @@ Finder( eObj )
 
 getMachine()
 {
-	return GetEnt( self.target, "targetname" );
+	return getent( self.target, "targetname" );
 }
 
 getVendingPerk()
@@ -187,7 +187,7 @@ Executer( eObj )
 	self endon( "disconnect" );
 	self endon( "zombified" );
 
-	vending = eObj.eEnt;
+	vending = eObj.eent;
 
 	self thread WatchForCancel( vending );
 
@@ -197,7 +197,7 @@ Executer( eObj )
 	self ClearScriptAimPos();
 	self ClearScriptGoal();
 
-	self CompletedObjective( eObj.bWasSuccessful, eObj.sReason );
+	self CompletedObjective( eObj.bwassuccessful, eObj.sreason );
 }
 
 WatchForCancelCleanup()
@@ -236,7 +236,7 @@ WatchToGoToMachine( vending )
 	{
 		wait 0.05;
 
-		if ( self IsTouching( vending ) || vending PointInsideUseTrigger( self.origin ) )
+		if ( self istouching( vending ) || vending PointInsideUseTrigger( self.origin ) )
 		{
 			self notify( "goal" );
 			break; // is this needed?
@@ -248,7 +248,7 @@ GoDoPerkMachine( eObj )
 {
 	self endon( "cancel_bot_objective" );
 
-	vending = eObj.eEnt;
+	vending = eObj.eent;
 	machine = vending getMachine();
 	perk = vending getVendingPerk();
 	org = self getOffset( machine );
@@ -261,13 +261,13 @@ GoDoPerkMachine( eObj )
 
 	if ( result != "goal" )
 	{
-		eObj.sReason = "didn't go to machine";
+		eObj.sreason = "didn't go to machine";
 		return;
 	}
 
-	if ( !self IsTouching( vending ) && !vending PointInsideUseTrigger( self.origin ) )
+	if ( !self istouching( vending ) && !vending PointInsideUseTrigger( self.origin ) )
 	{
-		eObj.sReason = "not touching machine";
+		eObj.sreason = "not touching machine";
 		return;
 	}
 
@@ -282,6 +282,6 @@ GoDoPerkMachine( eObj )
 	wait 0.1;
 
 	// ok we pressed use, DONE
-	eObj.sReason = "completed " + perk;
-	eObj.bWasSuccessful = true;
+	eObj.sreason = "completed " + perk;
+	eObj.bwassuccessful = true;
 }

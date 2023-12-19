@@ -39,9 +39,9 @@ watch_for_objective_canceled()
 
 		obj_name = "undefined";
 
-		if ( isDefined( self.bot_current_objective ) )
+		if ( isdefined( self.bot_current_objective ) )
 		{
-			obj_name = self.bot_current_objective.sName;
+			obj_name = self.bot_current_objective.sname;
 		}
 
 		self BotNotifyBotEvent( "debug", "watch_for_objective_canceled: " + obj_name + ": " + reason );
@@ -60,11 +60,11 @@ clean_objective_on_completion()
 
 		obj_name = "undefined";
 
-		if ( isDefined( self.bot_current_objective ) )
+		if ( isdefined( self.bot_current_objective ) )
 		{
-			obj_name = self.bot_current_objective.sName;
+			obj_name = self.bot_current_objective.sname;
 
-			self.bot_current_objective.eParentObj.aBotProcessTimes[self GetEntityNumber() + ""] = getTime();
+			self.bot_current_objective.eparentobj.abotprocesstimes[self getentitynumber() + ""] = gettime();
 		}
 
 		self BotNotifyBotEvent( "debug", "clean_objective_on_completion: " + obj_name + ": " + successful + ": " + reason );
@@ -95,21 +95,21 @@ bot_objective_think()
 
 		// find all avail objectives
 		objectives = [];
-		now = getTime();
-		our_key = self GetEntityNumber() + "";
+		now = gettime();
+		our_key = self getentitynumber() + "";
 
 		for ( i = 0; i < level.bot_objectives.size; i++ )
 		{
 			objective = level.bot_objectives[i];
 
 			// check the process rate
-			if ( isDefined( objective.aBotProcessTimes[our_key] ) && now - objective.aBotProcessTimes[our_key] < objective.iProcessRate )
+			if ( isdefined( objective.abotprocesstimes[our_key] ) && now - objective.abotprocesstimes[our_key] < objective.iprocessrate )
 			{
 				continue;
 			}
 
-			objectives = array_merge( objectives, self [[objective.fpFinder]]( objective ) );
-			objective.aBotProcessTimes[our_key] = now;
+			objectives = array_merge( objectives, self [[objective.fpfinder]]( objective ) );
+			objective.abotprocesstimes[our_key] = now;
 		}
 
 		if ( objectives.size <= 0 )
@@ -122,7 +122,7 @@ bot_objective_think()
 
 		for ( i = 0; i < objectives.size; i++ )
 		{
-			if ( objectives[i].fPriority <= -100 )
+			if ( objectives[i].fpriority <= -100 )
 			{
 				continue;
 			}
@@ -133,36 +133,36 @@ bot_objective_think()
 		// pop the top!
 		best_prio = heap.data[0];
 
-		if ( !isDefined( best_prio ) )
+		if ( !isdefined( best_prio ) )
 		{
 			continue;
 		}
 
 		// already on a better obj
-		if ( isDefined( self.bot_current_objective ) && ( best_prio.GUID == self.bot_current_objective.GUID || best_prio.fPriority < self [[self.bot_current_objective.eParentObj.fpPriorty]]( self.bot_current_objective.eParentObj, self.bot_current_objective.eEnt ) ) )
+		if ( isdefined( self.bot_current_objective ) && ( best_prio.guid == self.bot_current_objective.guid || best_prio.fpriority < self [[self.bot_current_objective.eparentobj.fppriorty]]( self.bot_current_objective.eparentobj, self.bot_current_objective.eent ) ) )
 		{
 			continue;
 		}
 
 		// DO THE OBJ
 		// cancel the old obj
-		if ( isDefined( self.bot_current_objective ) )
+		if ( isdefined( self.bot_current_objective ) )
 		{
 			// cancel it
-			self CancelObjective( "new obj: " + best_prio.sName );
+			self CancelObjective( "new obj: " + best_prio.sname );
 
 			// wait for it to clean up
 			self waittill( "completed_bot_objective" );
 
 			// redo the loop, should do the obj next iteration
-			best_prio.eParentObj.aBotProcessTimes[our_key] = undefined;
+			best_prio.eparentobj.abotprocesstimes[our_key] = undefined;
 			continue;
 		}
 
 		// ready to execute
-		self BotNotifyBotEvent( "debug", "bot_objective_think: " + best_prio.sName );
+		self BotNotifyBotEvent( "debug", "bot_objective_think: " + best_prio.sname );
 
 		self.bot_current_objective = best_prio;
-		self thread [[best_prio.eParentObj.fpExecuter]]( best_prio );
+		self thread [[best_prio.eparentobj.fpexecuter]]( best_prio );
 	}
 }

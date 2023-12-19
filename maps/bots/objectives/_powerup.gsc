@@ -17,7 +17,7 @@ Finder( eObj )
 	for ( i = 0; i < ents.size; i++ )
 	{
 		// not a powerup script_model
-		if ( !isDefined( ents[i].powerup_name ) )
+		if ( !isdefined( ents[i].powerup_name ) )
 		{
 			continue;
 		}
@@ -59,7 +59,7 @@ Executer( eObj )
 	self endon( "disconnect" );
 	self endon( "zombified" );
 
-	powerup = eObj.eEnt;
+	powerup = eObj.eent;
 	org = powerup.origin;
 
 	self thread IncrementBotsForEntity( powerup );
@@ -73,11 +73,11 @@ Executer( eObj )
 
 	if ( distance( org, self.origin ) <= 64 )
 	{
-		eObj.sReason = "completed";
-		eObj.bWasSuccessful = true;
+		eObj.sreason = "completed";
+		eObj.bwassuccessful = true;
 	}
 
-	self CompletedObjective( eObj.bWasSuccessful, eObj.sReason );
+	self CompletedObjective( eObj.bwassuccessful, eObj.sreason );
 }
 
 WatchForCancelCleanup()
@@ -113,7 +113,7 @@ GoDoPowerup( eObj )
 {
 	self endon( "cancel_bot_objective" );
 
-	powerup = eObj.eEnt;
+	powerup = eObj.eent;
 
 	// go to it
 	self SetScriptGoal( powerup.origin, 32 );
@@ -122,21 +122,21 @@ GoDoPowerup( eObj )
 
 	if ( result != "goal" )
 	{
-		eObj.sReason = "didn't go to powerup";
+		eObj.sreason = "didn't go to powerup";
 		return;
 	}
 
-	if ( !isDefined( powerup ) || !isDefined( powerup.origin ) )
+	if ( !isdefined( powerup ) || !isdefined( powerup.origin ) )
 	{
 		return;
 	}
 
 	if ( distance( powerup.origin, self.origin ) > 64 )
 	{
-		eObj.sReason = "not touching it";
+		eObj.sreason = "not touching it";
 		return;
 	}
 
-	eObj.sReason = "completed";
-	eObj.bWasSuccessful = true;
+	eObj.sreason = "completed";
+	eObj.bwassuccessful = true;
 }

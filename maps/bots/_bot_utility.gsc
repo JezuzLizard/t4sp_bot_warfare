@@ -8,7 +8,7 @@ wait_for_builtins()
 {
 	for ( i = 0; i < 20; i++ )
 	{
-		if ( isDefined( level.bot_builtins ) )
+		if ( isdefined( level.bot_builtins ) )
 			return true;
 
 		if ( i < 18 )
@@ -25,7 +25,7 @@ wait_for_builtins()
 */
 BotBuiltinPrintConsole( s )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["printconsole"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["printconsole"] ) )
 	{
 		[[ level.bot_builtins["printconsole" ]]]( s );
 	}
@@ -33,11 +33,11 @@ BotBuiltinPrintConsole( s )
 
 /*
 	Bot action, does a bot action
-	<client> botAction(<action string (+ or - then action like frag or smoke)>)
+	<client> botaction(<action string (+ or - then action like frag or smoke)>)
 */
 BotBuiltinBotAction( action )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["botaction"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["botaction"] ) )
 	{
 		self [[ level.bot_builtins["botaction" ]]]( action );
 	}
@@ -45,11 +45,11 @@ BotBuiltinBotAction( action )
 
 /*
 	Clears the bot from movement and actions
-	<client> botStop()
+	<client> botstop()
 */
 BotBuiltinBotStop()
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["botstop"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["botstop"] ) )
 	{
 		self [[ level.bot_builtins["botstop" ]]]();
 	}
@@ -57,11 +57,11 @@ BotBuiltinBotStop()
 
 /*
 	Sets the bot's movement
-	<client> botMovement(<int left>, <int forward>)
+	<client> botmovement(<int left>, <int forward>)
 */
 BotBuiltinBotMovement( left, forward )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["botmovement"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["botmovement"] ) )
 	{
 		self [[ level.bot_builtins["botmovement" ]]]( left, forward );
 	}
@@ -72,7 +72,7 @@ BotBuiltinBotMovement( left, forward )
 */
 BotBuiltinBotMeleeParams( yaw, dist )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["botmeleeparams"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["botmeleeparams"] ) )
 	{
 		self [[ level.bot_builtins["botmeleeparams" ]]]( yaw, dist );
 	}
@@ -84,7 +84,7 @@ BotBuiltinBotMeleeParams( yaw, dist )
 */
 BotBuiltinIsBot()
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["isbot"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["isbot"] ) )
 	{
 		return self [[ level.bot_builtins["isbot" ]]]();
 	}
@@ -97,7 +97,7 @@ BotBuiltinIsBot()
 */
 BotBuiltinGeneratePath( from, to, team, best_effort )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["generatepath"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["generatepath"] ) )
 	{
 		return [[ level.bot_builtins["generatepath" ]]]( from, to, team, best_effort );
 	}
@@ -110,7 +110,7 @@ BotBuiltinGeneratePath( from, to, team, best_effort )
 */
 BotBuiltinGetFunction( file, threadname )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getfunction"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getfunction"] ) )
 	{
 		return [[ level.bot_builtins["getfunction" ]]]( file, threadname );
 	}
@@ -123,7 +123,7 @@ BotBuiltinGetFunction( file, threadname )
 */
 BotBuiltinGetMins()
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getmins"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getmins"] ) )
 	{
 		return self [[ level.bot_builtins["getmins" ]]]();
 	}
@@ -136,7 +136,7 @@ BotBuiltinGetMins()
 */
 BotBuiltinGetMaxs()
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getmaxs"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getmaxs"] ) )
 	{
 		return self [[ level.bot_builtins["getmaxs" ]]]();
 	}
@@ -149,7 +149,7 @@ BotBuiltinGetMaxs()
 */
 BotBuiltinGetGuid()
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getguid"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getguid"] ) )
 	{
 		return self [[ level.bot_builtins["getguid" ]]]();
 	}
@@ -161,7 +161,7 @@ BotBuiltinGetGuid()
 */
 BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["setallowedtraversals"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["setallowedtraversals"] ) )
 	{
 		[[ level.bot_builtins["setallowedtraversals" ]]]( bot_allowed_negotiation_links );
 	}
@@ -171,7 +171,7 @@ BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links )
 */
 BotBuiltinSetIgnoredLinks( bot_ignore_links )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["setignoredlinks"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["setignoredlinks"] ) )
 	{
 		[[ level.bot_builtins["setignoredlinks" ]]]( bot_ignore_links );
 	}
@@ -181,7 +181,7 @@ BotBuiltinSetIgnoredLinks( bot_ignore_links )
 */
 BotBuiltinGetNodeNumber()
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getnodenumber"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getnodenumber"] ) )
 	{
 		return self [[ level.bot_builtins["getnodenumber" ]]]();
 	}
@@ -193,7 +193,7 @@ BotBuiltinGetNodeNumber()
 */
 BotBuiltinGetLinkedNodes()
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["getlinkednodes"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["getlinkednodes"] ) )
 	{
 		return self [[ level.bot_builtins["getlinkednodes" ]]]();
 	}
@@ -205,7 +205,7 @@ BotBuiltinGetLinkedNodes()
 */
 BotBuiltinAddTestClient()
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["addtestclient"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["addtestclient"] ) )
 	{
 		return [[ level.bot_builtins["addtestclient" ]]]();
 	}
@@ -217,7 +217,7 @@ BotBuiltinAddTestClient()
 */
 BotBuiltinCmdExec( what )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["cmdexec"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["cmdexec"] ) )
 	{
 		[[ level.bot_builtins["cmdexec" ]]]( what );
 	}
@@ -227,7 +227,7 @@ BotBuiltinCmdExec( what )
 */
 BotBuiltinNotifyOnPlayerCommand( cmd, notif )
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["notifyonplayercommand"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["notifyonplayercommand"] ) )
 	{
 		self [[ level.bot_builtins["notifyonplayercommand" ]]]( cmd, notif );
 	}
@@ -238,7 +238,7 @@ BotBuiltinNotifyOnPlayerCommand( cmd, notif )
 */
 BotBuiltinIsHost()
 {
-	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["ishost"] ) )
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins["ishost"] ) )
 	{
 		return self [[ level.bot_builtins["ishost" ]]]();
 	}
@@ -251,7 +251,7 @@ BotBuiltinIsHost()
 */
 is_host()
 {
-	return ( isDefined( self.pers["bot_host"] ) && self.pers["bot_host"] );
+	return ( isdefined( self.pers["bot_host"] ) && self.pers["bot_host"] );
 }
 
 /*
@@ -266,20 +266,20 @@ doHostCheck()
 
 	result = false;
 
-	if ( getDvar( "bots_main_firstIsHost" ) != "0" )
+	if ( getdvar( "bots_main_firstIsHost" ) != "0" )
 	{
 		BotBuiltinPrintConsole( "WARNING: bots_main_firstIsHost is enabled" );
 
-		if ( getDvar( "bots_main_firstIsHost" ) == "1" )
+		if ( getdvar( "bots_main_firstIsHost" ) == "1" )
 		{
-			setDvar( "bots_main_firstIsHost", self BotBuiltinGetGuid() );
+			setdvar( "bots_main_firstIsHost", self BotBuiltinGetGuid() );
 		}
 
-		if ( getDvar( "bots_main_firstIsHost" ) == self BotBuiltinGetGuid() + "" )
+		if ( getdvar( "bots_main_firstIsHost" ) == self BotBuiltinGetGuid() + "" )
 			result = true;
 	}
 
-	DvarGUID = getDvar( "bots_main_GUIDs" );
+	DvarGUID = getdvar( "bots_main_GUIDs" );
 
 	if ( DvarGUID != "" )
 	{
@@ -388,7 +388,7 @@ BotGetRandom()
 */
 BotGetTargetRandom()
 {
-	if ( !isDefined( self.bot.target ) )
+	if ( !isdefined( self.bot.target ) )
 		return undefined;
 
 	return self.bot.target.rand;
@@ -486,7 +486,7 @@ BotHasObjective()
 */
 HasScriptGoal()
 {
-	return ( isDefined( self GetScriptGoal() ) );
+	return ( isdefined( self GetScriptGoal() ) );
 }
 
 /*
@@ -502,7 +502,7 @@ GetScriptGoal()
 */
 SetScriptGoal( goal, dist )
 {
-	if ( !isDefined( dist ) )
+	if ( !isdefined( dist ) )
 		dist = 16;
 
 	self.bot.script_goal = goal;
@@ -575,7 +575,7 @@ GetScriptAimPos()
 */
 HasScriptAimPos()
 {
-	return isDefined( self GetScriptAimPos() );
+	return isdefined( self GetScriptAimPos() );
 }
 
 /*
@@ -619,7 +619,7 @@ GetThreat()
 */
 HasScriptEnemy()
 {
-	return ( isDefined( self.bot.script_target ) );
+	return ( isdefined( self.bot.script_target ) );
 }
 
 /*
@@ -627,7 +627,7 @@ HasScriptEnemy()
 */
 HasThreat()
 {
-	return ( isDefined( self GetThreat() ) );
+	return ( isdefined( self GetThreat() ) );
 }
 
 /*
@@ -641,10 +641,10 @@ getValidTube()
 	{
 		weap = weaps[i];
 
-		if ( !self getAmmoCount( weap ) )
+		if ( !self getammocount( weap ) )
 			continue;
 
-		if ( isSubStr( weap, "gl_" ) && !isSubStr( weap, "_gl_" ) )
+		if ( issubstr( weap, "gl_" ) && !issubstr( weap, "_gl_" ) )
 			return weap;
 	}
 
@@ -663,10 +663,10 @@ getValidGrenade()
 
 	for ( i = 0; i < grenadeTypes.size; i++ )
 	{
-		if ( !self hasWeapon( grenadeTypes[i] ) )
+		if ( !self hasweapon( grenadeTypes[i] ) )
 			continue;
 
-		if ( !self getAmmoCount( grenadeTypes[i] ) )
+		if ( !self getammocount( grenadeTypes[i] ) )
 			continue;
 
 		possibles[possibles.size] = grenadeTypes[i];
@@ -683,7 +683,7 @@ PickRandom( arr )
 	if ( !arr.size )
 		return undefined;
 
-	return arr[randomInt( arr.size )];
+	return arr[randomint( arr.size )];
 }
 
 /*
@@ -709,7 +709,7 @@ WeaponIsFullAuto( weap )
 {
 	weaptoks = strtok( weap, "_" );
 
-	return isDefined( weaptoks[0] ) && isString( weaptoks[0] ) && isdefined( level.bots_fullautoguns[weaptoks[0]] );
+	return isdefined( weaptoks[0] ) && isstring( weaptoks[0] ) && isdefined( level.bots_fullautoguns[weaptoks[0]] );
 }
 
 /*
@@ -727,7 +727,7 @@ waittill_either_return_( str1, str2 )
 */
 waittill_either_return( str1, str2 )
 {
-	if ( !isDefined( self waittill_either_return_( str1, str2 ) ) )
+	if ( !isdefined( self waittill_either_return_( str1, str2 ) ) )
 		return str1;
 
 	return str2;
@@ -805,34 +805,34 @@ bot_wait_for_host()
 {
 	host = undefined;
 
-	while ( !isDefined( level ) || !isDefined( level.players ) )
+	while ( !isdefined( level ) || !isdefined( level.players ) )
 		wait 0.05;
 
-	for ( i = getDvarFloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
+	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
 	{
 		host = GetHostPlayer();
 
-		if ( isDefined( host ) )
+		if ( isdefined( host ) )
 			break;
 
 		wait 0.05;
 	}
 
-	if ( !isDefined( host ) )
+	if ( !isdefined( host ) )
 		return;
 
-	for ( i = getDvarFloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
+	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
 	{
-		if ( IsDefined( host.pers[ "team" ] ) )
+		if ( isdefined( host.pers[ "team" ] ) )
 			break;
 
 		wait 0.05;
 	}
 
-	if ( !IsDefined( host.pers[ "team" ] ) )
+	if ( !isdefined( host.pers[ "team" ] ) )
 		return;
 
-	for ( i = getDvarFloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
+	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
 	{
 		if ( host.pers[ "team" ] == "allies" || host.pers[ "team" ] == "axis" )
 			break;
@@ -846,26 +846,26 @@ bot_wait_for_host()
 */
 getConeDot( to, from, dir )
 {
-	dirToTarget = VectorNormalize( to - from );
-	forward = AnglesToForward( dir );
+	dirToTarget = vectornormalize( to - from );
+	forward = anglestoforward( dir );
 	return vectordot( dirToTarget, forward );
 }
 
 /*
 	Returns the distance squared in a 2d space
 */
-DistanceSquared2D( to, from )
+distancesquared2D( to, from )
 {
 	to = ( to[0], to[1], 0 );
 	from = ( from[0], from[1], 0 );
 
-	return DistanceSquared( to, from );
+	return distancesquared( to, from );
 }
 
 /*
-	Distance from box
+	distance from box
 */
-RectDistanceSquared( origin )
+Rectdistancesquared( origin )
 {
 	dx = 0;
 	dy = 0;
@@ -936,7 +936,7 @@ float( num )
 {
 	setdvar( "temp_dvar_bot_util", num );
 
-	return GetDvarFloat( "temp_dvar_bot_util" );
+	return getdvarfloat( "temp_dvar_bot_util" );
 }
 
 /*
@@ -944,7 +944,7 @@ float( num )
 */
 get_nodes_in_playable_area()
 {
-	total_nodes = getAllNodes();
+	total_nodes = getallnodes();
 	filtered_nodes = [];
 
 	for ( i = 0; i < total_nodes.size; i++ )
@@ -974,7 +974,7 @@ is_point_in_playable_area( point )
 
 	in_playable_area = false;
 
-	if ( !isDefined( playable_area ) || playable_area.size < 1 )
+	if ( !isdefined( playable_area ) || playable_area.size < 1 )
 	{
 		in_playable_area = true;
 	}
@@ -985,7 +985,7 @@ is_point_in_playable_area( point )
 	{
 		for ( p = 0; p < playable_area.size; p++ )
 		{
-			if ( temp_ent isTouching( playable_area[ p ] ) )
+			if ( temp_ent istouching( playable_area[ p ] ) )
 			{
 				in_playable_area = true;
 				break;
@@ -1145,11 +1145,11 @@ load_waypoints()
 	BotBuiltinSetIgnoredLinks( bot_ignore_links );
 	level.bot_ignore_links = bot_ignore_links;
 
-	level.waypoints = GetAllNodes();
-	level.waypointCount = level.waypoints.size;
+	level.waypoints = getallnodes();
+	level.waypointcount = level.waypoints.size;
 
-	level.waypointsInPlayableArea = [];
-	level.waypointsInPlayableArea = get_nodes_in_playable_area();
+	level.waypointsinplayablearea = [];
+	level.waypointsinplayablearea = get_nodes_in_playable_area();
 }
 
 /*
@@ -1175,7 +1175,7 @@ getBotToKick()
 {
 	bots = getBotArray();
 
-	if ( !isDefined( bots ) || !isDefined( bots.size ) || bots.size <= 0 || !isDefined( bots[0] ) )
+	if ( !isdefined( bots ) || !isdefined( bots.size ) || bots.size <= 0 || !isdefined( bots[0] ) )
 		return undefined;
 
 	tokick = undefined;
@@ -1185,13 +1185,13 @@ getBotToKick()
 	{
 		bot = bots[i];
 
-		if ( !isDefined( bot ) )
+		if ( !isdefined( bot ) )
 			continue;
 
-		if ( !isDefined( bot.pers ) || !isDefined( bot.pers["bots"] ) || !isDefined( bot.pers["bots"]["skill"] ) || !isDefined( bot.pers["bots"]["skill"]["base"] ) )
+		if ( !isdefined( bot.pers ) || !isdefined( bot.pers["bots"] ) || !isdefined( bot.pers["bots"]["skill"] ) || !isdefined( bot.pers["bots"]["skill"]["base"] ) )
 			continue;
 
-		if ( isDefined( tokick ) && bot.pers["bots"]["skill"]["base"] > tokick.pers["bots"]["skill"]["base"] )
+		if ( isdefined( tokick ) && bot.pers["bots"]["skill"]["base"] > tokick.pers["bots"]["skill"]["base"] )
 			continue;
 
 		tokick = bot;
@@ -1239,7 +1239,7 @@ ReverseHeap( item, item2 )
 
 HeapPriority( item, item2 )
 {
-	return item.fPriority > item2.fPriority;
+	return item.fpriority > item2.fpriority;
 }
 
 /*
@@ -1255,7 +1255,7 @@ HeapTraceFraction( item, item2 )
 */
 NewHeap( compare )
 {
-	heap_node = spawnStruct();
+	heap_node = spawnstruct();
 	heap_node.data = [];
 	heap_node.compare = compare;
 
@@ -1346,15 +1346,6 @@ HeapRemove()
 */
 Log( x )
 {
-	/*  if (!isDefined(level.log_cache))
-		level.log_cache = [];
-
-	    key = x + "";
-
-	    if (isDefined(level.log_cache[key]))
-		return level.log_cache[key];*/
-
-	//thanks Bob__ at stackoverflow
 	old_sum = 0.0;
 	xmlxpl = ( x - 1 ) / ( x + 1 );
 	xmlxpl_2 = xmlxpl * xmlxpl;
@@ -1371,8 +1362,6 @@ Log( x )
 	}
 
 	answer = 2.0 * sum;
-
-	//level.log_cache[key] = answer;
 	return answer;
 }
 
@@ -1414,7 +1403,7 @@ array_std_deviation( array, mean )
 		total = total + tmp[i];
 	}
 
-	return Sqrt( total / array.size );
+	return sqrt( total / array.size );
 }
 
 /*
@@ -1430,21 +1419,21 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 
 	while ( w >= 1 )
 	{
-		x1 = 2 * RandomFloatRange( 0, 1 ) - 1;
-		x2 = 2 * RandomFloatRange( 0, 1 ) - 1;
+		x1 = 2 * randomfloatrange( 0, 1 ) - 1;
+		x2 = 2 * randomfloatrange( 0, 1 ) - 1;
 		w = x1 * x1 + x2 * x2;
 	}
 
-	w = Sqrt( ( -2.0 * Log( w ) ) / w );
+	w = sqrt( ( -2.0 * Log( w ) ) / w );
 	y1 = x1 * w;
 	number = mean + y1 * std_deviation;
 
-	if ( IsDefined( lower_bound ) && number < lower_bound )
+	if ( isdefined( lower_bound ) && number < lower_bound )
 	{
 		number = lower_bound;
 	}
 
-	if ( IsDefined( upper_bound ) && number > upper_bound )
+	if ( isdefined( upper_bound ) && number > upper_bound )
 	{
 		number = upper_bound;
 	}
@@ -1477,12 +1466,12 @@ isReviving( revivee )
 */
 getRandomGoal()
 {
-	if ( !level.waypointsInPlayableArea.size )
+	if ( !level.waypointsinplayablearea.size )
 	{
 		return self.origin;
 	}
 
-	return PickRandom( level.waypointsInPlayableArea ).origin;
+	return PickRandom( level.waypointsinplayablearea ).origin;
 }
 
 /*
@@ -1490,7 +1479,7 @@ getRandomGoal()
 */
 targetIsDog()
 {
-	return isDefined( self.targetname ) && self.targetname == "zombie_dog";
+	return isdefined( self.targetname ) && self.targetname == "zombie_dog";
 }
 
 /*
@@ -1498,7 +1487,7 @@ targetIsDog()
 */
 targetIsGibbed()
 {
-	return isDefined( self.gibbed ) && self.gibbed;
+	return isdefined( self.gibbed ) && self.gibbed;
 }
 
 /*
@@ -1506,7 +1495,7 @@ targetIsGibbed()
 */
 isWeaponPrimary( weap )
 {
-	weaps = self GetWeaponsListPrimaries();
+	weaps = self getweaponslistprimaries();
 
 	for ( i = 0; i < weaps.size; i++ )
 	{
@@ -1523,7 +1512,7 @@ isWeaponPrimary( weap )
 GetPathIsInaccessible( from, to, team, best_effort )
 {
 	path = BotBuiltinGeneratePath( from, to, team, best_effort );
-	return ( !isDefined( path ) || ( path.size <= 0 ) );
+	return ( !isdefined( path ) || ( path.size <= 0 ) );
 }
 
 /*
@@ -1533,7 +1522,7 @@ get_path_dist( start, end, team )
 {
 	path = BotBuiltinGeneratePath( start, end, team, 192.0 );
 
-	if ( !isDefined( path ) || path.size <= 0 )
+	if ( !isdefined( path ) || path.size <= 0 )
 	{
 		return 999999999;
 	}
@@ -1585,27 +1574,27 @@ ClampLerp( dist, min_dist, max_dist, max_bonus, min_bonus )
 */
 get_angle_offset_node( forward_size, angle_offset, offset )
 {
-	if ( !isDefined( forward_size ) )
+	if ( !isdefined( forward_size ) )
 	{
 		forward_size = 40;
 	}
 
-	if ( !isDefined( angle_offset ) )
+	if ( !isdefined( angle_offset ) )
 	{
 		angle_offset = ( 0, 0, 0 );
 	}
 
-	if ( !isDefined( offset ) )
+	if ( !isdefined( offset ) )
 	{
 		offset = ( 0, 0, 0 );
 	}
 
 	angles = ( 0, self.angles[ 1 ], 0 );
 	angles += angle_offset;
-	node = self.origin + ( AnglesToForward( angles ) * forward_size ) + offset;
+	node = self.origin + ( anglestoforward( angles ) * forward_size ) + offset;
 	node = clamp_to_ground( node );
 
-	if ( getDvarInt( "bots_main_debug" ) )
+	if ( getdvarint( "bots_main_debug" ) )
 	{
 		self thread debug_offset_line( node );
 	}
@@ -1622,7 +1611,7 @@ debug_offset_line( node )
 	self notify( "debug_offset_line" );
 	self endon( "debug_offset_line" );
 
-	while ( isDefined( self ) )
+	while ( isdefined( self ) )
 	{
 		line( self.origin, node );
 		wait 0.05;
@@ -1634,7 +1623,7 @@ debug_offset_line( node )
 */
 PointInsideUseTrigger( point )
 {
-	if ( getDvarInt( "bots_main_debug" ) )
+	if ( getdvarint( "bots_main_debug" ) )
 	{
 		self thread debug_bounding_box_for_ent();
 	}
@@ -1650,12 +1639,12 @@ PointInsideUseTrigger( point )
 	box.z0 = self.origin[2] + mins[2];
 	box.z1 = self.origin[2] + maxs[2];
 
-	if ( box RectDistanceSquared( self.origin ) > 72 * 72 )
+	if ( box Rectdistancesquared( self.origin ) > 72 * 72 )
 	{
 		return false;
 	}
 
-	if ( !sightTracePassed( point, self.origin, false, undefined ) )
+	if ( !sighttracepassed( point, self.origin, false, undefined ) )
 	{
 		return false;
 	}
@@ -1672,10 +1661,10 @@ debug_bounding_box_for_ent( color )
 	self notify( "debug_bounding_box_for_ent" );
 	self endon( "debug_bounding_box_for_ent" );
 
-	if ( !isDefined( color ) )
-		color = ( randomFloatRange( 0, 1 ), randomFloatRange( 0, 1 ), randomFloatRange( 0, 1 ) );
+	if ( !isdefined( color ) )
+		color = ( randomfloatrange( 0, 1 ), randomfloatrange( 0, 1 ), randomfloatrange( 0, 1 ) );
 
-	while ( isDefined( self ) )
+	while ( isdefined( self ) )
 	{
 		mins = self BotBuiltinGetMins();
 		maxs = self BotBuiltinGetMaxs();
@@ -1706,6 +1695,6 @@ debug_bounding_box_for_ent( color )
 */
 clamp_to_ground( org )
 {
-	trace = playerPhysicsTrace( org + ( 0, 0, 20 ), org - ( 0, 0, 2000 ) );
+	trace = playerphysicstrace( org + ( 0, 0, 20 ), org - ( 0, 0, 2000 ) );
 	return trace;
 }

@@ -4,43 +4,43 @@
 
 CreateObjectiveForManger( sName, fpFinder, fpPriorty, fpExecuter, iProcessRate )
 {
-	Answer = SpawnStruct();
+	Answer = spawnstruct();
 
-	Answer.sName = sName;
-	Answer.fpFinder = fpFinder;
-	Answer.fpExecuter = fpExecuter;
-	Answer.fpPriorty = fpPriorty;
+	Answer.sname = sName;
+	Answer.fpfinder = fpFinder;
+	Answer.fpexecuter = fpExecuter;
+	Answer.fppriorty = fpPriorty;
 
-	Answer.aBotProcessTimes = [];
-	Answer.iProcessRate = iProcessRate;
+	Answer.abotprocesstimes = [];
+	Answer.iprocessrate = iProcessRate;
 
 	return Answer;
 }
 
 CreateFinderObjectiveEZ( eObj, eEnt )
 {
-	return self CreateFinderObjective( eObj, eObj.sName + "_" + eEnt GetEntityNumber(), eEnt, self [[eObj.fpPriorty]]( eObj, eEnt ) );
+	return self CreateFinderObjective( eObj, eObj.sname + "_" + eEnt getentitynumber(), eEnt, self [[eObj.fppriorty]]( eObj, eEnt ) );
 }
 
 CreateFinderObjective( eObj, sName, eEnt, fPriority )
 {
-	Answer = SpawnStruct();
+	Answer = spawnstruct();
 
-	Answer.eParentObj = eObj;
-	Answer.sName = sName;
-	Answer.eEnt = eEnt;
-	Answer.fPriority = fPriority;
-	Answer.GUID = eEnt GetEntityNumber();
+	Answer.eparentobj = eObj;
+	Answer.sname = sName;
+	Answer.eent = eEnt;
+	Answer.fpriority = fPriority;
+	Answer.guid = eEnt getentitynumber();
 
-	Answer.bWasSuccessful = false;
-	Answer.sReason = "canceled";
+	Answer.bwassuccessful = false;
+	Answer.sreason = "canceled";
 
 	return Answer;
 }
 
 GetBotsAmountForEntity( eEnt )
 {
-	if ( !isDefined( eEnt.bots ) )
+	if ( !isdefined( eEnt.bots ) )
 	{
 		eEnt.bots = 0;
 	}
@@ -56,7 +56,7 @@ IncrementBotsForEntity( eEnt )
 
 	self waittill_either( "disconnect", "zombified" );
 
-	if ( isDefined( eEnt ) )
+	if ( isdefined( eEnt ) )
 	{
 		eEnt.bots--;
 	}
@@ -66,7 +66,7 @@ DecrementBotsForEntity( eEnt )
 {
 	self notify( "bots_for_entity_cleanup" );
 
-	if ( isDefined( eEnt ) )
+	if ( isdefined( eEnt ) )
 	{
 		eEnt.bots--;
 	}
@@ -94,7 +94,7 @@ GetBotObjectiveEnt()
 		return undefined;
 	}
 
-	return self GetBotObjective().eEnt;
+	return self GetBotObjective().eent;
 }
 
 /*
@@ -110,5 +110,5 @@ GetBotObjective()
 */
 HasBotObjective()
 {
-	return isDefined( self GetBotObjective() );
+	return isdefined( self GetBotObjective() );
 }

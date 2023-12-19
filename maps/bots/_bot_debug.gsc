@@ -12,41 +12,41 @@
 
 init()
 {
-	if ( getDvar( "bots_main_debug" ) == "" )
-		setDvar( "bots_main_debug", 0 );
+	if ( getdvar( "bots_main_debug" ) == "" )
+		setdvar( "bots_main_debug", 0 );
 
-	if ( !getDVarint( "bots_main_debug" ) || !getDVarint( "bots_main_debug_wp_vis" ) )
+	if ( !getdvarint( "bots_main_debug" ) || !getdvarint( "bots_main_debug_wp_vis" ) )
 		return;
 
-	if ( !getDVarint( "developer" ) )
+	if ( !getdvarint( "developer" ) )
 	{
 		setdvar( "developer_script", 1 );
 		setdvar( "developer", 2 );
 
-		setdvar( "sv_mapRotation", "map " + getDvar( "mapname" ) );
-		exitLevel( false );
+		setdvar( "sv_mapRotation", "map " + getdvar( "mapname" ) );
+		exitlevel( false );
 		return;
 	}
 
-	setDvar( "bots_main", false );
+	setdvar( "bots_main", false );
 	setdvar( "bots_main_menu", false );
 	setdvar( "bots_manage_fill_mode", 0 );
 	setdvar( "bots_manage_fill", 0 );
 	setdvar( "bots_manage_add", 0 );
 	setdvar( "bots_manage_fill_kick", true );
-	setDvar( "bots_manage_fill_spec", true );
+	setdvar( "bots_manage_fill_spec", true );
 
-	if ( getDvar( "bots_main_debug_distance" ) == "" )
-		setDvar( "bots_main_debug_distance", 512.0 );
+	if ( getdvar( "bots_main_debug_distance" ) == "" )
+		setdvar( "bots_main_debug_distance", 512.0 );
 
-	if ( getDvar( "bots_main_debug_cone" ) == "" )
-		setDvar( "bots_main_debug_cone", 0.65 );
+	if ( getdvar( "bots_main_debug_cone" ) == "" )
+		setdvar( "bots_main_debug_cone", 0.65 );
 
-	if ( getDvar( "bots_main_debug_minDist" ) == "" )
-		setDvar( "bots_main_debug_minDist", 32.0 );
+	if ( getdvar( "bots_main_debug_minDist" ) == "" )
+		setdvar( "bots_main_debug_minDist", 32.0 );
 
-	if ( getDvar( "bots_main_debug_drawThrough" ) == "" )
-		setDvar( "bots_main_debug_drawThrough", false );
+	if ( getdvar( "bots_main_debug_drawThrough" ) == "" )
+		setdvar( "bots_main_debug_drawThrough", false );
 
 	thread load_waypoints();
 
@@ -149,7 +149,7 @@ toggle_link( firstwp, secondwp )
 		return;
 	}
 
-	if ( isDefined( level.bot_ignore_links[key] ) && array_contains( level.bot_ignore_links[key], secnum ) )
+	if ( isdefined( level.bot_ignore_links[key] ) && array_contains( level.bot_ignore_links[key], secnum ) )
 	{
 		a = level.bot_ignore_links[key];
 
@@ -169,7 +169,7 @@ toggle_link( firstwp, secondwp )
 	}
 	else
 	{
-		if ( !isDefined( level.bot_ignore_links[key] ) )
+		if ( !isdefined( level.bot_ignore_links[key] ) )
 		{
 			level.bot_ignore_links[key] = [];
 		}
@@ -196,24 +196,24 @@ debug()
 		wait 0.05;
 
 		closest = -1;
-		myEye = self getTagOrigin( "j_head" );
-		myAngles = self GetPlayerAngles();
+		myEye = self gettagorigin( "j_head" );
+		myAngles = self getplayerangles();
 
-		for ( i = 0; i < level.waypointCount; i++ )
+		for ( i = 0; i < level.waypointcount; i++ )
 		{
 			if ( closest == -1 || closer( self.origin, level.waypoints[i].origin, level.waypoints[closest].origin ) )
 				closest = i;
 
 			wpOrg = level.waypoints[i].origin + ( 0, 0, 25 );
 
-			if ( distance( level.waypoints[i].origin, self.origin ) < getDvarFloat( "bots_main_debug_distance" ) && ( sightTracePassed( myEye, wpOrg, false, self ) || getDVarint( "bots_main_debug_drawThrough" ) ) && getConeDot( wpOrg, myEye, myAngles ) > getDvarFloat( "bots_main_debug_cone" ) )
+			if ( distance( level.waypoints[i].origin, self.origin ) < getdvarfloat( "bots_main_debug_distance" ) && ( sighttracepassed( myEye, wpOrg, false, self ) || getdvarint( "bots_main_debug_drawThrough" ) ) && getConeDot( wpOrg, myEye, myAngles ) > getdvarfloat( "bots_main_debug_cone" ) )
 			{
 				linked = level.waypoints[i] BotBuiltinGetLinkedNodes();
 				node_num_str = level.waypoints[i] BotBuiltinGetNodeNumber() + "";
 
 				for ( h = linked.size - 1; h >= 0; h-- )
 				{
-					if ( isDefined( level.bot_ignore_links[node_num_str] ) )
+					if ( isdefined( level.bot_ignore_links[node_num_str] ) )
 					{
 						found = false;
 						this_node_num = linked[h] BotBuiltinGetNodeNumber();
@@ -236,9 +236,9 @@ debug()
 
 				print3d( wpOrg, node_num_str, ( 1, 0, 0 ), 2 );
 
-				if ( isDefined( level.waypoints[i].animscript ) )
+				if ( isdefined( level.waypoints[i].animscript ) )
 				{
-					line( wpOrg, wpOrg + AnglesToForward( level.waypoints[i].angles ) * 64, ( 1, 1, 1 ) );
+					line( wpOrg, wpOrg + anglestoforward( level.waypoints[i].angles ) * 64, ( 1, 1, 1 ) );
 					print3d( wpOrg + ( 0, 0, 15 ), level.waypoints[i].animscript, ( 1, 0, 0 ), 2 );
 				}
 			}
@@ -264,18 +264,18 @@ textScroll( string )
 	self endon( "disconnect" );
 	//thanks ActionScript
 
-	back = createBar( ( 0, 0, 0 ), 1000, 30 );
-	back setPoint( "CENTER", undefined, 0, 220 );
+	back = createbar( ( 0, 0, 0 ), 1000, 30 );
+	back setpoint( "CENTER", undefined, 0, 220 );
 	self thread destroyOnDeath( back );
 
-	text = createFontString( "default", 1.5 );
-	text setText( string );
+	text = createfontstring( "default", 1.5 );
+	text settext( string );
 	self thread destroyOnDeath( text );
 
 	for ( ;; )
 	{
-		text setPoint( "CENTER", undefined, 1200, 220 );
-		text setPoint( "CENTER", undefined, -1200, 220, 20 );
+		text setpoint( "CENTER", undefined, 1200, 220 );
+		text setpoint( "CENTER", undefined, -1200, 220, 20 );
 		wait 20;
 	}
 }

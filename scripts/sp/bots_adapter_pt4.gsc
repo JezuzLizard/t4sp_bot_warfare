@@ -23,57 +23,57 @@ init()
 
 do_printconsole( s )
 {
-	PrintConsole( s );
+	printconsole( s );
 }
 
 do_botaction( action )
 {
-	self BotAction( action );
+	self botaction( action );
 }
 
 do_botstop()
 {
-	self BotStop();
+	self botstop();
 }
 
 do_botmovement( left, forward )
 {
-	self BotMovement( left, forward );
+	self botmovement( left, forward );
 }
 
 do_botmeleeparams( yaw, dist )
 {
-	// self BotMeleeParams( yaw, dist );
+	// self botmeleeparams( yaw, dist );
 }
 
 do_isbot()
 {
-	return self isBot();
+	return self isbot();
 }
 
 do_generatepath( from, to, team, best_effort )
 {
-	return GeneratePath( from, to, team, best_effort );
+	return generatepath( from, to, team, best_effort );
 }
 
 do_getfunction( file, threadname )
 {
-	return GetFunction( file, threadname );
+	return getfunction( file, threadname );
 }
 
 do_getmins()
 {
-	return self GetMins();
+	return self getmins();
 }
 
 do_getmaxs()
 {
-	return self GetMaxs();
+	return self getmaxs();
 }
 
 do_getguid()
 {
-	return self GetGuid();
+	return self getguid();
 }
 
 do_setallowedtraversals( a )
@@ -88,12 +88,12 @@ do_setignoredlinks( a )
 
 do_getnodenumber()
 {
-	return self GetNodeNumber();
+	return self getnodenumber();
 }
 
 do_getlinkednodes()
 {
-	return self GetLinkedNodes();
+	return self getlinkednodes();
 }
 
 do_addtestclient()
@@ -113,5 +113,5 @@ do_cmdexec( a )
 
 do_ishost()
 {
-	return self isHost();
+	return self ishost();
 }

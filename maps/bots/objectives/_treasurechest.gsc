@@ -12,17 +12,17 @@ Finder( eObj )
 		return answer;
 	}
 
-	weapons = self GetWeaponsList();
+	weapons = self getweaponslist();
 
 	// TODO check if need a new weapon, rate weapons too is better then current etc
 	chests = level.chests;
 
-	if ( !isDefined( chests ) )
+	if ( !isdefined( chests ) )
 	{
-		chests = GetEntArray( "treasure_chest_use", "targetname" );
+		chests = getentarray( "treasure_chest_use", "targetname" );
 	}
 
-	if ( !isDefined( chests ) || chests.size <= 0 )
+	if ( !isdefined( chests ) || chests.size <= 0 )
 	{
 		return answer;
 	}
@@ -32,24 +32,24 @@ Finder( eObj )
 		chest = chests[i];
 
 		// not active chest
-		if ( isDefined( chest.disabled ) && chest.disabled )
+		if ( isdefined( chest.disabled ) && chest.disabled )
 		{
 			continue;
 		}
 
 		// box is waiting for someone to grab weapon
-		if ( isDefined( chest.grab_weapon_hint ) && chest.grab_weapon_hint )
+		if ( isdefined( chest.grab_weapon_hint ) && chest.grab_weapon_hint )
 		{
 			continue;
 		}
 
 		cost = 950;
 
-		if ( IsDefined( level.zombie_treasure_chest_cost ) )
+		if ( isdefined( level.zombie_treasure_chest_cost ) )
 		{
 			cost = level.zombie_treasure_chest_cost;
 		}
-		else if ( isDefined( chest.zombie_cost ) )
+		else if ( isdefined( chest.zombie_cost ) )
 		{
 			cost = chest.zombie_cost;
 		}
@@ -62,7 +62,7 @@ Finder( eObj )
 
 		lid = getent( chest.target, "targetname" );
 
-		if ( !isDefined( lid ) )
+		if ( !isdefined( lid ) )
 		{
 			continue;
 		}
@@ -112,7 +112,7 @@ Executer( eObj )
 	self endon( "disconnect" );
 	self endon( "zombified" );
 
-	chest = eObj.eEnt;
+	chest = eObj.eent;
 
 	self thread WatchForCancel( chest );
 
@@ -123,7 +123,7 @@ Executer( eObj )
 	self ClearScriptGoal();
 	self ClearPriorityObjective();
 
-	self CompletedObjective( eObj.bWasSuccessful, eObj.sReason );
+	self CompletedObjective( eObj.bwassuccessful, eObj.sreason );
 }
 
 WatchForCancelCleanup()
@@ -162,13 +162,13 @@ WatchToGoToChest( chest )
 	{
 		wait 0.05;
 
-		if ( self IsTouching( chest ) || chest PointInsideUseTrigger( self.origin ) )
+		if ( self istouching( chest ) || chest PointInsideUseTrigger( self.origin ) )
 		{
 			self notify( "goal" );
 			break; // is this needed?
 		}
 
-		if ( isDefined( chest.disabled ) && chest.disabled )
+		if ( isdefined( chest.disabled ) && chest.disabled )
 		{
 			self notify( "bad_path" );
 			break; // is this needed?
@@ -180,14 +180,14 @@ GoDoTreasureChest( eObj )
 {
 	self endon( "cancel_bot_objective" );
 
-	chest = eObj.eEnt;
+	chest = eObj.eent;
 	lid = getent( chest.target, "targetname" );
 	weapon_spawn_org = getent( lid.target, "targetname" );
 	org = self getOffset( lid );
 
-	weap = self GetCurrentWeapon();
+	weap = self getcurrentweapon();
 
-	if ( weap == "none" || !self getAmmoCount( weap ) )
+	if ( weap == "none" || !self getammocount( weap ) )
 	{
 		self SetPriorityObjective();
 	}
@@ -200,13 +200,13 @@ GoDoTreasureChest( eObj )
 
 	if ( result != "goal" )
 	{
-		eObj.sReason = "didn't go to chest";
+		eObj.sreason = "didn't go to chest";
 		return;
 	}
 
-	if ( !self IsTouching( chest ) && !chest PointInsideUseTrigger( self.origin ) )
+	if ( !self istouching( chest ) && !chest PointInsideUseTrigger( self.origin ) )
 	{
-		eObj.sReason = "not touching chest";
+		eObj.sreason = "not touching chest";
 		return;
 	}
 
@@ -225,9 +225,9 @@ GoDoTreasureChest( eObj )
 	self ClearPriorityObjective();
 
 	// randomization isnt happening...
-	if ( !isDefined( chest.disabled ) || !chest.disabled )
+	if ( !isdefined( chest.disabled ) || !chest.disabled )
 	{
-		eObj.sReason = "chest isnt randomizing";
+		eObj.sreason = "chest isnt randomizing";
 		return;
 	}
 
@@ -235,13 +235,13 @@ GoDoTreasureChest( eObj )
 
 	if (ret == "timeout")
 	{
-		eObj.sReason = "randomization_done timed out";
+		eObj.sreason = "randomization_done timed out";
 		return;
 	}
 
-	if ( isDefined( level.flag[ "moving_chest_now" ] ) && flag( "moving_chest_now" ) )
+	if ( isdefined( level.flag[ "moving_chest_now" ] ) && flag( "moving_chest_now" ) )
 	{
-		eObj.sReason = "chest is moving!";
+		eObj.sreason = "chest is moving!";
 		return;
 	}
 
@@ -258,13 +258,13 @@ GoDoTreasureChest( eObj )
 
 	if ( result != "goal" )
 	{
-		eObj.sReason = "didn't go to chest";
+		eObj.sreason = "didn't go to chest";
 		return;
 	}
 
-	if ( !self IsTouching( chest ) && !chest PointInsideUseTrigger( self.origin ) )
+	if ( !self istouching( chest ) && !chest PointInsideUseTrigger( self.origin ) )
 	{
-		eObj.sReason = "not touching chest";
+		eObj.sreason = "not touching chest";
 		return;
 	}
 
@@ -279,6 +279,6 @@ GoDoTreasureChest( eObj )
 	wait 0.1;
 
 	// complete!
-	eObj.sReason = "completed " + weap;
-	eObj.bWasSuccessful = true;
+	eObj.sreason = "completed " + weap;
+	eObj.bwassuccessful = true;
 }
