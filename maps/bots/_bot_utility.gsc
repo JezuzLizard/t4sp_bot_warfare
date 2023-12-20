@@ -9,12 +9,18 @@ wait_for_builtins()
 	for ( i = 0; i < 20; i++ )
 	{
 		if ( isdefined( level.bot_builtins ) )
+		{
 			return true;
+		}
 
 		if ( i < 18 )
+		{
 			waittillframeend;
+		}
 		else
+		{
 			wait 0.05;
+		}
 	}
 
 	return false;
@@ -262,7 +268,9 @@ doHostCheck()
 	self.pers[ "bot_host" ] = false;
 
 	if ( self is_bot() )
+	{
 		return;
+	}
 
 	result = false;
 
@@ -276,7 +284,9 @@ doHostCheck()
 		}
 
 		if ( getdvar( "bots_main_firstIsHost" ) == self BotBuiltinGetGuid() + "" )
+		{
 			result = true;
+		}
 	}
 
 	DvarGUID = getdvar( "bots_main_GUIDs" );
@@ -288,12 +298,16 @@ doHostCheck()
 		for ( i = 0; i < guids.size; i++ )
 		{
 			if ( self BotBuiltinGetGuid() + "" == guids[ i ] )
+			{
 				result = true;
+			}
 		}
 	}
 
 	if ( !self BotBuiltinIsHost() && !result )
+	{
 		return;
+	}
 
 	self.pers[ "bot_host" ] = true;
 }
@@ -389,7 +403,9 @@ BotGetRandom()
 BotGetTargetRandom()
 {
 	if ( !isdefined( self.bot.target ) )
+	{
 		return undefined;
+	}
 
 	return self.bot.target.rand;
 }
@@ -442,7 +458,9 @@ BotFreezeControls( what )
 	self.bot.isfrozen = what;
 
 	if ( what )
+	{
 		self notify( "kill_goal" );
+	}
 }
 
 /*
@@ -461,7 +479,9 @@ BotStopMoving( what )
 	self.bot.stop_move = what;
 
 	if ( what )
+	{
 		self notify( "kill_goal" );
+	}
 }
 
 /*
@@ -503,7 +523,9 @@ GetScriptGoal()
 SetScriptGoal( goal, dist )
 {
 	if ( !isdefined( dist ) )
+	{
 		dist = 16;
+	}
 
 	self.bot.script_goal = goal;
 	self.bot.script_goal_dist = dist;
@@ -609,7 +631,9 @@ ClearScriptEnemy()
 GetThreat()
 {
 	if ( !isdefined( self.bot.target ) )
+	{
 		return undefined;
+	}
 
 	return self.bot.target.entity;
 }
@@ -642,10 +666,14 @@ getValidTube()
 		weap = weaps[ i ];
 
 		if ( !self getammocount( weap ) )
+		{
 			continue;
+		}
 
 		if ( issubstr( weap, "gl_" ) && !issubstr( weap, "_gl_" ) )
+		{
 			return weap;
+		}
 	}
 
 	return undefined;
@@ -664,10 +692,14 @@ getValidGrenade()
 	for ( i = 0; i < grenadeTypes.size; i++ )
 	{
 		if ( !self hasweapon( grenadeTypes[ i ] ) )
+		{
 			continue;
+		}
 
 		if ( !self getammocount( grenadeTypes[ i ] ) )
+		{
 			continue;
+		}
 
 		possibles[ possibles.size ] = grenadeTypes[ i ];
 	}
@@ -681,7 +713,9 @@ getValidGrenade()
 PickRandom( arr )
 {
 	if ( !arr.size )
+	{
 		return undefined;
+	}
 
 	return arr[ randomint( arr.size ) ];
 }
@@ -728,7 +762,9 @@ waittill_either_return_( str1, str2 )
 waittill_either_return( str1, str2 )
 {
 	if ( !isdefined( self waittill_either_return_( str1, str2 ) ) )
+	{
 		return str1;
+	}
 
 	return str2;
 }
@@ -743,24 +779,36 @@ waittill_any_timeout( timeOut, string1, string2, string3, string4, string5 )
 	    ( !isdefined( string3 ) || string3 != "death" ) &&
 	    ( !isdefined( string4 ) || string4 != "death" ) &&
 	    ( !isdefined( string5 ) || string5 != "death" ) )
+	{
 		self endon( "death" );
+	}
 
 	ent = spawnstruct();
 
 	if ( isdefined( string1 ) )
+	{
 		self thread waittill_string( string1, ent );
+	}
 
 	if ( isdefined( string2 ) )
+	{
 		self thread waittill_string( string2, ent );
+	}
 
 	if ( isdefined( string3 ) )
+	{
 		self thread waittill_string( string3, ent );
+	}
 
 	if ( isdefined( string4 ) )
+	{
 		self thread waittill_string( string4, ent );
+	}
 
 	if ( isdefined( string5 ) )
+	{
 		self thread waittill_string( string5, ent );
+	}
 
 	ent thread _timeout( timeOut );
 
@@ -790,7 +838,9 @@ GetHostPlayer()
 		player = level.players[ i ];
 
 		if ( !player is_host() )
+		{
 			continue;
+		}
 
 		return player;
 	}
@@ -806,36 +856,48 @@ bot_wait_for_host()
 	host = undefined;
 
 	while ( !isdefined( level ) || !isdefined( level.players ) )
+	{
 		wait 0.05;
+	}
 
 	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
 	{
 		host = GetHostPlayer();
 
 		if ( isdefined( host ) )
+		{
 			break;
+		}
 
 		wait 0.05;
 	}
 
 	if ( !isdefined( host ) )
+	{
 		return;
+	}
 
 	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
 	{
 		if ( isdefined( host.pers[ "team" ] ) )
+		{
 			break;
+		}
 
 		wait 0.05;
 	}
 
 	if ( !isdefined( host.pers[ "team" ] ) )
+	{
 		return;
+	}
 
 	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
 	{
 		if ( host.pers[ "team" ] == "allies" || host.pers[ "team" ] == "axis" )
+		{
 			break;
+		}
 
 		wait 0.05;
 	}
@@ -872,20 +934,32 @@ Rectdistancesquared( origin )
 	dz = 0;
 
 	if ( origin[ 0 ] < self.x0 )
+	{
 		dx = origin[ 0 ] - self.x0;
+	}
 	else if ( origin[ 0 ] > self.x1 )
+	{
 		dx = origin[ 0 ] - self.x1;
+	}
 
 	if ( origin[ 1 ] < self.y0 )
+	{
 		dy = origin[ 1 ] - self.y0;
+	}
 	else if ( origin[ 1 ] > self.y1 )
+	{
 		dy = origin[ 1 ] - self.y1;
+	}
 
 
 	if ( origin[ 2 ] < self.z0 )
+	{
 		dz = origin[ 2 ] - self.z0;
+	}
 	else if ( origin[ 2 ] > self.z1 )
+	{
 		dz = origin[ 2 ] - self.z1;
+	}
 
 	return dx * dx + dy * dy + dz * dz;
 }
@@ -900,12 +974,18 @@ Round( x )
 	if ( abs( x ) - abs( y ) > 0.5 )
 	{
 		if ( x < 0 )
+		{
 			return y - 1;
+		}
 		else
+		{
 			return y + 1;
+		}
 	}
 	else
+	{
 		return y;
+	}
 }
 
 /*
@@ -916,9 +996,13 @@ RoundUp( floatVal )
 	i = int( floatVal );
 
 	if ( i != floatVal )
+	{
 		return i + 1;
+	}
 	else
+	{
 		return i;
+	}
 }
 
 /*
@@ -1176,7 +1260,9 @@ getBotToKick()
 	bots = getBotArray();
 
 	if ( !isdefined( bots ) || !isdefined( bots.size ) || bots.size <= 0 || !isdefined( bots[ 0 ] ) )
+	{
 		return undefined;
+	}
 
 	tokick = undefined;
 
@@ -1186,13 +1272,19 @@ getBotToKick()
 		bot = bots[ i ];
 
 		if ( !isdefined( bot ) )
+		{
 			continue;
+		}
 
 		if ( !isdefined( bot.pers ) || !isdefined( bot.pers[ "bots" ] ) || !isdefined( bot.pers[ "bots" ][ "skill" ] ) || !isdefined( bot.pers[ "bots" ][ "skill" ][ "base" ] ) )
+		{
 			continue;
+		}
 
 		if ( isdefined( tokick ) && bot.pers[ "bots" ][ "skill" ][ "base" ] > tokick.pers[ "bots" ][ "skill" ][ "base" ] )
+		{
 			continue;
+		}
 
 		tokick = bot;
 	}
@@ -1213,7 +1305,9 @@ getBotArray()
 		player = level.players[ i ];
 
 		if ( !player is_bot() )
+		{
 			continue;
+		}
 
 		result[ result.size ] = player;
 	}
@@ -1278,7 +1372,9 @@ HeapInsert( item )
 		current = int( current / 2 );
 
 		if ( ![[ self.compare ]]( item, self.data[ current - 1 ] ) )
+		{
 			break;
+		}
 
 		self.data[ last - 1 ] = self.data[ current - 1 ];
 		self.data[ current - 1 ] = item;
@@ -1294,15 +1390,23 @@ _HeapNextChild( node, hsize )
 	right = left + 1;
 
 	if ( left > hsize )
+	{
 		return -1;
+	}
 
 	if ( right > hsize )
+	{
 		return left;
+	}
 
 	if ( [[ self.compare ]]( self.data[ left - 1 ], self.data[ right - 1 ] ) )
+	{
 		return left;
+	}
 	else
+	{
 		return right;
+	}
 }
 
 /*
@@ -1313,7 +1417,9 @@ HeapRemove()
 	remove = self.data.size;
 
 	if ( !remove )
+	{
 		return remove;
+	}
 
 	move = self.data[ remove - 1 ];
 	self.data[ 0 ] = move;
@@ -1321,7 +1427,9 @@ HeapRemove()
 	remove--;
 
 	if ( !remove )
+	{
 		return remove;
+	}
 
 	last = 1;
 	next = self _HeapNextChild( 1, remove );
@@ -1329,7 +1437,9 @@ HeapRemove()
 	while ( next != -1 )
 	{
 		if ( [[ self.compare ]]( move, self.data[ next - 1 ] ) )
+		{
 			break;
+		}
 
 		self.data[ last - 1 ] = self.data[ next - 1 ];
 		self.data[ next - 1 ] = move;
@@ -1500,7 +1610,9 @@ isWeaponPrimary( weap )
 	for ( i = 0; i < weaps.size; i++ )
 	{
 		if ( weap == weaps[ i ] )
+		{
 			return true;
+		}
 	}
 
 	return false;
@@ -1662,7 +1774,9 @@ debug_bounding_box_for_ent( color )
 	self endon( "debug_bounding_box_for_ent" );
 
 	if ( !isdefined( color ) )
+	{
 		color = ( randomfloatrange( 0, 1 ), randomfloatrange( 0, 1 ), randomfloatrange( 0, 1 ) );
+	}
 
 	while ( isdefined( self ) )
 	{

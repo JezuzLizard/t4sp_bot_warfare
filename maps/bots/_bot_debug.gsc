@@ -13,10 +13,14 @@
 init()
 {
 	if ( getdvar( "bots_main_debug" ) == "" )
+	{
 		setdvar( "bots_main_debug", 0 );
+	}
 
 	if ( !getdvarint( "bots_main_debug" ) || !getdvarint( "bots_main_debug_wp_vis" ) )
+	{
 		return;
+	}
 
 	if ( !getdvarint( "developer" ) )
 	{
@@ -37,16 +41,24 @@ init()
 	setdvar( "bots_manage_fill_spec", true );
 
 	if ( getdvar( "bots_main_debug_distance" ) == "" )
+	{
 		setdvar( "bots_main_debug_distance", 512.0 );
+	}
 
 	if ( getdvar( "bots_main_debug_cone" ) == "" )
+	{
 		setdvar( "bots_main_debug_cone", 0.65 );
+	}
 
 	if ( getdvar( "bots_main_debug_minDist" ) == "" )
+	{
 		setdvar( "bots_main_debug_minDist", 32.0 );
+	}
 
 	if ( getdvar( "bots_main_debug_drawThrough" ) == "" )
+	{
 		setdvar( "bots_main_debug_drawThrough", false );
+	}
 
 	thread load_waypoints();
 
@@ -113,7 +125,9 @@ array_contains( arr, it )
 	for ( i = 0; i < arr.size; i++ )
 	{
 		if ( arr[ i ] == it )
+		{
 			return true;
+		}
 	}
 
 	return false;
@@ -202,7 +216,9 @@ debug()
 		for ( i = 0; i < level.waypointcount; i++ )
 		{
 			if ( closest == -1 || closer( self.origin, level.waypoints[ i ].origin, level.waypoints[ closest ].origin ) )
+			{
 				closest = i;
+			}
 
 			wpOrg = level.waypoints[ i ].origin + ( 0, 0, 25 );
 
@@ -228,7 +244,9 @@ debug()
 						}
 
 						if ( found )
+						{
 							continue;
+						}
 					}
 
 					line( wpOrg, linked[ h ].origin + ( 0, 0, 25 ), ( 1, 0, 1 ) );
@@ -245,9 +263,13 @@ debug()
 		}
 
 		if ( distance( self.origin, level.waypoints[ closest ].origin ) < 64 )
+		{
 			self.closest = closest;
+		}
 		else
+		{
 			self.closest = -1;
+		}
 	}
 }
 

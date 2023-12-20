@@ -40,25 +40,39 @@ connected()
 onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, modelIndex, psOffsetTime )
 {
 	if ( !isdefined( self ) || !isdefined( self.team ) )
+	{
 		return;
+	}
 
 	if ( !isalive( self ) )
+	{
 		return;
+	}
 
 	if ( sMeansOfDeath == "MOD_FALLING" || sMeansOfDeath == "MOD_SUICIDE" )
+	{
 		return;
+	}
 
 	if ( iDamage <= 0 )
+	{
 		return;
+	}
 
 	if ( !isdefined( eAttacker ) || !isdefined( eAttacker.team ) )
+	{
 		return;
+	}
 
 	if ( eAttacker == self )
+	{
 		return;
+	}
 
 	if ( !isalive( eAttacker ) )
+	{
 		return;
+	}
 
 	self SetAttacker( eAttacker );
 }
@@ -409,12 +423,16 @@ changeToWeapon( weap )
 	level endon( "game_ended" );
 
 	if ( !self hasweapon( weap ) )
+	{
 		return false;
+	}
 
 	self switchtoweapon( weap );
 
 	if ( self getcurrentweapon() == weap )
+	{
 		return true;
+	}
 
 	self waittill_any_timeout( 5, "weapon_change" );
 
@@ -429,29 +447,41 @@ doReloadCancel_loop()
 	ret = self waittill_any_return( "reload", "weapon_change" );
 
 	if ( self BotIsFrozen() )
+	{
 		return;
+	}
 
 	if ( self usebuttonpressed() )
+	{
 		return;
+	}
 
 	if ( self inLastStand() )
+	{
 		return;
+	}
 
 	curWeap = self getcurrentweapon();
 
 	if ( !self isWeaponPrimary( curWeap ) )
+	{
 		return;
+	}
 
 	if ( ret == "reload" )
 	{
 		// check single reloads
 		if ( self getweaponammoclip( curWeap ) < weaponclipsize( curWeap ) )
+		{
 			return;
+		}
 	}
 
 	// check difficulty
 	if ( self.pers[ "bots" ][ "skill" ][ "base" ] <= 3 )
+	{
 		return;
+	}
 
 	// check if got another weapon
 	weaponslist = self getweaponslistprimaries();
@@ -463,17 +493,23 @@ doReloadCancel_loop()
 		weaponslist = array_remove( weaponslist, weapon );
 
 		if ( !self isWeaponPrimary( weapon ) )
+		{
 			continue;
+		}
 
 		if ( curWeap == weapon || weapon == "none" || weapon == "" )
+		{
 			continue;
+		}
 
 		weap = weapon;
 		break;
 	}
 
 	if ( weap == "" )
+	{
 		return;
+	}
 
 	// do the cancel
 	wait 0.1;
