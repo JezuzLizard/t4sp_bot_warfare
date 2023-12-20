@@ -480,7 +480,7 @@ stance_loop()
 		toStance = "crouch";
 	}
 
-	toStance = "stand"; //Hack to make the bots never crouch
+	toStance = "stand"; // Hack to make the bots never crouch
 
 	if ( toStance == "stand" )
 	{
@@ -1413,7 +1413,7 @@ aim_loop()
 				{
 					if ( isact )
 					{
-						//better room to nade? cook time function with dist?
+						// better room to nade? cook time function with dist?
 						if ( !self.bot.isfraggingafter && !self.bot.issmokingafter )
 						{
 							nade = self getValidGrenade();
@@ -1770,7 +1770,7 @@ doWalk( goal, dist, isScriptGoal )
 {
 	level endon( "intermission" );
 	self endon( "kill_goal" );
-	self endon( "goal_internal" ); //so that the watchOnGoal notify can happen same frame, not a frame later
+	self endon( "goal_internal" ); // so that the watchOnGoal notify can happen same frame, not a frame later
 
 	dist *= dist;
 
@@ -1998,7 +1998,7 @@ strafe( target )
 */
 getRandomLargestStafe( dist )
 {
-	//find a better algo?
+	// find a better algo?
 	traces = NewHeap( ::HeapTraceFraction );
 	myOrg = self.origin + ( 0, 0, 16 );
 
@@ -2035,7 +2035,7 @@ initAStar( goal )
 
 	if ( !isdefined( nodes ) || nodes.size <= 0 )
 	{
-		//Try again to find a path to the origin using best effort algo
+		// Try again to find a path to the origin using best effort algo
 		nodes = BotBuiltinGeneratePath( self.origin, goal, self.team, 192.0 );
 
 		if ( !isdefined( nodes ) || nodes.size <= 0 )

@@ -29,52 +29,52 @@ init()
 
 	if ( getdvar( "bots_main_GUIDs" ) == "" )
 	{
-		setdvar( "bots_main_GUIDs", "" );   //guids of players who will be given host powers, comma seperated
+		setdvar( "bots_main_GUIDs", "" );   // guids of players who will be given host powers, comma seperated
 	}
 
 	if ( getdvar( "bots_main_firstIsHost" ) == "" )
 	{
-		setdvar( "bots_main_firstIsHost", false );   //first player to connect is a host
+		setdvar( "bots_main_firstIsHost", false );   // first player to connect is a host
 	}
 
 	if ( getdvar( "bots_main_waitForHostTime" ) == "" )
 	{
-		setdvar( "bots_main_waitForHostTime", 10.0 );   //how long to wait to wait for the host player
+		setdvar( "bots_main_waitForHostTime", 10.0 );   // how long to wait to wait for the host player
 	}
 
 	if ( getdvar( "bots_main_kickBotsAtEnd" ) == "" )
 	{
-		setdvar( "bots_main_kickBotsAtEnd", false );   //kicks the bots at game end
+		setdvar( "bots_main_kickBotsAtEnd", false );   // kicks the bots at game end
 	}
 
 	if ( getdvar( "bots_manage_add" ) == "" )
 	{
-		setdvar( "bots_manage_add", 0 );   //amount of bots to add to the game
+		setdvar( "bots_manage_add", 0 );   // amount of bots to add to the game
 	}
 
 	if ( getdvar( "bots_manage_fill" ) == "" )
 	{
-		setdvar( "bots_manage_fill", 0 );   //amount of bots to maintain
+		setdvar( "bots_manage_fill", 0 );   // amount of bots to maintain
 	}
 
 	if ( getdvar( "bots_manage_fill_mode" ) == "" )
 	{
-		setdvar( "bots_manage_fill_mode", 0 );   //fill mode, 0 adds everyone, 1 just bots, 2 maintains at maps, 3 is 2 with 1
+		setdvar( "bots_manage_fill_mode", 0 );   // fill mode, 0 adds everyone, 1 just bots, 2 maintains at maps, 3 is 2 with 1
 	}
 
 	if ( getdvar( "bots_manage_fill_kick" ) == "" )
 	{
-		setdvar( "bots_manage_fill_kick", false );   //kick bots if too many
+		setdvar( "bots_manage_fill_kick", false );   // kick bots if too many
 	}
 
 	if ( getdvar( "bots_skill" ) == "" )
 	{
-		setdvar( "bots_skill", 0 );   //0 is random, 1 is easy 7 is hard, 8 is custom, 9 is completely random
+		setdvar( "bots_skill", 0 );   // 0 is random, 1 is easy 7 is hard, 8 is custom, 9 is completely random
 	}
 
 	if ( getdvar( "bots_skill_hard" ) == "" )
 	{
-		setdvar( "bots_skill_hard", 0 );   //amount of hard bots on axis team
+		setdvar( "bots_skill_hard", 0 );   // amount of hard bots on axis team
 	}
 
 	if ( getdvar( "bots_skill_med" ) == "" )
@@ -92,27 +92,27 @@ init()
 		setdvar( "bots_loadout_prestige", -1 );
 	}
 
-	if ( getdvar( "bots_play_move" ) == "" ) //bots move
+	if ( getdvar( "bots_play_move" ) == "" ) // bots move
 	{
 		setdvar( "bots_play_move", true );
 	}
 
-	if ( getdvar( "bots_play_knife" ) == "" ) //bots knife
+	if ( getdvar( "bots_play_knife" ) == "" ) // bots knife
 	{
 		setdvar( "bots_play_knife", true );
 	}
 
-	if ( getdvar( "bots_play_fire" ) == "" ) //bots fire
+	if ( getdvar( "bots_play_fire" ) == "" ) // bots fire
 	{
 		setdvar( "bots_play_fire", true );
 	}
 
-	if ( getdvar( "bots_play_nade" ) == "" ) //bots grenade
+	if ( getdvar( "bots_play_nade" ) == "" ) // bots grenade
 	{
 		setdvar( "bots_play_nade", true );
 	}
 
-	if ( getdvar( "bots_play_ads" ) == "" ) //bot ads
+	if ( getdvar( "bots_play_ads" ) == "" ) // bot ads
 	{
 		setdvar( "bots_play_ads", true );
 	}

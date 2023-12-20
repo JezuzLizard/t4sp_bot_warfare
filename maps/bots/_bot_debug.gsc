@@ -284,7 +284,7 @@ textScroll( string )
 {
 	self endon( "zombified" );
 	self endon( "disconnect" );
-	//thanks ActionScript
+	// thanks ActionScript
 
 	back = createbar( ( 0, 0, 0 ), 1000, 30 );
 	back setpoint( "CENTER", undefined, 0, 220 );
