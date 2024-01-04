@@ -16,7 +16,7 @@ bot_script_init()
 added()
 {
 	self endon( "disconnect" );
-
+	
 	self set_diff();
 }
 
@@ -26,11 +26,11 @@ added()
 connected()
 {
 	self endon( "disconnect" );
-
+	
 	self thread difficulty();
 	self thread onBotSpawned();
 	self thread onSpawned();
-
+	
 	self thread maps\bots\objectives\_manager::connected();
 }
 
@@ -43,37 +43,37 @@ onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoin
 	{
 		return;
 	}
-
+	
 	if ( !isalive( self ) )
 	{
 		return;
 	}
-
+	
 	if ( sMeansOfDeath == "MOD_FALLING" || sMeansOfDeath == "MOD_SUICIDE" )
 	{
 		return;
 	}
-
+	
 	if ( iDamage <= 0 )
 	{
 		return;
 	}
-
+	
 	if ( !isdefined( eAttacker ) || !isdefined( eAttacker.team ) )
 	{
 		return;
 	}
-
+	
 	if ( eAttacker == self )
 	{
 		return;
 	}
-
+	
 	if ( !isalive( eAttacker ) )
 	{
 		return;
 	}
-
+	
 	self SetAttacker( eAttacker );
 }
 
@@ -83,7 +83,7 @@ onDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoin
 difficulty()
 {
 	self endon( "disconnect" );
-
+	
 	for ( ;; )
 	{
 		if ( getdvarint( "bots_skill" ) != 9 )
@@ -110,7 +110,7 @@ difficulty()
 					self.pers[ "bots" ][ "skill" ][ "bones" ] = "j_spineupper,j_ankle_le,j_ankle_ri";
 					self.pers[ "bots" ][ "skill" ][ "ads_fov_multi" ] = 0.5;
 					self.pers[ "bots" ][ "skill" ][ "ads_aimspeed_multi" ] = 0.5;
-
+					
 					self.pers[ "bots" ][ "behavior" ][ "strafe" ] = 0;
 					self.pers[ "bots" ][ "behavior" ][ "nade" ] = 10;
 					self.pers[ "bots" ][ "behavior" ][ "sprint" ] = 30;
@@ -120,7 +120,7 @@ difficulty()
 					self.pers[ "bots" ][ "behavior" ][ "switch" ] = 2;
 					self.pers[ "bots" ][ "behavior" ][ "jump" ] = 0;
 					break;
-
+					
 				case 2:
 					self.pers[ "bots" ][ "skill" ][ "aim_time" ] = 0.55;
 					self.pers[ "bots" ][ "skill" ][ "init_react_time" ] = 1000;
@@ -141,7 +141,7 @@ difficulty()
 					self.pers[ "bots" ][ "skill" ][ "bones" ] = "j_spineupper,j_ankle_le,j_ankle_ri,j_head";
 					self.pers[ "bots" ][ "skill" ][ "ads_fov_multi" ] = 0.5;
 					self.pers[ "bots" ][ "skill" ][ "ads_aimspeed_multi" ] = 0.5;
-
+					
 					self.pers[ "bots" ][ "behavior" ][ "strafe" ] = 10;
 					self.pers[ "bots" ][ "behavior" ][ "nade" ] = 15;
 					self.pers[ "bots" ][ "behavior" ][ "sprint" ] = 45;
@@ -151,7 +151,7 @@ difficulty()
 					self.pers[ "bots" ][ "behavior" ][ "switch" ] = 2;
 					self.pers[ "bots" ][ "behavior" ][ "jump" ] = 10;
 					break;
-
+					
 				case 3:
 					self.pers[ "bots" ][ "skill" ][ "aim_time" ] = 0.4;
 					self.pers[ "bots" ][ "skill" ][ "init_react_time" ] = 750;
@@ -172,7 +172,7 @@ difficulty()
 					self.pers[ "bots" ][ "skill" ][ "bones" ] = "j_spineupper,j_spineupper,j_ankle_le,j_ankle_ri,j_head";
 					self.pers[ "bots" ][ "skill" ][ "ads_fov_multi" ] = 0.5;
 					self.pers[ "bots" ][ "skill" ][ "ads_aimspeed_multi" ] = 0.5;
-
+					
 					self.pers[ "bots" ][ "behavior" ][ "strafe" ] = 20;
 					self.pers[ "bots" ][ "behavior" ][ "nade" ] = 20;
 					self.pers[ "bots" ][ "behavior" ][ "sprint" ] = 50;
@@ -182,7 +182,7 @@ difficulty()
 					self.pers[ "bots" ][ "behavior" ][ "switch" ] = 2;
 					self.pers[ "bots" ][ "behavior" ][ "jump" ] = 25;
 					break;
-
+					
 				case 4:
 					self.pers[ "bots" ][ "skill" ][ "aim_time" ] = 0.3;
 					self.pers[ "bots" ][ "skill" ][ "init_react_time" ] = 600;
@@ -203,7 +203,7 @@ difficulty()
 					self.pers[ "bots" ][ "skill" ][ "bones" ] = "j_spineupper,j_spineupper,j_ankle_le,j_ankle_ri,j_head,j_head";
 					self.pers[ "bots" ][ "skill" ][ "ads_fov_multi" ] = 0.5;
 					self.pers[ "bots" ][ "skill" ][ "ads_aimspeed_multi" ] = 0.5;
-
+					
 					self.pers[ "bots" ][ "behavior" ][ "strafe" ] = 30;
 					self.pers[ "bots" ][ "behavior" ][ "nade" ] = 25;
 					self.pers[ "bots" ][ "behavior" ][ "sprint" ] = 55;
@@ -213,7 +213,7 @@ difficulty()
 					self.pers[ "bots" ][ "behavior" ][ "switch" ] = 2;
 					self.pers[ "bots" ][ "behavior" ][ "jump" ] = 35;
 					break;
-
+					
 				case 5:
 					self.pers[ "bots" ][ "skill" ][ "aim_time" ] = 0.25;
 					self.pers[ "bots" ][ "skill" ][ "init_react_time" ] = 500;
@@ -234,7 +234,7 @@ difficulty()
 					self.pers[ "bots" ][ "skill" ][ "bones" ] = "j_spineupper,j_head";
 					self.pers[ "bots" ][ "skill" ][ "ads_fov_multi" ] = 0.5;
 					self.pers[ "bots" ][ "skill" ][ "ads_aimspeed_multi" ] = 0.5;
-
+					
 					self.pers[ "bots" ][ "behavior" ][ "strafe" ] = 40;
 					self.pers[ "bots" ][ "behavior" ][ "nade" ] = 35;
 					self.pers[ "bots" ][ "behavior" ][ "sprint" ] = 60;
@@ -244,7 +244,7 @@ difficulty()
 					self.pers[ "bots" ][ "behavior" ][ "switch" ] = 2;
 					self.pers[ "bots" ][ "behavior" ][ "jump" ] = 50;
 					break;
-
+					
 				case 6:
 					self.pers[ "bots" ][ "skill" ][ "aim_time" ] = 0.2;
 					self.pers[ "bots" ][ "skill" ][ "init_react_time" ] = 250;
@@ -265,7 +265,7 @@ difficulty()
 					self.pers[ "bots" ][ "skill" ][ "bones" ] = "j_spineupper,j_head,j_head";
 					self.pers[ "bots" ][ "skill" ][ "ads_fov_multi" ] = 0.5;
 					self.pers[ "bots" ][ "skill" ][ "ads_aimspeed_multi" ] = 0.5;
-
+					
 					self.pers[ "bots" ][ "behavior" ][ "strafe" ] = 50;
 					self.pers[ "bots" ][ "behavior" ][ "nade" ] = 45;
 					self.pers[ "bots" ][ "behavior" ][ "sprint" ] = 65;
@@ -275,7 +275,7 @@ difficulty()
 					self.pers[ "bots" ][ "behavior" ][ "switch" ] = 2;
 					self.pers[ "bots" ][ "behavior" ][ "jump" ] = 75;
 					break;
-
+					
 				case 7:
 					self.pers[ "bots" ][ "skill" ][ "aim_time" ] = 0.1;
 					self.pers[ "bots" ][ "skill" ][ "init_react_time" ] = 100;
@@ -296,7 +296,7 @@ difficulty()
 					self.pers[ "bots" ][ "skill" ][ "bones" ] = "j_head";
 					self.pers[ "bots" ][ "skill" ][ "ads_fov_multi" ] = 0.5;
 					self.pers[ "bots" ][ "skill" ][ "ads_aimspeed_multi" ] = 0.5;
-
+					
 					self.pers[ "bots" ][ "behavior" ][ "strafe" ] = 65;
 					self.pers[ "bots" ][ "behavior" ][ "nade" ] = 65;
 					self.pers[ "bots" ][ "behavior" ][ "sprint" ] = 70;
@@ -308,7 +308,7 @@ difficulty()
 					break;
 			}
 		}
-
+		
 		wait 5;
 	}
 }
@@ -319,16 +319,16 @@ difficulty()
 set_diff()
 {
 	rankVar = getdvarint( "bots_skill" );
-
+	
 	switch ( rankVar )
 	{
 		case 0:
 			self.pers[ "bots" ][ "skill" ][ "base" ] = Round( random_normal_distribution( 3.5, 1.75, 1, 7 ) );
 			break;
-
+			
 		case 8:
 			break;
-
+			
 		case 9:
 			self.pers[ "bots" ][ "skill" ][ "base" ] = randomintrange( 1, 7 );
 			self.pers[ "bots" ][ "skill" ][ "aim_time" ] = 0.05 * randomintrange( 1, 20 );
@@ -338,11 +338,11 @@ set_diff()
 			self.pers[ "bots" ][ "skill" ][ "no_trace_look_time" ] = 50 * randomint( 100 );
 			self.pers[ "bots" ][ "skill" ][ "remember_time" ] = 50 * randomint( 100 );
 			self.pers[ "bots" ][ "skill" ][ "fov" ] = randomfloatrange( -1, 1 );
-
+			
 			randomNum = randomintrange( 500, 25000 );
 			self.pers[ "bots" ][ "skill" ][ "dist_start" ] = randomNum;
 			self.pers[ "bots" ][ "skill" ][ "dist_max" ] = randomNum * 2;
-
+			
 			self.pers[ "bots" ][ "skill" ][ "spawn_time" ] = 0.05 * randomint( 20 );
 			self.pers[ "bots" ][ "skill" ][ "help_dist" ] = randomintrange( 500, 25000 );
 			self.pers[ "bots" ][ "skill" ][ "semi_time" ] = randomfloatrange( 0.05, 1 );
@@ -351,7 +351,7 @@ set_diff()
 			self.pers[ "bots" ][ "skill" ][ "aim_offset_amount" ] = randomfloatrange( 0.05, 1 );
 			self.pers[ "bots" ][ "skill" ][ "bone_update_interval" ] = randomfloatrange( 0.05, 1 );
 			self.pers[ "bots" ][ "skill" ][ "bones" ] = "j_head,j_spineupper,j_ankle_ri,j_ankle_le";
-
+			
 			self.pers[ "bots" ][ "behavior" ][ "strafe" ] = randomint( 100 );
 			self.pers[ "bots" ][ "behavior" ][ "nade" ] = randomint( 100 );
 			self.pers[ "bots" ][ "behavior" ][ "sprint" ] = randomint( 100 );
@@ -361,7 +361,7 @@ set_diff()
 			self.pers[ "bots" ][ "behavior" ][ "switch" ] = randomint( 100 );
 			self.pers[ "bots" ][ "behavior" ][ "jump" ] = randomint( 100 );
 			break;
-
+			
 		default:
 			self.pers[ "bots" ][ "skill" ][ "base" ] = rankVar;
 			break;
@@ -375,11 +375,11 @@ onBotSpawned()
 {
 	self endon( "disconnect" );
 	level endon( "intermission" );
-
+	
 	for ( ;; )
 	{
 		self waittill( "bot_spawned" );
-
+		
 		self thread start_bot_threads();
 	}
 }
@@ -390,11 +390,11 @@ onBotSpawned()
 onSpawned()
 {
 	self endon( "disconnect" );
-
+	
 	for ( ;; )
 	{
 		self waittill( "spawned_player" );
-
+		
 		self thread maps\bots\objectives\_manager::spawned();
 	}
 }
@@ -407,9 +407,9 @@ start_bot_threads()
 	self endon( "disconnect" );
 	level endon( "intermission" );
 	self endon( "zombified" );
-
+	
 	self thread doReloadCancel();
-
+	
 	self thread maps\bots\objectives\_manager::start_bot_threads();
 }
 
@@ -421,21 +421,21 @@ changeToWeapon( weap )
 	self endon( "disconnect" );
 	self endon( "zombified" );
 	level endon( "game_ended" );
-
+	
 	if ( !self hasweapon( weap ) )
 	{
 		return false;
 	}
-
+	
 	self switchtoweapon( weap );
-
+	
 	if ( self getcurrentweapon() == weap )
 	{
 		return true;
 	}
-
+	
 	self waittill_any_timeout( 5, "weapon_change" );
-
+	
 	return ( self getcurrentweapon() == weap );
 }
 
@@ -445,29 +445,29 @@ changeToWeapon( weap )
 doReloadCancel_loop()
 {
 	ret = self waittill_any_return( "reload", "weapon_change" );
-
+	
 	if ( self BotIsFrozen() )
 	{
 		return;
 	}
-
+	
 	if ( self usebuttonpressed() )
 	{
 		return;
 	}
-
+	
 	if ( self inLastStand() )
 	{
 		return;
 	}
-
+	
 	curWeap = self getcurrentweapon();
-
+	
 	if ( !self isWeaponPrimary( curWeap ) )
 	{
 		return;
 	}
-
+	
 	if ( ret == "reload" )
 	{
 		// check single reloads
@@ -476,41 +476,41 @@ doReloadCancel_loop()
 			return;
 		}
 	}
-
+	
 	// check difficulty
 	if ( self.pers[ "bots" ][ "skill" ][ "base" ] <= 3 )
 	{
 		return;
 	}
-
+	
 	// check if got another weapon
 	weaponslist = self getweaponslistprimaries();
 	weap = "";
-
+	
 	while ( weaponslist.size )
 	{
 		weapon = weaponslist[ randomint( weaponslist.size ) ];
 		weaponslist = array_remove( weaponslist, weapon );
-
+		
 		if ( !self isWeaponPrimary( weapon ) )
 		{
 			continue;
 		}
-
+		
 		if ( curWeap == weapon || weapon == "none" || weapon == "" )
 		{
 			continue;
 		}
-
+		
 		weap = weapon;
 		break;
 	}
-
+	
 	if ( weap == "" )
 	{
 		return;
 	}
-
+	
 	// do the cancel
 	wait 0.1;
 	self thread changeToWeapon( weap );
@@ -526,7 +526,7 @@ doReloadCancel()
 {
 	self endon( "disconnect" );
 	self endon( "zombified" );
-
+	
 	for ( ;; )
 	{
 		self doReloadCancel_loop();

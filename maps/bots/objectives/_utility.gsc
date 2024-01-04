@@ -5,15 +5,15 @@
 CreateObjectiveForManger( sName, fpFinder, fpPriorty, fpExecuter, iProcessRate )
 {
 	Answer = spawnstruct();
-
+	
 	Answer.sname = sName;
 	Answer.fpfinder = fpFinder;
 	Answer.fpexecuter = fpExecuter;
 	Answer.fppriorty = fpPriorty;
-
+	
 	Answer.abotprocesstimes = [];
 	Answer.iprocessrate = iProcessRate;
-
+	
 	return Answer;
 }
 
@@ -25,16 +25,16 @@ CreateFinderObjectiveEZ( eObj, eEnt )
 CreateFinderObjective( eObj, sName, eEnt, fPriority )
 {
 	Answer = spawnstruct();
-
+	
 	Answer.eparentobj = eObj;
 	Answer.sname = sName;
 	Answer.eent = eEnt;
 	Answer.fpriority = fPriority;
 	Answer.guid = eEnt getentitynumber();
-
+	
 	Answer.bwassuccessful = false;
 	Answer.sreason = "canceled";
-
+	
 	return Answer;
 }
 
@@ -44,18 +44,18 @@ GetBotsAmountForEntity( eEnt )
 	{
 		eEnt.bots = 0;
 	}
-
+	
 	return eEnt.bots;
 }
 
 IncrementBotsForEntity( eEnt )
 {
 	self endon( "bots_for_entity_cleanup" );
-
+	
 	eEnt.bots++;
-
+	
 	self waittill_either( "disconnect", "zombified" );
-
+	
 	if ( isdefined( eEnt ) )
 	{
 		eEnt.bots--;
@@ -65,7 +65,7 @@ IncrementBotsForEntity( eEnt )
 DecrementBotsForEntity( eEnt )
 {
 	self notify( "bots_for_entity_cleanup" );
-
+	
 	if ( isdefined( eEnt ) )
 	{
 		eEnt.bots--;
@@ -93,7 +93,7 @@ GetBotObjectiveEnt()
 	{
 		return undefined;
 	}
-
+	
 	return self GetBotObjective().eent;
 }
 

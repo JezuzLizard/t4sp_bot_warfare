@@ -12,7 +12,7 @@ wait_for_builtins()
 		{
 			return true;
 		}
-
+		
 		if ( i < 18 )
 		{
 			waittillframeend;
@@ -22,7 +22,7 @@ wait_for_builtins()
 			wait 0.05;
 		}
 	}
-
+	
 	return false;
 }
 
@@ -94,7 +94,7 @@ BotBuiltinIsBot()
 	{
 		return self [[ level.bot_builtins[ "isbot" ] ]]();
 	}
-
+	
 	return false;
 }
 
@@ -107,7 +107,7 @@ BotBuiltinGeneratePath( from, to, team, best_effort )
 	{
 		return [[ level.bot_builtins[ "generatepath" ] ]]( from, to, team, best_effort );
 	}
-
+	
 	return [];
 }
 
@@ -120,7 +120,7 @@ BotBuiltinGetFunction( file, threadname )
 	{
 		return [[ level.bot_builtins[ "getfunction" ] ]]( file, threadname );
 	}
-
+	
 	return undefined;
 }
 
@@ -133,7 +133,7 @@ BotBuiltinGetMins()
 	{
 		return self [[ level.bot_builtins[ "getmins" ] ]]();
 	}
-
+	
 	return ( 0, 0, 0 );
 }
 
@@ -146,7 +146,7 @@ BotBuiltinGetMaxs()
 	{
 		return self [[ level.bot_builtins[ "getmaxs" ] ]]();
 	}
-
+	
 	return ( 0, 0, 0 );
 }
 
@@ -159,7 +159,7 @@ BotBuiltinGetGuid()
 	{
 		return self [[ level.bot_builtins[ "getguid" ] ]]();
 	}
-
+	
 	return 0;
 }
 
@@ -191,7 +191,7 @@ BotBuiltinGetNodeNumber()
 	{
 		return self [[ level.bot_builtins[ "getnodenumber" ] ]]();
 	}
-
+	
 	return 0;
 }
 
@@ -203,7 +203,7 @@ BotBuiltinGetLinkedNodes()
 	{
 		return self [[ level.bot_builtins[ "getlinkednodes" ] ]]();
 	}
-
+	
 	return [];
 }
 
@@ -215,7 +215,7 @@ BotBuiltinAddTestClient()
 	{
 		return [[ level.bot_builtins[ "addtestclient" ] ]]();
 	}
-
+	
 	return undefined;
 }
 
@@ -248,7 +248,7 @@ BotBuiltinIsHost()
 	{
 		return self [[ level.bot_builtins[ "ishost" ] ]]();
 	}
-
+	
 	return false;
 }
 
@@ -266,35 +266,35 @@ is_host()
 doHostCheck()
 {
 	self.pers[ "bot_host" ] = false;
-
+	
 	if ( self is_bot() )
 	{
 		return;
 	}
-
+	
 	result = false;
-
+	
 	if ( getdvar( "bots_main_firstIsHost" ) != "0" )
 	{
 		BotBuiltinPrintConsole( "WARNING: bots_main_firstIsHost is enabled" );
-
+		
 		if ( getdvar( "bots_main_firstIsHost" ) == "1" )
 		{
 			setdvar( "bots_main_firstIsHost", self BotBuiltinGetGuid() );
 		}
-
+		
 		if ( getdvar( "bots_main_firstIsHost" ) == self BotBuiltinGetGuid() + "" )
 		{
 			result = true;
 		}
 	}
-
+	
 	DvarGUID = getdvar( "bots_main_GUIDs" );
-
+	
 	if ( DvarGUID != "" )
 	{
 		guids = strtok( DvarGUID, "," );
-
+		
 		for ( i = 0; i < guids.size; i++ )
 		{
 			if ( self BotBuiltinGetGuid() + "" == guids[ i ] )
@@ -303,12 +303,12 @@ doHostCheck()
 			}
 		}
 	}
-
+	
 	if ( !self BotBuiltinIsHost() && !result )
 	{
 		return;
 	}
-
+	
 	self.pers[ "bot_host" ] = true;
 }
 
@@ -330,11 +330,11 @@ BotSetStance( stance )
 		case "stand":
 			self maps\bots\_bot_internal::stand();
 			break;
-
+			
 		case "crouch":
 			self maps\bots\_bot_internal::crouch();
 			break;
-
+			
 		case "prone":
 			self maps\bots\_bot_internal::prone();
 			break;
@@ -406,7 +406,7 @@ BotGetTargetRandom()
 	{
 		return undefined;
 	}
-
+	
 	return self.bot.target.rand;
 }
 
@@ -456,7 +456,7 @@ IsBotKnifing()
 BotFreezeControls( what )
 {
 	self.bot.isfrozen = what;
-
+	
 	if ( what )
 	{
 		self notify( "kill_goal" );
@@ -477,7 +477,7 @@ BotIsFrozen()
 BotStopMoving( what )
 {
 	self.bot.stop_move = what;
-
+	
 	if ( what )
 	{
 		self notify( "kill_goal" );
@@ -526,7 +526,7 @@ SetScriptGoal( goal, dist )
 	{
 		dist = 16;
 	}
-
+	
 	self.bot.script_goal = goal;
 	self.bot.script_goal_dist = dist;
 	waittillframeend;
@@ -634,7 +634,7 @@ GetThreat()
 	{
 		return undefined;
 	}
-
+	
 	return self.bot.target.entity;
 }
 
@@ -660,22 +660,22 @@ HasThreat()
 getValidTube()
 {
 	weaps = self getweaponslist();
-
+	
 	for ( i = 0; i < weaps.size; i++ )
 	{
 		weap = weaps[ i ];
-
+		
 		if ( !self getammocount( weap ) )
 		{
 			continue;
 		}
-
+		
 		if ( issubstr( weap, "gl_" ) && !issubstr( weap, "_gl_" ) )
 		{
 			return weap;
 		}
 	}
-
+	
 	return undefined;
 }
 
@@ -686,24 +686,24 @@ getValidGrenade()
 {
 	grenadeTypes = [];
 	grenadeTypes[ grenadeTypes.size ] = "stielhandgranate";
-
+	
 	possibles = [];
-
+	
 	for ( i = 0; i < grenadeTypes.size; i++ )
 	{
 		if ( !self hasweapon( grenadeTypes[ i ] ) )
 		{
 			continue;
 		}
-
+		
 		if ( !self getammocount( grenadeTypes[ i ] ) )
 		{
 			continue;
 		}
-
+		
 		possibles[ possibles.size ] = grenadeTypes[ i ];
 	}
-
+	
 	return PickRandom( possibles );
 }
 
@@ -716,7 +716,7 @@ PickRandom( arr )
 	{
 		return undefined;
 	}
-
+	
 	return arr[ randomint( arr.size ) ];
 }
 
@@ -742,7 +742,7 @@ getBaseWeaponName( weap )
 WeaponIsFullAuto( weap )
 {
 	weaptoks = strtok( weap, "_" );
-
+	
 	return isdefined( weaptoks[ 0 ] ) && isstring( weaptoks[ 0 ] ) && isdefined( level.bots_fullautoguns[ weaptoks[ 0 ]] );
 }
 
@@ -765,7 +765,7 @@ waittill_either_return( str1, str2 )
 	{
 		return str1;
 	}
-
+	
 	return str2;
 }
 
@@ -778,36 +778,36 @@ waittill_any_timeout( timeOut, string1, string2, string3, string4, string5 )
 	{
 		self endon( "death" );
 	}
-
+	
 	ent = spawnstruct();
-
+	
 	if ( isdefined( string1 ) )
 	{
 		self thread waittill_string( string1, ent );
 	}
-
+	
 	if ( isdefined( string2 ) )
 	{
 		self thread waittill_string( string2, ent );
 	}
-
+	
 	if ( isdefined( string3 ) )
 	{
 		self thread waittill_string( string3, ent );
 	}
-
+	
 	if ( isdefined( string4 ) )
 	{
 		self thread waittill_string( string4, ent );
 	}
-
+	
 	if ( isdefined( string5 ) )
 	{
 		self thread waittill_string( string5, ent );
 	}
-
+	
 	ent thread _timeout( timeOut );
-
+	
 	ent waittill( "returned", msg );
 	ent notify( "die" );
 	return msg;
@@ -819,7 +819,7 @@ waittill_any_timeout( timeOut, string1, string2, string3, string4, string5 )
 _timeout( delay )
 {
 	self endon( "die" );
-
+	
 	wait( delay );
 	self notify( "returned", "timeout" );
 }
@@ -832,15 +832,15 @@ GetHostPlayer()
 	for ( i = 0; i < level.players.size; i++ )
 	{
 		player = level.players[ i ];
-
+		
 		if ( !player is_host() )
 		{
 			continue;
 		}
-
+		
 		return player;
 	}
-
+	
 	return undefined;
 }
 
@@ -850,51 +850,51 @@ GetHostPlayer()
 bot_wait_for_host()
 {
 	host = undefined;
-
+	
 	while ( !isdefined( level ) || !isdefined( level.players ) )
 	{
 		wait 0.05;
 	}
-
+	
 	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
 	{
 		host = GetHostPlayer();
-
+		
 		if ( isdefined( host ) )
 		{
 			break;
 		}
-
+		
 		wait 0.05;
 	}
-
+	
 	if ( !isdefined( host ) )
 	{
 		return;
 	}
-
+	
 	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
 	{
 		if ( isdefined( host.pers[ "team" ] ) )
 		{
 			break;
 		}
-
+		
 		wait 0.05;
 	}
-
+	
 	if ( !isdefined( host.pers[ "team" ] ) )
 	{
 		return;
 	}
-
+	
 	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
 	{
 		if ( host.pers[ "team" ] == "allies" || host.pers[ "team" ] == "axis" )
 		{
 			break;
 		}
-
+		
 		wait 0.05;
 	}
 }
@@ -916,7 +916,7 @@ distancesquared2D( to, from )
 {
 	to = ( to[ 0 ], to[ 1 ], 0 );
 	from = ( from[ 0 ], from[ 1 ], 0 );
-
+	
 	return distancesquared( to, from );
 }
 
@@ -928,7 +928,7 @@ Rectdistancesquared( origin )
 	dx = 0;
 	dy = 0;
 	dz = 0;
-
+	
 	if ( origin[ 0 ] < self.x0 )
 	{
 		dx = origin[ 0 ] - self.x0;
@@ -937,7 +937,7 @@ Rectdistancesquared( origin )
 	{
 		dx = origin[ 0 ] - self.x1;
 	}
-
+	
 	if ( origin[ 1 ] < self.y0 )
 	{
 		dy = origin[ 1 ] - self.y0;
@@ -946,8 +946,8 @@ Rectdistancesquared( origin )
 	{
 		dy = origin[ 1 ] - self.y1;
 	}
-
-
+	
+	
 	if ( origin[ 2 ] < self.z0 )
 	{
 		dz = origin[ 2 ] - self.z0;
@@ -956,7 +956,7 @@ Rectdistancesquared( origin )
 	{
 		dz = origin[ 2 ] - self.z1;
 	}
-
+	
 	return dx * dx + dy * dy + dz * dz;
 }
 
@@ -966,7 +966,7 @@ Rectdistancesquared( origin )
 Round( x )
 {
 	y = int( x );
-
+	
 	if ( abs( x ) - abs( y ) > 0.5 )
 	{
 		if ( x < 0 )
@@ -990,7 +990,7 @@ Round( x )
 RoundUp( floatVal )
 {
 	i = int( floatVal );
-
+	
 	if ( i != floatVal )
 	{
 		return i + 1;
@@ -1015,7 +1015,7 @@ Clamp( a, minv, maxv )
 float( num )
 {
 	setdvar( "temp_dvar_bot_util", num );
-
+	
 	return getdvarfloat( "temp_dvar_bot_util" );
 }
 
@@ -1026,22 +1026,22 @@ get_nodes_in_playable_area()
 {
 	total_nodes = getallnodes();
 	filtered_nodes = [];
-
+	
 	for ( i = 0; i < total_nodes.size; i++ )
 	{
 		if ( !is_point_in_playable_area( total_nodes[ i ].origin ) )
 		{
 			continue;
 		}
-
+		
 		filtered_nodes[ filtered_nodes.size ] = total_nodes[ i ];
-
+		
 		if ( ( i % 10 ) == 0 )
 		{
 			wait 0.05;
 		}
 	}
-
+	
 	return filtered_nodes;
 }
 
@@ -1051,16 +1051,16 @@ get_nodes_in_playable_area()
 is_point_in_playable_area( point )
 {
 	playable_area = getentarray( "playable_area", "targetname" );
-
+	
 	in_playable_area = false;
-
+	
 	if ( !isdefined( playable_area ) || playable_area.size < 1 )
 	{
 		in_playable_area = true;
 	}
-
+	
 	temp_ent = spawn( "script_origin", point );
-
+	
 	if ( !in_playable_area )
 	{
 		for ( p = 0; p < playable_area.size; p++ )
@@ -1072,9 +1072,9 @@ is_point_in_playable_area( point )
 			}
 		}
 	}
-
+	
 	temp_ent delete ();
-
+	
 	return in_playable_area;
 }
 
@@ -1090,9 +1090,9 @@ load_waypoints()
 	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_127";
 	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_184";
 	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_190";
-
+	
 	bot_ignore_links = [];
-
+	
 	switch ( level.script )
 	{
 		case "nazi_zombie_sumpf":
@@ -1104,33 +1104,33 @@ load_waypoints()
 			a[ a.size ] = 1833;
 			a[ a.size ] = 1837;
 			bot_ignore_links[ 1603 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1829;
 			bot_ignore_links[ 1604 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1904;
 			bot_ignore_links[ 1823 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1603;
 			a[ a.size ] = 1903;
 			a[ a.size ] = 1904;
 			a[ a.size ] = 1906;
 			bot_ignore_links[ 1825 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1603;
 			a[ a.size ] = 1903;
 			a[ a.size ] = 1904;
 			a[ a.size ] = 1907;
 			bot_ignore_links[ 1826 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1904;
 			bot_ignore_links[ 1827 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1603;
 			a[ a.size ] = 1604;
@@ -1139,19 +1139,19 @@ load_waypoints()
 			a[ a.size ] = 1906;
 			a[ a.size ] = 1907;
 			bot_ignore_links[ 1829 + "" ] = a;
-
-
+			
+			
 			a = [];
 			a[ a.size ] = 1603;
 			a[ a.size ] = 1903;
 			a[ a.size ] = 1904;
 			a[ a.size ] = 1907;
 			bot_ignore_links[ 1830 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1904;
 			bot_ignore_links[ 1831 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1603;
 			a[ a.size ] = 1903;
@@ -1159,12 +1159,12 @@ load_waypoints()
 			a[ a.size ] = 1906;
 			a[ a.size ] = 1907;
 			bot_ignore_links[ 1833 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1903;
 			a[ a.size ] = 1904;
 			bot_ignore_links[ 1834 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1603;
 			a[ a.size ] = 1903;
@@ -1172,12 +1172,12 @@ load_waypoints()
 			a[ a.size ] = 1906;
 			a[ a.size ] = 1907;
 			bot_ignore_links[ 1837 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1903;
 			a[ a.size ] = 1904;
 			bot_ignore_links[ 1838 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1825;
 			a[ a.size ] = 1826;
@@ -1188,7 +1188,7 @@ load_waypoints()
 			a[ a.size ] = 1837;
 			a[ a.size ] = 1838;
 			bot_ignore_links[ 1903 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1823;
 			a[ a.size ] = 1825;
@@ -1202,14 +1202,14 @@ load_waypoints()
 			a[ a.size ] = 1837;
 			a[ a.size ] = 1838;
 			bot_ignore_links[ 1904 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1825;
 			a[ a.size ] = 1829;
 			a[ a.size ] = 1833;
 			a[ a.size ] = 1837;
 			bot_ignore_links[ 1906 + "" ] = a;
-
+			
 			a = [];
 			a[ a.size ] = 1826;
 			a[ a.size ] = 1829;
@@ -1219,15 +1219,15 @@ load_waypoints()
 			bot_ignore_links[ 1907 + "" ] = a;
 			break;
 	}
-
+	
 	// arrays are passed by value in gsc... hope this isnt gunna run out of vars
 	BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links );
 	BotBuiltinSetIgnoredLinks( bot_ignore_links );
 	level.bot_ignore_links = bot_ignore_links;
-
+	
 	level.waypoints = getallnodes();
 	level.waypointcount = level.waypoints.size;
-
+	
 	level.waypointsinplayablearea = [];
 	level.waypointsinplayablearea = get_nodes_in_playable_area();
 }
@@ -1254,37 +1254,37 @@ getMapName( map )
 getBotToKick()
 {
 	bots = getBotArray();
-
+	
 	if ( !isdefined( bots ) || !isdefined( bots.size ) || bots.size <= 0 || !isdefined( bots[ 0 ] ) )
 	{
 		return undefined;
 	}
-
+	
 	tokick = undefined;
-
+	
 	// just kick lowest skill
 	for ( i = 0; i < bots.size; i++ )
 	{
 		bot = bots[ i ];
-
+		
 		if ( !isdefined( bot ) )
 		{
 			continue;
 		}
-
+		
 		if ( !isdefined( bot.pers ) || !isdefined( bot.pers[ "bots" ] ) || !isdefined( bot.pers[ "bots" ][ "skill" ] ) || !isdefined( bot.pers[ "bots" ][ "skill" ][ "base" ] ) )
 		{
 			continue;
 		}
-
+		
 		if ( isdefined( tokick ) && bot.pers[ "bots" ][ "skill" ][ "base" ] > tokick.pers[ "bots" ][ "skill" ][ "base" ] )
 		{
 			continue;
 		}
-
+		
 		tokick = bot;
 	}
-
+	
 	return tokick;
 }
 
@@ -1295,19 +1295,19 @@ getBotArray()
 {
 	result = [];
 	playercount = level.players.size;
-
+	
 	for ( i = 0; i < playercount; i++ )
 	{
 		player = level.players[ i ];
-
+		
 		if ( !player is_bot() )
 		{
 			continue;
 		}
-
+		
 		result[ result.size ] = player;
 	}
-
+	
 	return result;
 }
 
@@ -1348,7 +1348,7 @@ NewHeap( compare )
 	heap_node = spawnstruct();
 	heap_node.data = [];
 	heap_node.compare = compare;
-
+	
 	return heap_node;
 }
 
@@ -1359,19 +1359,19 @@ HeapInsert( item )
 {
 	insert = self.data.size;
 	self.data[ insert ] = item;
-
+	
 	current = insert + 1;
-
+	
 	while ( current > 1 )
 	{
 		last = current;
 		current = int( current / 2 );
-
+		
 		if ( ![[ self.compare ]]( item, self.data[ current - 1 ] ) )
 		{
 			break;
 		}
-
+		
 		self.data[ last - 1 ] = self.data[ current - 1 ];
 		self.data[ current - 1 ] = item;
 	}
@@ -1384,17 +1384,17 @@ _HeapNextChild( node, hsize )
 {
 	left = node * 2;
 	right = left + 1;
-
+	
 	if ( left > hsize )
 	{
 		return -1;
 	}
-
+	
 	if ( right > hsize )
 	{
 		return left;
 	}
-
+	
 	if ( [[ self.compare ]]( self.data[ left - 1 ], self.data[ right - 1 ] ) )
 	{
 		return left;
@@ -1411,39 +1411,39 @@ _HeapNextChild( node, hsize )
 HeapRemove()
 {
 	remove = self.data.size;
-
+	
 	if ( !remove )
 	{
 		return remove;
 	}
-
+	
 	move = self.data[ remove - 1 ];
 	self.data[ 0 ] = move;
 	self.data[ remove - 1 ] = undefined;
 	remove--;
-
+	
 	if ( !remove )
 	{
 		return remove;
 	}
-
+	
 	last = 1;
 	next = self _HeapNextChild( 1, remove );
-
+	
 	while ( next != -1 )
 	{
 		if ( [[ self.compare ]]( move, self.data[ next - 1 ] ) )
 		{
 			break;
 		}
-
+		
 		self.data[ last - 1 ] = self.data[ next - 1 ];
 		self.data[ next - 1 ] = move;
-
+		
 		last = next;
 		next = self _HeapNextChild( next, remove );
 	}
-
+	
 	return remove;
 }
 
@@ -1458,7 +1458,7 @@ Log( x )
 	denom = 1.0;
 	frac = xmlxpl;
 	sum = frac;
-
+	
 	while ( sum != old_sum )
 	{
 		old_sum = sum;
@@ -1466,7 +1466,7 @@ Log( x )
 		frac *= xmlxpl_2;
 		sum += frac / denom;
 	}
-
+	
 	answer = 2.0 * sum;
 	return answer;
 }
@@ -1479,12 +1479,12 @@ array_average( array )
 {
 	assert( array.size > 0 );
 	total = 0;
-
+	
 	for ( i = 0; i < array.size; i++ )
 	{
 		total += array[ i ];
 	}
-
+	
 	return ( total / array.size );
 }
 
@@ -1496,19 +1496,19 @@ array_std_deviation( array, mean )
 {
 	assert( array.size > 0 );
 	tmp = [];
-
+	
 	for ( i = 0; i < array.size; i++ )
 	{
 		tmp[ i ] = ( array[ i ] - mean ) * ( array[ i ] - mean );
 	}
-
+	
 	total = 0;
-
+	
 	for ( i = 0; i < tmp.size; i++ )
 	{
 		total = total + tmp[ i ];
 	}
-
+	
 	return sqrt( total / array.size );
 }
 
@@ -1522,28 +1522,28 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 	x2 = 0;
 	w = 1;
 	y1 = 0;
-
+	
 	while ( w >= 1 )
 	{
 		x1 = 2 * randomfloatrange( 0, 1 ) - 1;
 		x2 = 2 * randomfloatrange( 0, 1 ) - 1;
 		w = x1 * x1 + x2 * x2;
 	}
-
+	
 	w = sqrt( ( -2.0 * Log( w ) ) / w );
 	y1 = x1 * w;
 	number = mean + y1 * std_deviation;
-
+	
 	if ( isdefined( lower_bound ) && number < lower_bound )
 	{
 		number = lower_bound;
 	}
-
+	
 	if ( isdefined( upper_bound ) && number > upper_bound )
 	{
 		number = upper_bound;
 	}
-
+	
 	return ( number );
 }
 
@@ -1553,7 +1553,7 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 inLastStand()
 {
 	func = BotBuiltinGetFunction( "maps/_laststand", "player_is_in_laststand" );
-
+	
 	return self [[ func ]]();
 }
 
@@ -1563,7 +1563,7 @@ inLastStand()
 isReviving( revivee )
 {
 	func = BotBuiltinGetFunction( "maps/_laststand", "is_reviving" );
-
+	
 	return self [[ func ]]( revivee );
 }
 
@@ -1576,7 +1576,7 @@ getRandomGoal()
 	{
 		return self.origin;
 	}
-
+	
 	return PickRandom( level.waypointsinplayablearea ).origin;
 }
 
@@ -1602,7 +1602,7 @@ targetIsGibbed()
 isWeaponPrimary( weap )
 {
 	weaps = self getweaponslistprimaries();
-
+	
 	for ( i = 0; i < weaps.size; i++ )
 	{
 		if ( weap == weaps[ i ] )
@@ -1610,7 +1610,7 @@ isWeaponPrimary( weap )
 			return true;
 		}
 	}
-
+	
 	return false;
 }
 
@@ -1629,15 +1629,15 @@ GetPathIsInaccessible( from, to, team, best_effort )
 get_path_dist( start, end, team )
 {
 	path = BotBuiltinGeneratePath( start, end, team, 192.0 );
-
+	
 	if ( !isdefined( path ) || path.size <= 0 )
 	{
 		return 999999999;
 	}
-
+	
 	dist = 0;
 	prev_node = undefined;
-
+	
 	for ( i = 0; i < path.size; i++ )
 	{
 		if ( i == 0 )
@@ -1645,11 +1645,11 @@ get_path_dist( start, end, team )
 			prev_node = path[ i ];
 			continue;
 		}
-
+		
 		dist += distance( prev_node.origin, path[ i ].origin );
 		prev_node = path[ i ];
 	}
-
+	
 	return dist;
 }
 
@@ -1659,7 +1659,7 @@ get_path_dist( start, end, team )
 ClampLerp( dist, min_dist, max_dist, max_bonus, min_bonus )
 {
 	answer = 0;
-
+	
 	if ( dist <= min_dist )
 	{
 		answer += max_bonus;
@@ -1673,7 +1673,7 @@ ClampLerp( dist, min_dist, max_dist, max_bonus, min_bonus )
 		dist_multi = 1 - ( ( dist - min_dist ) / ( max_dist - min_dist ) );
 		answer += min_bonus + ( ( max_bonus - min_bonus ) * dist_multi );
 	}
-
+	
 	return answer;
 }
 
@@ -1686,27 +1686,27 @@ get_angle_offset_node( forward_size, angle_offset, offset )
 	{
 		forward_size = 40;
 	}
-
+	
 	if ( !isdefined( angle_offset ) )
 	{
 		angle_offset = ( 0, 0, 0 );
 	}
-
+	
 	if ( !isdefined( offset ) )
 	{
 		offset = ( 0, 0, 0 );
 	}
-
+	
 	angles = ( 0, self.angles[ 1 ], 0 );
 	angles += angle_offset;
 	node = self.origin + ( anglestoforward( angles ) * forward_size ) + offset;
 	node = clamp_to_ground( node );
-
+	
 	if ( getdvarint( "bots_main_debug" ) )
 	{
 		self thread debug_offset_line( node );
 	}
-
+	
 	return node;
 }
 
@@ -1718,7 +1718,7 @@ debug_offset_line( node )
 	self endon( "death" );
 	self notify( "debug_offset_line" );
 	self endon( "debug_offset_line" );
-
+	
 	while ( isdefined( self ) )
 	{
 		line( self.origin, node );
@@ -1735,10 +1735,10 @@ PointInsideUseTrigger( point )
 	{
 		self thread debug_bounding_box_for_ent();
 	}
-
+	
 	mins = self BotBuiltinGetMins();
 	maxs = self BotBuiltinGetMaxs();
-
+	
 	box = spawnstruct();
 	box.x0 = self.origin[ 0 ] + mins[ 0 ];
 	box.x1 = self.origin[ 0 ] + maxs[ 0 ];
@@ -1746,17 +1746,17 @@ PointInsideUseTrigger( point )
 	box.y1 = self.origin[ 1 ] + maxs[ 1 ];
 	box.z0 = self.origin[ 2 ] + mins[ 2 ];
 	box.z1 = self.origin[ 2 ] + maxs[ 2 ];
-
+	
 	if ( box Rectdistancesquared( self.origin ) > 72 * 72 )
 	{
 		return false;
 	}
-
+	
 	if ( !sighttracepassed( point, self.origin, false, undefined ) )
 	{
 		return false;
 	}
-
+	
 	return true;
 }
 
@@ -1768,34 +1768,34 @@ debug_bounding_box_for_ent( color )
 	self endon( "death" );
 	self notify( "debug_bounding_box_for_ent" );
 	self endon( "debug_bounding_box_for_ent" );
-
+	
 	if ( !isdefined( color ) )
 	{
 		color = ( randomfloatrange( 0, 1 ), randomfloatrange( 0, 1 ), randomfloatrange( 0, 1 ) );
 	}
-
+	
 	while ( isdefined( self ) )
 	{
 		mins = self BotBuiltinGetMins();
 		maxs = self BotBuiltinGetMaxs();
-
+		
 		line( self.origin + ( mins[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( mins[ 0 ], mins[ 1 ], maxs[ 2 ] ), color );
 		line( self.origin + ( mins[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( mins[ 0 ], maxs[ 1 ], mins[ 2 ] ), color );
 		line( self.origin + ( mins[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( maxs[ 0 ], mins[ 1 ], mins[ 2 ] ), color );
-
+		
 		line( self.origin + ( maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] ), self.origin + ( maxs[ 0 ], maxs[ 1 ], mins[ 2 ] ), color );
 		line( self.origin + ( maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] ), self.origin + ( maxs[ 0 ], mins[ 1 ], maxs[ 2 ] ), color );
 		line( self.origin + ( maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] ), self.origin + ( mins[ 0 ], maxs[ 1 ], maxs[ 2 ] ), color );
-
+		
 		line( self.origin + ( maxs[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( maxs[ 0 ], maxs[ 1 ], mins[ 2 ] ), color );
 		line( self.origin + ( maxs[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( maxs[ 0 ], mins[ 1 ], maxs[ 2 ] ), color );
-
+		
 		line( self.origin + ( mins[ 0 ], mins[ 1 ], maxs[ 2 ] ), self.origin + ( maxs[ 0 ], mins[ 1 ], maxs[ 2 ] ), color );
 		line( self.origin + ( mins[ 0 ], mins[ 1 ], maxs[ 2 ] ), self.origin + ( mins[ 0 ], maxs[ 1 ], maxs[ 2 ] ), color );
-
+		
 		line( self.origin + ( mins[ 0 ], maxs[ 1 ], mins[ 2 ] ), self.origin + ( maxs[ 0 ], maxs[ 1 ], mins[ 2 ] ), color );
 		line( self.origin + ( mins[ 0 ], maxs[ 1 ], mins[ 2 ] ), self.origin + ( mins[ 0 ], maxs[ 1 ], maxs[ 2 ] ), color );
-
+		
 		wait 0.05;
 	}
 }
