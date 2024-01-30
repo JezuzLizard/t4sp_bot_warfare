@@ -43,7 +43,7 @@ do_botmovement( left, forward )
 
 do_botmeleeparams( yaw, dist )
 {
-	// self botmeleeparams( yaw, dist );
+	self botmeleeparams( yaw, dist );
 }
 
 do_isbot()
