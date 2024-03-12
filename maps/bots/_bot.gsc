@@ -7,7 +7,7 @@
 */
 init()
 {
-	level.bw_version = "2.2.0";
+	level.bw_version = "2.2.0 PR 1";
 	
 	if ( getdvar( "bots_main" ) == "" )
 	{
