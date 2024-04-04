@@ -905,6 +905,28 @@ canAds( dist, curweap )
 }
 
 /*
+	Returns true if myEye can see the bone of self
+*/
+checkTraceForBone( myEye, bone )
+{
+	if ( !self targetIsDog() && self targetIsGibbed() )
+	{
+		bone = "j_spinelower";
+	}
+	
+	boneLoc = self gettagorigin( bone );
+	
+	if ( !isdefined( boneLoc ) )
+	{
+		return false;
+	}
+	
+	trace = bullettrace( myEye, boneLoc, false, undefined );
+	
+	return ( sighttracepassed( myEye, boneLoc, false, undefined ) && ( trace[ "fraction" ] >= 1.0 || trace[ "surfacetype" ] == "glass" ) );
+}
+
+/*
 	The main target thread, will update the bot's main target. Will auto target enemy players and handle script targets.
 */
 target_loop()
@@ -997,40 +1019,9 @@ target_loop()
 			daDist = distancesquared( self.origin, enemy.origin );
 			isObjDef = isdefined( obj );
 			
-			targetHead = undefined;
-			targetAnkleLeft = undefined;
-			targetAnkleRight = undefined;
-			
-			if ( enemy targetIsDog() )
-			{
-				targetHead = enemy gettagorigin( "j_head" );
-				targetAnkleLeft = enemy gettagorigin( "j_ankle_le" );
-				targetAnkleRight = enemy gettagorigin( "j_ankle_ri" );
-			}
-			else if ( !enemy targetIsGibbed() )
-			{
-				targetHead = enemy gettagorigin( "j_head" );
-				targetAnkleLeft = enemy gettagorigin( "j_ankle_le" );
-				targetAnkleRight = enemy gettagorigin( "j_ankle_ri" );
-			}
-			else
-			{
-				targetHead = enemy gettagorigin( "j_spinelower" );
-				targetAnkleLeft = enemy gettagorigin( "j_spinelower" );
-				targetAnkleRight = enemy gettagorigin( "j_spinelower" );
-			}
-			
-			traceHead = bullettrace( myEye, targetHead, false, enemy );
-			traceAnkleLeft = bullettrace( myEye, targetAnkleLeft, false, enemy );
-			traceAnkleRight = bullettrace( myEye, targetAnkleRight, false, enemy );
-			
-			canTargetEnemy = ( ( sighttracepassed( myEye, targetHead, false, enemy ) ||
-						sighttracepassed( myEye, targetAnkleLeft, false, enemy ) ||
-						sighttracepassed( myEye, targetAnkleRight, false, enemy ) )
-						
-					&& ( ( traceHead[ "fraction" ] >= 1.0 || traceHead[ "surfacetype" ] == "glass" ) ||
-						( traceAnkleLeft[ "fraction" ] >= 1.0 || traceAnkleLeft[ "surfacetype" ] == "glass" ) ||
-						( traceAnkleRight[ "fraction" ] >= 1.0 || traceAnkleRight[ "surfacetype" ] == "glass" ) )
+			canTargetEnemy = ( ( enemy checkTraceForBone( myEye, "j_head" ) ||
+						enemy checkTraceForBone( myEye, "j_ankle_le" ) ||
+						enemy checkTraceForBone( myEye, "j_ankle_ri" ) )
 						
 					&& ( getConeDot( enemy.origin, self.origin, myAngles ) >= myFov ||
 						( isObjDef && obj.trace_time ) )

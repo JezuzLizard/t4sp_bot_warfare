@@ -213,7 +213,7 @@ debug()
 		myEye = self gettagorigin( "j_head" );
 		myAngles = self getplayerangles();
 		
-		for ( i = 0; i < level.waypointcount; i++ )
+		for ( i = level.waypoints.size - 1; i >= 0; i-- )
 		{
 			if ( closest == -1 || closer( self.origin, level.waypoints[ i ].origin, level.waypoints[ closest ].origin ) )
 			{

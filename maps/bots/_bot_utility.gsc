@@ -1236,7 +1236,6 @@ load_waypoints()
 	level.bot_ignore_links = bot_ignore_links;
 	
 	level.waypoints = getallnodes();
-	level.waypointcount = level.waypoints.size;
 	
 	level.waypointsinplayablearea = [];
 	level.waypointsinplayablearea = get_nodes_in_playable_area();
