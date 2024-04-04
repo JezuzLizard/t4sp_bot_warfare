@@ -1171,6 +1171,9 @@ selectBoneForTarget( enemy, bones )
 */
 updateBones()
 {
+	self notify( "bot_updateBones" );
+	self endon( "bot_updateBones" );
+	
 	self endon( "disconnect" );
 	self endon( "zombified" );
 	
