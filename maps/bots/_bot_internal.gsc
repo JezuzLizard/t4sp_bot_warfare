@@ -1173,21 +1173,21 @@ updateBones()
 {
 	self endon( "disconnect" );
 	self endon( "zombified" );
-
+	
 	for ( ;; )
 	{
 		oldbones = self.pers[ "bots" ][ "skill" ][ "bones" ];
 		bones = strtok( oldbones, "," );
-
+		
 		while ( oldbones == self.pers[ "bots" ][ "skill" ][ "bones" ] )
 		{
-			self waittill_notify_or_timeout( self.pers[ "bots" ][ "skill" ][ "bone_update_interval" ], "new_enemy" );
-
+			self waittill_notify_or_timeout( "new_enemy", self.pers[ "bots" ][ "skill" ][ "bone_update_interval" ] );
+			
 			if ( !isdefined( self.bot.target ) || !isdefined( self.bot.target.entity ) )
 			{
 				continue;
 			}
-
+			
 			self.bot.target.bone = selectBoneForTarget( self.bot.target.entity, bones );
 		}
 	}
