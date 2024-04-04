@@ -1171,25 +1171,25 @@ selectBoneForTarget( enemy, bones )
 */
 updateBones()
 {
-	self notify( "bot_updateBones" );
-	self endon( "bot_updateBones" );
-	
 	self endon( "disconnect" );
 	self endon( "zombified" );
-	
-	bones = strtok( self.pers[ "bots" ][ "skill" ][ "bones" ], "," );
-	waittime = self.pers[ "bots" ][ "skill" ][ "bone_update_interval" ];
-	
+
 	for ( ;; )
 	{
-		self waittill_notify_or_timeout( "new_enemy", waittime );
-		
-		if ( !isdefined( self.bot.target ) || !isdefined( self.bot.target.entity ) )
+		oldbones = self.pers[ "bots" ][ "skill" ][ "bones" ];
+		bones = strtok( oldbones, "," );
+
+		while ( oldbones == self.pers[ "bots" ][ "skill" ][ "bones" ] )
 		{
-			continue;
+			self waittill_notify_or_timeout( self.pers[ "bots" ][ "skill" ][ "bone_update_interval" ], "new_enemy" );
+
+			if ( !isdefined( self.bot.target ) || !isdefined( self.bot.target.entity ) )
+			{
+				continue;
+			}
+
+			self.bot.target.bone = selectBoneForTarget( self.bot.target.entity, bones );
 		}
-		
-		self.bot.target.bone = selectBoneForTarget( self.bot.target.entity, bones );
 	}
 }
 
