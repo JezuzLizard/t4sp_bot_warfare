@@ -882,31 +882,6 @@ bot_wait_for_host()
 	{
 		return;
 	}
-	
-	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
-	{
-		if ( isdefined( host.pers[ "team" ] ) )
-		{
-			break;
-		}
-		
-		wait 0.05;
-	}
-	
-	if ( !isdefined( host.pers[ "team" ] ) )
-	{
-		return;
-	}
-	
-	for ( i = getdvarfloat( "bots_main_waitForHostTime" ); i > 0; i -= 0.05 )
-	{
-		if ( host.pers[ "team" ] == "allies" || host.pers[ "team" ] == "axis" )
-		{
-			break;
-		}
-		
-		wait 0.05;
-	}
 }
 
 /*
