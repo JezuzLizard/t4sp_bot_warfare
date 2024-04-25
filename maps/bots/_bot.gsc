@@ -272,6 +272,14 @@ onDisconnectAll()
 	self waittill( "disconnect" );
 	
 	level.players = array_remove( level.players, self );
+	
+	waittillframeend;
+	
+	for ( i = 0; i < level.bots.size; i++ )
+	{
+		bot = level.bots[ i ];
+		bot BotNotifyBotEvent( "connection", "disconnected", self, self.playername );
+	}
 }
 
 /*
@@ -317,6 +325,13 @@ connected()
 	}
 	
 	level.players[ level.players.size ] = self;
+	
+	for ( i = 0; i < level.bots.size; i++ )
+	{
+		bot = level.bots[ i ];
+		bot BotNotifyBotEvent( "connection", "connected", self, self.playername );
+	}
+	
 	self thread onDisconnectAll();
 	
 	self thread onSpawnedAll();
