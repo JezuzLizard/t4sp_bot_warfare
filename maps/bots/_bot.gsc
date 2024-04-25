@@ -135,8 +135,11 @@ init()
 	if ( !isdefined( game[ "botWarfare" ] ) )
 	{
 		game[ "botWarfare" ] = true;
+		game[ "botWarfareInitTime" ] = gettime();
 	}
 	
+	level.bot_inittime = gettime();
+
 	level.bots_minsprintdistance = 315;
 	level.bots_minsprintdistance *= level.bots_minsprintdistance;
 	level.bots_mingrenadedistance = 256;
