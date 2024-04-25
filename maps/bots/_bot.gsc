@@ -272,6 +272,8 @@ onPlayerConnect()
 */
 onDisconnectAll()
 {
+	name = self.playername;
+
 	self waittill( "disconnect" );
 	
 	level.players = array_remove( level.players, self );
@@ -281,7 +283,7 @@ onDisconnectAll()
 	for ( i = 0; i < level.bots.size; i++ )
 	{
 		bot = level.bots[ i ];
-		bot BotNotifyBotEvent( "connection", "disconnected", self, self.playername );
+		bot BotNotifyBotEvent( "connection", "disconnected", self, name );
 	}
 }
 
