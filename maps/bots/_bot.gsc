@@ -173,6 +173,7 @@ init()
 	
 	level thread onPlayerConnect();
 	level thread handleBots();
+	level thread onPlayerChat();
 	
 	level thread maps\bots\_bot_script::bot_script_init();
 }
@@ -618,5 +619,23 @@ addBots()
 		wait 1.5;
 		
 		addBots_loop();
+	}
+}
+
+/*
+	When a player chats
+*/
+onPlayerChat()
+{
+	for ( ;; )
+	{
+		level waittill( "say", message, player, is_hidden );
+		
+		for ( i = 0; i < level.bots.size; i++ )
+		{
+			bot = level.bots[ i ];
+			
+			bot BotNotifyBotEvent( "chat", "chat", message, player, is_hidden );
+		}
 	}
 }
