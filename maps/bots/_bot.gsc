@@ -67,6 +67,11 @@ init()
 		setdvar( "bots_manage_fill_kick", false ); // kick bots if too many
 	}
 	
+	if ( getdvar( "bots_manage_fill_watchplayers" ) == "" )
+	{
+		setdvar( "bots_manage_fill_watchplayers", false ); // add bots when player exists, kick if not
+	}
+	
 	if ( getdvar( "bots_skill" ) == "" )
 	{
 		setdvar( "bots_skill", 0 ); // 0 is random, 1 is easy 7 is hard, 8 is custom, 9 is completely random
@@ -139,7 +144,7 @@ init()
 	}
 	
 	level.bot_inittime = gettime();
-
+	
 	level.bots_minsprintdistance = 315;
 	level.bots_minsprintdistance *= level.bots_minsprintdistance;
 	level.bots_mingrenadedistance = 256;
@@ -274,7 +279,7 @@ onPlayerConnect()
 onDisconnectAll()
 {
 	name = self.playername;
-
+	
 	self waittill( "disconnect" );
 	
 	level.players = array_remove( level.players, self );
@@ -582,6 +587,14 @@ addBots_loop()
 			players++;
 		}
 	}
+
+	if ( !randomint( 999 ) )
+	{
+		setdvar( "testclients_doreload", true );
+		wait 0.1;
+		setdvar( "testclients_doreload", false );
+		// doExtraCheck();
+	}
 	
 	amount = bots;
 	
@@ -589,18 +602,35 @@ addBots_loop()
 	{
 		amount += players;
 	}
-	
+
+	if ( players <= 0 && getdvarint( "bots_manage_fill_watchplayers" ) )
+	{
+		amount = fillAmount + bots;
+	}
+
 	if ( amount < fillAmount )
 	{
-		setdvar( "bots_manage_add", 1 );
+		setdvar( "bots_manage_add", fillAmount - amount );
 	}
 	else if ( amount > fillAmount && getdvarint( "bots_manage_fill_kick" ) )
 	{
-		tempBot = getBotToKick();
+		botsToKick = amount - fillAmount;
 		
-		if ( isdefined( tempBot ) )
+		if ( botsToKick > 64 )
 		{
-			BotBuiltinCmdExec( "clientkick " + tempBot getentitynumber() );
+			botsToKick = 64;
+		}
+		
+		for ( i = 0; i < botsToKick; i++ )
+		{
+			tempBot = getBotToKick();
+			
+			if ( isdefined( tempBot ) )
+			{
+				BotBuiltinCmdExec( "clientkick " + tempBot getentitynumber() + " EXE_PLAYERKICKED" );
+				
+				wait 0.25;
+			}
 		}
 	}
 }
