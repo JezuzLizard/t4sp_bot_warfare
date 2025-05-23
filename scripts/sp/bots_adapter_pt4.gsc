@@ -24,7 +24,7 @@ init()
 
 do_printconsole( s )
 {
-	printconsole( s );
+	printf( s );
 }
 
 do_botaction( action )
@@ -49,8 +49,7 @@ do_botmeleeparams( yaw, dist )
 
 do_botangles( angles )
 {
-	self setplayerangles( angles );
-	// self botangles( angles[ 0 ], angles[ 1 ], angles[ 2 ] );
+	self botangles( angles );
 }
 
 do_isbot()

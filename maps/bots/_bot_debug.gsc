@@ -27,8 +27,7 @@ init()
 		setdvar( "developer_script", 1 );
 		setdvar( "developer", 2 );
 		
-		setdvar( "sv_mapRotation", "map " + getdvar( "mapname" ) );
-		exitlevel( false );
+		BotBuiltinCmdExec( "devmap " + getdvar( "mapname" ) );
 		return;
 	}
 	
@@ -73,6 +72,7 @@ onPlayerSpawned()
 	for ( ;; )
 	{
 		self waittill( "spawned_player" );
+		self.score = 100000;
 		self thread beginDebug();
 	}
 }
@@ -92,7 +92,7 @@ watch_for_unlink()
 	self endon( "disconnect" );
 	self endon( "zombified" );
 	
-	self BotBuiltinNotifyOnPlayerCommand( "+smoke", "toggle_unlink" );
+	self BotBuiltinNotifyOnPlayerCommand( "toggle_unlink", "+smoke" );
 	
 	for ( ;; )
 	{

@@ -2145,14 +2145,14 @@ pressADS( time )
 		time = 0.05;
 	}
 	
-	self BotBuiltinBotAction( "+ads" );
+	self BotBuiltinBotAction( "+speed_throw" );
 	
 	if ( time )
 	{
 		wait time;
 	}
 	
-	self BotBuiltinBotAction( "-ads" );
+	self BotBuiltinBotAction( "-speed_throw" );
 }
 
 /*
@@ -2300,14 +2300,14 @@ pressFire( time )
 		time = 0.05;
 	}
 	
-	self BotBuiltinBotAction( "+fire" );
+	self BotBuiltinBotAction( "+attack" );
 	
 	if ( time )
 	{
 		wait time;
 	}
 	
-	self BotBuiltinBotAction( "-fire" );
+	self BotBuiltinBotAction( "-attack" );
 }
 
 /*
@@ -2456,8 +2456,8 @@ jump()
 */
 stand()
 {
-	self BotBuiltinBotAction( "-gocrouch" );
-	self BotBuiltinBotAction( "-goprone" );
+	self BotBuiltinBotAction( "-crouch" );
+	self BotBuiltinBotAction( "-prone" );
 }
 
 /*
@@ -2465,8 +2465,8 @@ stand()
 */
 crouch()
 {
-	self BotBuiltinBotAction( "+gocrouch" );
-	self BotBuiltinBotAction( "-goprone" );
+	self BotBuiltinBotAction( "+crouch" );
+	self BotBuiltinBotAction( "-prone" );
 }
 
 /*
@@ -2474,8 +2474,8 @@ crouch()
 */
 prone()
 {
-	self BotBuiltinBotAction( "-gocrouch" );
-	self BotBuiltinBotAction( "+goprone" );
+	self BotBuiltinBotAction( "-crouch" );
+	self BotBuiltinBotAction( "+prone" );
 }
 
 /*
