@@ -409,6 +409,7 @@ start_bot_threads()
 	self endon( "zombified" );
 	
 	self thread doReloadCancel();
+	self thread bot_weapon_think();
 	
 	self thread maps\bots\objectives\_manager::start_bot_threads();
 }
@@ -530,5 +531,104 @@ doReloadCancel()
 	for ( ;; )
 	{
 		self doReloadCancel_loop();
+	}
+}
+
+/*
+	Bot logic for switching weapons.
+*/
+bot_weapon_think_loop( data )
+{
+	ret = self waittill_any_timeout( randomintrange( 2, 4 ), "bot_force_check_switch" );
+	
+	if ( self BotIsFrozen() )
+	{
+		return;
+	}
+	
+	if ( self inLastStand() )
+	{
+		return;
+	}
+	
+	hasTarget = self hasThreat();
+	curWeap = self getcurrentweapon();
+	
+	force = ( ret == "bot_force_check_switch" );
+	
+	if ( data.first )
+	{
+		data.first = false;
+		
+		if ( randomint( 100 ) > self.pers[ "bots" ][ "behavior" ][ "initswitch" ] )
+		{
+			return;
+		}
+	}
+	else
+	{
+		if ( curWeap != "none" && self getammocount( curWeap ) && curWeap != "molotov" && curWeap != "molotov_zombie" )
+		{
+			if ( randomint( 100 ) > self.pers[ "bots" ][ "behavior" ][ "switch" ] )
+			{
+				return;
+			}
+			
+			if ( hasTarget )
+			{
+				return;
+			}
+		}
+		else
+		{
+			force = true;
+		}
+	}
+	
+	weaponslist = self getweaponslistprimaries();
+	weap = "";
+	
+	while ( weaponslist.size )
+	{
+		weapon = weaponslist[ randomint( weaponslist.size ) ];
+		weaponslist = array_remove( weaponslist, weapon );
+		
+		if ( !self getammocount( weapon ) && !force )
+		{
+			continue;
+		}
+		
+		if ( curWeap == weapon )
+		{
+			continue;
+		}
+		
+		weap = weapon;
+		break;
+	}
+	
+	if ( weap == "" )
+	{
+		return;
+	}
+	
+	self thread changeToWeapon( weap );
+}
+
+/*
+	Bot logic for switching weapons.
+*/
+bot_weapon_think()
+{
+	self endon( "disconnect" );
+	self endon( "zombified" );
+	level endon( "game_ended" );
+	
+	data = spawnstruct();
+	data.first = true;
+	
+	for ( ;; )
+	{
+		self bot_weapon_think_loop( data );
 	}
 }

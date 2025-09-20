@@ -241,7 +241,12 @@ onActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 {
 	if ( isdefined( eAttacker ) && isplayer( eAttacker ) && eAttacker is_bot() && getdvarint( "bots_t8_mode" ) && ( !isdefined( self.magic_bullet_shield ) || !self.magic_bullet_shield ) )
 	{
-		iDamage += int( self.maxhealth * randomfloatrange( 0.25, 1.25 ) );
+		bonus = int( self.maxhealth * randomfloatrange( 0.25, 1.25 ) );
+		
+		if ( bonus > 0 )
+		{
+			iDamage += bonus;
+		}
 	}
 	
 	self [[ level.prevcallbackactordamage ]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset );
