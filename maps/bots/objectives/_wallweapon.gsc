@@ -44,8 +44,9 @@ Finder( eObj )
 		
 		if ( !player_has_weapon || is_grenade )
 		{
-			func = BotBuiltinGetFunction( "maps/_zombiemode_weapons", "get_weapon_cost" );
-			
+			//func = BotBuiltinGetFunction( "maps/_zombiemode_weapons", "get_weapon_cost" );
+			func = ::get_weapon_cost;
+
 			if ( self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 			{
 				continue;
@@ -53,7 +54,8 @@ Finder( eObj )
 		}
 		else
 		{
-			func = BotBuiltinGetFunction( "maps/_zombiemode_weapons", "get_ammo_cost" );
+			//func = BotBuiltinGetFunction( "maps/_zombiemode_weapons", "get_ammo_cost" );
+			func = ::get_ammo_cost;
 			
 			if ( self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 			{

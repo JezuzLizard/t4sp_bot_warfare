@@ -8,6 +8,9 @@
 init()
 {
 	level.bw_version = "2.3.0 PR 1";
+
+	// disable cover warnings
+	level.enable_cover_warning = false;
 	
 	if ( getdvar( "bots_main" ) == "" )
 	{
@@ -461,6 +464,17 @@ add_bot()
 	{
 		bot.pers[ "isBot" ] = true;
 		bot.pers[ "isBotWarfare" ] = true;
+		if ( isdefined( level.zombie_vars["zombie_score_start"] ) )
+		{
+			bot.entity_num = bot GetEntityNumber(); 
+			bot.score = level.zombie_vars["zombie_score_start"];
+			bot.score_total = bot.score;
+			bot.old_score = bot.score; 
+
+			bot.is_zombie = false; 
+			bot.initialized = false;
+			bot.zombification_time = 0;
+		}
 		bot thread added();
 	}
 }

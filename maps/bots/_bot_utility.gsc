@@ -865,7 +865,7 @@ GetHostPlayer()
 }
 
 /*
-    Waits for a host player
+	Waits for a host player
 */
 bot_wait_for_host()
 {
@@ -1546,8 +1546,8 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 */
 inLastStand()
 {
-	func = BotBuiltinGetFunction( "maps/_laststand", "player_is_in_laststand" );
-	
+	//func = BotBuiltinGetFunction( "maps/_laststand", "player_is_in_laststand" );
+	func = ::player_is_in_laststand;
 	return self [[ func ]]();
 }
 
@@ -1556,7 +1556,8 @@ inLastStand()
 */
 isReviving( revivee )
 {
-	func = BotBuiltinGetFunction( "maps/_laststand", "is_reviving" );
+	//func = BotBuiltinGetFunction( "maps/_laststand", "is_reviving" );
+	func = ::is_reviving;
 	
 	return self [[ func ]]( revivee );
 }
@@ -1801,4 +1802,93 @@ clamp_to_ground( org )
 {
 	trace = playerphysicstrace( org + ( 0, 0, 20 ), org - ( 0, 0, 2000 ) );
 	return trace;
+}
+
+
+get_weapon_cost( weapon_name )
+{
+	AssertEx( IsDefined( level.zombie_weapons[weapon_name] ), weapon_name + " was not included or is not part of the zombie weapon list." );
+
+	return level.zombie_weapons[weapon_name].cost;
+}
+
+get_ammo_cost( weapon_name )
+{
+	AssertEx( IsDefined( level.zombie_weapons[weapon_name] ), weapon_name + " was not included or is not part of the zombie weapon list." );
+
+	return level.zombie_weapons[weapon_name].ammo_cost;
+}
+
+is_facing( facee )
+{
+	orientation = self getPlayerAngles();
+	forwardVec = anglesToForward( orientation );
+	forwardVec2D = ( forwardVec[0], forwardVec[1], 0 );
+	unitForwardVec2D = VectorNormalize( forwardVec2D );
+	toFaceeVec = facee.origin - self.origin;
+	toFaceeVec2D = ( toFaceeVec[0], toFaceeVec[1], 0 );
+	unitToFaceeVec2D = VectorNormalize( toFaceeVec2D );
+	
+	dotProduct = VectorDot( unitForwardVec2D, unitToFaceeVec2D );
+	return ( dotProduct > 0.9 ); // reviver is facing within a ~52-degree cone of the player
+}
+
+can_revive( revivee )
+{
+	if ( !isAlive( self ) )
+		return false;
+
+	if ( self player_is_in_laststand() )
+		return false;
+		
+	if( !isDefined( revivee.revivetrigger ) )
+		return false;
+	
+	if ( !self IsTouching( revivee.revivetrigger ) )
+		return false;
+		
+	//PI CHANGE: can revive in deep water in sumpf
+	if (IsDefined(level.script) && level.script == "nazi_zombie_sumpf" && (revivee depthinwater() > 10))
+		return true;
+	//END PI CHANGE
+		
+	if ( !self is_facing( revivee ) )
+		return false;
+		
+	if( !SightTracePassed( self.origin + ( 0, 0, 50 ), revivee.origin + ( 0, 0, 30 ), false, undefined ) )                
+		return false;
+	
+	//chrisp - fix issue where guys can sometimes revive thru a wall    
+	if(!bullettracepassed(self.origin + (0,0,50), revivee.origin + ( 0, 0, 30 ), false, undefined) )
+	{
+		return false;
+	}
+	
+	// SRS 9/2/2008: in zombie mode, disallow revive if potential reviver is a zombie
+	if( IsDefined( level.is_zombie_level ) && level.is_zombie_level )
+	{
+		if( IsDefined( self.is_zombie ) && self.is_zombie )
+		{
+			return false;
+		}
+	}
+
+	//if the level is nazi_zombie_asylum and playeris drinking, disable the trigger
+	if(level.script == "nazi_zombie_asylum" && isdefined(self.is_drinking))
+		return false;
+
+	if(level.script == "nazi_zombie_sumpf" && isdefined(self.is_drinking))
+		return false;
+
+	return true;
+}
+
+player_is_in_laststand()
+{
+	return ( IsDefined( self.revivetrigger ) );
+}
+
+is_reviving( revivee )
+{	
+	return ( can_revive( revivee ) && self UseButtonPressed() );
 }

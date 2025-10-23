@@ -24,7 +24,7 @@ init()
 
 do_printconsole( s )
 {
-	printf( s );
+	printconsole( s );
 }
 
 do_botaction( action )
@@ -44,12 +44,13 @@ do_botmovement( left, forward )
 
 do_botmeleeparams( yaw, dist )
 {
-	self botmeleeparams( yaw, dist );
+	//self botmeleeparams( yaw, dist );
 }
 
 do_botangles( angles )
 {
-	self botangles( angles );
+	self setplayerangles( angles );
+	//self botangles( angles );
 }
 
 do_isbot()
@@ -64,7 +65,8 @@ do_generatepath( from, to, team, best_effort )
 
 do_getfunction( file, threadname )
 {
-	return getfunction( file, threadname );
+	return undefined;
+	//return getfunction( file, threadname );
 }
 
 do_getmins()
@@ -109,15 +111,16 @@ do_addtestclient()
 
 do_notifyonplayercommand( a, b )
 {
-	self notifyonplayercommand( a, b );
+	//self notifyonplayercommand( a, b );
 }
 
 do_cmdexec( a )
 {
-	cmdexec( a );
+	//cmdexec( a );
 }
 
 do_ishost()
 {
-	return self ishost();
+	return self == getplayers()[0];
+	//return self ishost();
 }
